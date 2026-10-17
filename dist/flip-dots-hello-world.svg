@@ -1,0 +1,1831 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 234" width="100%" role="img" aria-label="hello world &amp;#8226; its me &amp;#8226; taruna &amp;#8226; outrowed &amp;#8226; peace out~">
+  <title>hello world &amp;#8226; its me &amp;#8226; taruna &amp;#8226; outrowed &amp;#8226; peace out~</title>
+  <defs>
+    <linearGradient id="casing-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141923"/>
+      <stop offset="100%" stop-color="#090b10"/>
+    </linearGradient>
+    <linearGradient id="active-dot-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="28%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <filter id="amber-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="1.35" flood-color="#fbbf24" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <style>
+    .d {
+      transform-box: fill-box;
+      transform-origin: center;
+      stroke-width: 0.75px;
+    }
+    .z {
+      fill: #161b26;
+      stroke: #202736;
+    }
+    @keyframes k-10000 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  20.62% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-10000 {
+      animation: k-10000 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-00100 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35.66% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  36.09% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  52.29% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-00100 {
+      animation: k-00100 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-11000 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  36.46% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-11000 {
+      animation: k-11000 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-10010 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  20.62% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  50.83% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  51.49% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  51.93% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  68.13% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-10010 {
+      animation: k-10010 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-11010 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  36.46% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  50.83% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  51.49% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  51.93% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  68.13% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-11010 {
+      animation: k-11010 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-01000 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.17% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.82% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  20.26% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  36.46% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-01000 {
+      animation: k-01000 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-00001 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  66.67% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  67.32% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  67.76% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-00001 {
+      animation: k-00001 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-00010 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  50.83% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  51.49% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  51.93% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  68.13% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-00010 {
+      animation: k-00010 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-10001 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  20.62% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  66.67% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  67.32% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  67.76% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-10001 {
+      animation: k-10001 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-00011 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  50.83% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  51.49% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  51.93% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-00011 {
+      animation: k-00011 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-10011 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  20.62% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  50.83% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  51.49% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  51.93% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-10011 {
+      animation: k-10011 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-00110 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35.66% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  36.09% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  68.13% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-00110 {
+      animation: k-00110 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-01101 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.17% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.82% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  20.26% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  52.29% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  66.67% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  67.32% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  67.76% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-01101 {
+      animation: k-01101 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-11111 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-11111 {
+      animation: k-11111 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-11011 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  36.46% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  50.83% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  51.49% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  51.93% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-11011 {
+      animation: k-11011 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-11110 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  68.13% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-11110 {
+      animation: k-11110 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-01110 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.17% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.82% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  20.26% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  68.13% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-01110 {
+      animation: k-01110 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-01111 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.17% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.82% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  20.26% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-01111 {
+      animation: k-01111 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-01001 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.17% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.82% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  20.26% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  36.46% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  66.67% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  67.32% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  67.76% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-01001 {
+      animation: k-01001 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-10110 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  20.62% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35.66% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  36.09% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  68.13% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-10110 {
+      animation: k-10110 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-01100 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.17% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.82% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  20.26% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  52.29% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-01100 {
+      animation: k-01100 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-01010 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.17% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.82% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  20.26% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  36.46% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  50.83% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  51.49% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  51.93% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  68.13% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-01010 {
+      animation: k-01010 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-10100 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  20.62% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35.66% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  36.09% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  52.29% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-10100 {
+      animation: k-10100 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-11001 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  36.46% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  66.67% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  67.32% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  67.76% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-11001 {
+      animation: k-11001 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-01011 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.17% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  19.82% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  20.26% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  36.46% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  50.83% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  51.49% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  51.93% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-01011 {
+      animation: k-01011 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-00111 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35.66% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  36.09% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-00111 {
+      animation: k-00111 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-11101 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  52.29% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  66.67% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  67.32% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  67.76% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-11101 {
+      animation: k-11101 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-10111 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  20.62% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35.66% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  36.09% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  52.29% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  66.67% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  67.4% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-10111 {
+      animation: k-10111 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-00101 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35.66% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  36.09% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  52.29% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  66.67% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  67.32% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  67.76% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-00101 {
+      animation: k-00101 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-11100 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  20.62% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  35.73% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  52.29% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-11100 {
+      animation: k-11100 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @keyframes k-10101 {
+  0% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.33% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  3.99% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  4.43% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  4.79% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.17% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  19.9% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  20.62% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  35.66% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  36.09% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  36.46% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  50.83% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  51.56% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  52.29% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  66.67% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  67.32% { fill: #263042; stroke: #fcd34d; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }
+  67.76% { fill: #fef08a; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }
+  68.13% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  82.5% { fill: url(#active-dot-grad); stroke: #fcd34d; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }
+  83.23% { fill: #263042; stroke: #202736; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }
+  83.96% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+  100% { fill: #161b26; stroke: #202736; transform: scaleY(1) scaleX(1); filter: none; }
+    }
+    .p-10101 {
+      animation: k-10101 24s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .d[class*="p-"] {
+        animation: none;
+        fill: url(#active-dot-grad);
+        stroke: #fcd34d;
+        filter: url(#amber-glow);
+      }
+    }
+  </style>
+
+  <!-- Outer anodized aluminum frame -->
+  <rect x="1" y="1" width="1258" height="232" rx="12" fill="url(#casing-grad)" stroke="#232a38" stroke-width="2"/>
+
+  <!-- Inner recessed bezel -->
+  <rect x="20" y="18" width="1220" height="198" rx="6" fill="#0b0e15" stroke="#1b2230" stroke-width="1.5"/>
+
+  <!-- Corner mounting screws -->
+    <g transform="translate(14,14)">
+      <circle r="4.5" fill="#1a202c" stroke="#232a38" stroke-width="1"/>
+      <line x1="-2.6" y1="-1.5" x2="2.6" y2="1.5" stroke="#090b10" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(1246,14)">
+      <circle r="4.5" fill="#1a202c" stroke="#232a38" stroke-width="1"/>
+      <line x1="-2.6" y1="-1.5" x2="2.6" y2="1.5" stroke="#090b10" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(14,220)">
+      <circle r="4.5" fill="#1a202c" stroke="#232a38" stroke-width="1"/>
+      <line x1="-2.6" y1="-1.5" x2="2.6" y2="1.5" stroke="#090b10" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(1246,220)">
+      <circle r="4.5" fill="#1a202c" stroke="#232a38" stroke-width="1"/>
+      <line x1="-2.6" y1="-1.5" x2="2.6" y2="1.5" stroke="#090b10" stroke-width="1.2" stroke-linecap="round"/>
+    </g>
+
+  <!-- Flip-dot array -->
+  <g id="flip-dot-matrix">
+    <circle class="d z" cx="35" cy="33" r="6"/>
+    <circle class="d z" cx="49" cy="33" r="6"/>
+    <circle class="d z" cx="63" cy="33" r="6"/>
+    <circle class="d z" cx="77" cy="33" r="6"/>
+    <circle class="d z" cx="91" cy="33" r="6"/>
+    <circle class="d z" cx="105" cy="33" r="6"/>
+    <circle class="d z" cx="119" cy="33" r="6"/>
+    <circle class="d z" cx="133" cy="33" r="6"/>
+    <circle class="d z" cx="147" cy="33" r="6"/>
+    <circle class="d z" cx="161" cy="33" r="6"/>
+    <circle class="d z" cx="175" cy="33" r="6"/>
+    <circle class="d z" cx="189" cy="33" r="6"/>
+    <circle class="d z" cx="203" cy="33" r="6"/>
+    <circle class="d z" cx="217" cy="33" r="6"/>
+    <circle class="d z" cx="231" cy="33" r="6"/>
+    <circle class="d z" cx="245" cy="33" r="6"/>
+    <circle class="d z" cx="259" cy="33" r="6"/>
+    <circle class="d z" cx="273" cy="33" r="6"/>
+    <circle class="d z" cx="287" cy="33" r="6"/>
+    <circle class="d z" cx="301" cy="33" r="6"/>
+    <circle class="d z" cx="315" cy="33" r="6"/>
+    <circle class="d z" cx="329" cy="33" r="6"/>
+    <circle class="d z" cx="343" cy="33" r="6"/>
+    <circle class="d z" cx="357" cy="33" r="6"/>
+    <circle class="d z" cx="371" cy="33" r="6"/>
+    <circle class="d z" cx="385" cy="33" r="6"/>
+    <circle class="d z" cx="399" cy="33" r="6"/>
+    <circle class="d z" cx="413" cy="33" r="6"/>
+    <circle class="d z" cx="427" cy="33" r="6"/>
+    <circle class="d z" cx="441" cy="33" r="6"/>
+    <circle class="d z" cx="455" cy="33" r="6"/>
+    <circle class="d z" cx="469" cy="33" r="6"/>
+    <circle class="d z" cx="483" cy="33" r="6"/>
+    <circle class="d z" cx="497" cy="33" r="6"/>
+    <circle class="d z" cx="511" cy="33" r="6"/>
+    <circle class="d z" cx="525" cy="33" r="6"/>
+    <circle class="d z" cx="539" cy="33" r="6"/>
+    <circle class="d z" cx="553" cy="33" r="6"/>
+    <circle class="d z" cx="567" cy="33" r="6"/>
+    <circle class="d z" cx="581" cy="33" r="6"/>
+    <circle class="d z" cx="595" cy="33" r="6"/>
+    <circle class="d z" cx="609" cy="33" r="6"/>
+    <circle class="d z" cx="623" cy="33" r="6"/>
+    <circle class="d z" cx="637" cy="33" r="6"/>
+    <circle class="d z" cx="651" cy="33" r="6"/>
+    <circle class="d z" cx="665" cy="33" r="6"/>
+    <circle class="d z" cx="679" cy="33" r="6"/>
+    <circle class="d z" cx="693" cy="33" r="6"/>
+    <circle class="d z" cx="707" cy="33" r="6"/>
+    <circle class="d z" cx="721" cy="33" r="6"/>
+    <circle class="d z" cx="735" cy="33" r="6"/>
+    <circle class="d z" cx="749" cy="33" r="6"/>
+    <circle class="d z" cx="763" cy="33" r="6"/>
+    <circle class="d z" cx="777" cy="33" r="6"/>
+    <circle class="d z" cx="791" cy="33" r="6"/>
+    <circle class="d z" cx="805" cy="33" r="6"/>
+    <circle class="d z" cx="819" cy="33" r="6"/>
+    <circle class="d z" cx="833" cy="33" r="6"/>
+    <circle class="d z" cx="847" cy="33" r="6"/>
+    <circle class="d z" cx="861" cy="33" r="6"/>
+    <circle class="d z" cx="875" cy="33" r="6"/>
+    <circle class="d z" cx="889" cy="33" r="6"/>
+    <circle class="d z" cx="903" cy="33" r="6"/>
+    <circle class="d z" cx="917" cy="33" r="6"/>
+    <circle class="d z" cx="931" cy="33" r="6"/>
+    <circle class="d z" cx="945" cy="33" r="6"/>
+    <circle class="d z" cx="959" cy="33" r="6"/>
+    <circle class="d z" cx="973" cy="33" r="6"/>
+    <circle class="d z" cx="987" cy="33" r="6"/>
+    <circle class="d z" cx="1001" cy="33" r="6"/>
+    <circle class="d z" cx="1015" cy="33" r="6"/>
+    <circle class="d z" cx="1029" cy="33" r="6"/>
+    <circle class="d z" cx="1043" cy="33" r="6"/>
+    <circle class="d z" cx="1057" cy="33" r="6"/>
+    <circle class="d z" cx="1071" cy="33" r="6"/>
+    <circle class="d z" cx="1085" cy="33" r="6"/>
+    <circle class="d z" cx="1099" cy="33" r="6"/>
+    <circle class="d z" cx="1113" cy="33" r="6"/>
+    <circle class="d z" cx="1127" cy="33" r="6"/>
+    <circle class="d z" cx="1141" cy="33" r="6"/>
+    <circle class="d z" cx="1155" cy="33" r="6"/>
+    <circle class="d z" cx="1169" cy="33" r="6"/>
+    <circle class="d z" cx="1183" cy="33" r="6"/>
+    <circle class="d z" cx="1197" cy="33" r="6"/>
+    <circle class="d z" cx="1211" cy="33" r="6"/>
+    <circle class="d z" cx="1225" cy="33" r="6"/>
+    <circle class="d z" cx="35" cy="47" r="6"/>
+    <circle class="d z" cx="49" cy="47" r="6"/>
+    <circle class="d z" cx="63" cy="47" r="6"/>
+    <circle class="d z" cx="77" cy="47" r="6"/>
+    <circle class="d z" cx="91" cy="47" r="6"/>
+    <circle class="d z" cx="105" cy="47" r="6"/>
+    <circle class="d z" cx="119" cy="47" r="6"/>
+    <circle class="d z" cx="133" cy="47" r="6"/>
+    <circle class="d z" cx="147" cy="47" r="6"/>
+    <circle class="d z" cx="161" cy="47" r="6"/>
+    <circle class="d z" cx="175" cy="47" r="6"/>
+    <circle class="d z" cx="189" cy="47" r="6"/>
+    <circle class="d z" cx="203" cy="47" r="6"/>
+    <circle class="d z" cx="217" cy="47" r="6"/>
+    <circle class="d z" cx="231" cy="47" r="6"/>
+    <circle class="d z" cx="245" cy="47" r="6"/>
+    <circle class="d z" cx="259" cy="47" r="6"/>
+    <circle class="d z" cx="273" cy="47" r="6"/>
+    <circle class="d z" cx="287" cy="47" r="6"/>
+    <circle class="d z" cx="301" cy="47" r="6"/>
+    <circle class="d z" cx="315" cy="47" r="6"/>
+    <circle class="d z" cx="329" cy="47" r="6"/>
+    <circle class="d z" cx="343" cy="47" r="6"/>
+    <circle class="d z" cx="357" cy="47" r="6"/>
+    <circle class="d z" cx="371" cy="47" r="6"/>
+    <circle class="d z" cx="385" cy="47" r="6"/>
+    <circle class="d z" cx="399" cy="47" r="6"/>
+    <circle class="d z" cx="413" cy="47" r="6"/>
+    <circle class="d z" cx="427" cy="47" r="6"/>
+    <circle class="d z" cx="441" cy="47" r="6"/>
+    <circle class="d z" cx="455" cy="47" r="6"/>
+    <circle class="d z" cx="469" cy="47" r="6"/>
+    <circle class="d z" cx="483" cy="47" r="6"/>
+    <circle class="d z" cx="497" cy="47" r="6"/>
+    <circle class="d z" cx="511" cy="47" r="6"/>
+    <circle class="d z" cx="525" cy="47" r="6"/>
+    <circle class="d z" cx="539" cy="47" r="6"/>
+    <circle class="d z" cx="553" cy="47" r="6"/>
+    <circle class="d z" cx="567" cy="47" r="6"/>
+    <circle class="d z" cx="581" cy="47" r="6"/>
+    <circle class="d z" cx="595" cy="47" r="6"/>
+    <circle class="d z" cx="609" cy="47" r="6"/>
+    <circle class="d z" cx="623" cy="47" r="6"/>
+    <circle class="d z" cx="637" cy="47" r="6"/>
+    <circle class="d z" cx="651" cy="47" r="6"/>
+    <circle class="d z" cx="665" cy="47" r="6"/>
+    <circle class="d z" cx="679" cy="47" r="6"/>
+    <circle class="d z" cx="693" cy="47" r="6"/>
+    <circle class="d z" cx="707" cy="47" r="6"/>
+    <circle class="d z" cx="721" cy="47" r="6"/>
+    <circle class="d z" cx="735" cy="47" r="6"/>
+    <circle class="d z" cx="749" cy="47" r="6"/>
+    <circle class="d z" cx="763" cy="47" r="6"/>
+    <circle class="d z" cx="777" cy="47" r="6"/>
+    <circle class="d z" cx="791" cy="47" r="6"/>
+    <circle class="d z" cx="805" cy="47" r="6"/>
+    <circle class="d z" cx="819" cy="47" r="6"/>
+    <circle class="d z" cx="833" cy="47" r="6"/>
+    <circle class="d z" cx="847" cy="47" r="6"/>
+    <circle class="d z" cx="861" cy="47" r="6"/>
+    <circle class="d z" cx="875" cy="47" r="6"/>
+    <circle class="d z" cx="889" cy="47" r="6"/>
+    <circle class="d z" cx="903" cy="47" r="6"/>
+    <circle class="d z" cx="917" cy="47" r="6"/>
+    <circle class="d z" cx="931" cy="47" r="6"/>
+    <circle class="d z" cx="945" cy="47" r="6"/>
+    <circle class="d z" cx="959" cy="47" r="6"/>
+    <circle class="d z" cx="973" cy="47" r="6"/>
+    <circle class="d z" cx="987" cy="47" r="6"/>
+    <circle class="d z" cx="1001" cy="47" r="6"/>
+    <circle class="d z" cx="1015" cy="47" r="6"/>
+    <circle class="d z" cx="1029" cy="47" r="6"/>
+    <circle class="d z" cx="1043" cy="47" r="6"/>
+    <circle class="d z" cx="1057" cy="47" r="6"/>
+    <circle class="d z" cx="1071" cy="47" r="6"/>
+    <circle class="d z" cx="1085" cy="47" r="6"/>
+    <circle class="d z" cx="1099" cy="47" r="6"/>
+    <circle class="d z" cx="1113" cy="47" r="6"/>
+    <circle class="d z" cx="1127" cy="47" r="6"/>
+    <circle class="d z" cx="1141" cy="47" r="6"/>
+    <circle class="d z" cx="1155" cy="47" r="6"/>
+    <circle class="d z" cx="1169" cy="47" r="6"/>
+    <circle class="d z" cx="1183" cy="47" r="6"/>
+    <circle class="d z" cx="1197" cy="47" r="6"/>
+    <circle class="d z" cx="1211" cy="47" r="6"/>
+    <circle class="d z" cx="1225" cy="47" r="6"/>
+    <circle class="d z" cx="35" cy="61" r="6"/>
+    <circle class="d z" cx="49" cy="61" r="6"/>
+    <circle class="d z" cx="63" cy="61" r="6"/>
+    <circle class="d z" cx="77" cy="61" r="6"/>
+    <circle class="d z" cx="91" cy="61" r="6"/>
+    <circle class="d z" cx="105" cy="61" r="6"/>
+    <circle class="d z" cx="119" cy="61" r="6"/>
+    <circle class="d z" cx="133" cy="61" r="6"/>
+    <circle class="d z p-10000" cx="147" cy="61" r="6" style="animation-delay:0.089s"/>
+    <circle class="d z p-10000" cx="161" cy="61" r="6" style="animation-delay:0.121s"/>
+    <circle class="d z" cx="175" cy="61" r="6"/>
+    <circle class="d z" cx="189" cy="61" r="6"/>
+    <circle class="d z" cx="203" cy="61" r="6"/>
+    <circle class="d z" cx="217" cy="61" r="6"/>
+    <circle class="d z" cx="231" cy="61" r="6"/>
+    <circle class="d z" cx="245" cy="61" r="6"/>
+    <circle class="d z" cx="259" cy="61" r="6"/>
+    <circle class="d z" cx="273" cy="61" r="6"/>
+    <circle class="d z" cx="287" cy="61" r="6"/>
+    <circle class="d z" cx="301" cy="61" r="6"/>
+    <circle class="d z" cx="315" cy="61" r="6"/>
+    <circle class="d z" cx="329" cy="61" r="6"/>
+    <circle class="d z p-00100" cx="343" cy="61" r="6" style="animation-delay:0.24s"/>
+    <circle class="d z p-00100" cx="357" cy="61" r="6" style="animation-delay:0.178s"/>
+    <circle class="d z p-10000" cx="371" cy="61" r="6" style="animation-delay:0.199s"/>
+    <circle class="d z p-11000" cx="385" cy="61" r="6" style="animation-delay:0.206s"/>
+    <circle class="d z p-11000" cx="399" cy="61" r="6" style="animation-delay:0.256s"/>
+    <circle class="d z" cx="413" cy="61" r="6"/>
+    <circle class="d z" cx="427" cy="61" r="6"/>
+    <circle class="d z p-10000" cx="441" cy="61" r="6" style="animation-delay:0.235s"/>
+    <circle class="d z p-10010" cx="455" cy="61" r="6" style="animation-delay:0.292s"/>
+    <circle class="d z p-11010" cx="469" cy="61" r="6" style="animation-delay:0.314s"/>
+    <circle class="d z p-01000" cx="483" cy="61" r="6" style="animation-delay:0.26s"/>
+    <circle class="d z" cx="497" cy="61" r="6"/>
+    <circle class="d z" cx="511" cy="61" r="6"/>
+    <circle class="d z" cx="525" cy="61" r="6"/>
+    <circle class="d z" cx="539" cy="61" r="6"/>
+    <circle class="d z" cx="553" cy="61" r="6"/>
+    <circle class="d z" cx="567" cy="61" r="6"/>
+    <circle class="d z" cx="581" cy="61" r="6"/>
+    <circle class="d z" cx="595" cy="61" r="6"/>
+    <circle class="d z" cx="609" cy="61" r="6"/>
+    <circle class="d z" cx="623" cy="61" r="6"/>
+    <circle class="d z" cx="637" cy="61" r="6"/>
+    <circle class="d z" cx="651" cy="61" r="6"/>
+    <circle class="d z" cx="665" cy="61" r="6"/>
+    <circle class="d z" cx="679" cy="61" r="6"/>
+    <circle class="d z" cx="693" cy="61" r="6"/>
+    <circle class="d z" cx="707" cy="61" r="6"/>
+    <circle class="d z" cx="721" cy="61" r="6"/>
+    <circle class="d z" cx="735" cy="61" r="6"/>
+    <circle class="d z" cx="749" cy="61" r="6"/>
+    <circle class="d z" cx="763" cy="61" r="6"/>
+    <circle class="d z" cx="777" cy="61" r="6"/>
+    <circle class="d z" cx="791" cy="61" r="6"/>
+    <circle class="d z" cx="805" cy="61" r="6"/>
+    <circle class="d z" cx="819" cy="61" r="6"/>
+    <circle class="d z" cx="833" cy="61" r="6"/>
+    <circle class="d z" cx="847" cy="61" r="6"/>
+    <circle class="d z" cx="861" cy="61" r="6"/>
+    <circle class="d z" cx="875" cy="61" r="6"/>
+    <circle class="d z" cx="889" cy="61" r="6"/>
+    <circle class="d z" cx="903" cy="61" r="6"/>
+    <circle class="d z" cx="917" cy="61" r="6"/>
+    <circle class="d z" cx="931" cy="61" r="6"/>
+    <circle class="d z" cx="945" cy="61" r="6"/>
+    <circle class="d z" cx="959" cy="61" r="6"/>
+    <circle class="d z" cx="973" cy="61" r="6"/>
+    <circle class="d z p-00001" cx="987" cy="61" r="6" style="animation-delay:0.596s"/>
+    <circle class="d z p-00001" cx="1001" cy="61" r="6" style="animation-delay:0.624s"/>
+    <circle class="d z" cx="1015" cy="61" r="6"/>
+    <circle class="d z p-10000" cx="1029" cy="61" r="6" style="animation-delay:0.567s"/>
+    <circle class="d z p-10000" cx="1043" cy="61" r="6" style="animation-delay:0.62s"/>
+    <circle class="d z p-10000" cx="1057" cy="61" r="6" style="animation-delay:0.611s"/>
+    <circle class="d z" cx="1071" cy="61" r="6"/>
+    <circle class="d z p-00010" cx="1085" cy="61" r="6" style="animation-delay:0.649s"/>
+    <circle class="d z p-00010" cx="1099" cy="61" r="6" style="animation-delay:0.683s"/>
+    <circle class="d z" cx="1113" cy="61" r="6"/>
+    <circle class="d z" cx="1127" cy="61" r="6"/>
+    <circle class="d z" cx="1141" cy="61" r="6"/>
+    <circle class="d z p-10000" cx="1155" cy="61" r="6" style="animation-delay:0.648s"/>
+    <circle class="d z p-10000" cx="1169" cy="61" r="6" style="animation-delay:0.72s"/>
+    <circle class="d z" cx="1183" cy="61" r="6"/>
+    <circle class="d z" cx="1197" cy="61" r="6"/>
+    <circle class="d z" cx="1211" cy="61" r="6"/>
+    <circle class="d z" cx="1225" cy="61" r="6"/>
+    <circle class="d z" cx="35" cy="75" r="6"/>
+    <circle class="d z" cx="49" cy="75" r="6"/>
+    <circle class="d z" cx="63" cy="75" r="6"/>
+    <circle class="d z" cx="77" cy="75" r="6"/>
+    <circle class="d z" cx="91" cy="75" r="6"/>
+    <circle class="d z" cx="105" cy="75" r="6"/>
+    <circle class="d z" cx="119" cy="75" r="6"/>
+    <circle class="d z p-10000" cx="133" cy="75" r="6" style="animation-delay:0.052s"/>
+    <circle class="d z p-10000" cx="147" cy="75" r="6" style="animation-delay:0.068s"/>
+    <circle class="d z" cx="161" cy="75" r="6"/>
+    <circle class="d z" cx="175" cy="75" r="6"/>
+    <circle class="d z" cx="189" cy="75" r="6"/>
+    <circle class="d z" cx="203" cy="75" r="6"/>
+    <circle class="d z" cx="217" cy="75" r="6"/>
+    <circle class="d z" cx="231" cy="75" r="6"/>
+    <circle class="d z" cx="245" cy="75" r="6"/>
+    <circle class="d z" cx="259" cy="75" r="6"/>
+    <circle class="d z" cx="273" cy="75" r="6"/>
+    <circle class="d z" cx="287" cy="75" r="6"/>
+    <circle class="d z" cx="301" cy="75" r="6"/>
+    <circle class="d z" cx="315" cy="75" r="6"/>
+    <circle class="d z p-00100" cx="329" cy="75" r="6" style="animation-delay:0.169s"/>
+    <circle class="d z p-00100" cx="343" cy="75" r="6" style="animation-delay:0.195s"/>
+    <circle class="d z" cx="357" cy="75" r="6"/>
+    <circle class="d z p-10000" cx="371" cy="75" r="6" style="animation-delay:0.21s"/>
+    <circle class="d z p-10000" cx="385" cy="75" r="6" style="animation-delay:0.271s"/>
+    <circle class="d z" cx="399" cy="75" r="6"/>
+    <circle class="d z" cx="413" cy="75" r="6"/>
+    <circle class="d z" cx="427" cy="75" r="6"/>
+    <circle class="d z p-10010" cx="441" cy="75" r="6" style="animation-delay:0.269s"/>
+    <circle class="d z p-11010" cx="455" cy="75" r="6" style="animation-delay:0.285s"/>
+    <circle class="d z p-01000" cx="469" cy="75" r="6" style="animation-delay:0.307s"/>
+    <circle class="d z" cx="483" cy="75" r="6"/>
+    <circle class="d z" cx="497" cy="75" r="6"/>
+    <circle class="d z" cx="511" cy="75" r="6"/>
+    <circle class="d z" cx="525" cy="75" r="6"/>
+    <circle class="d z" cx="539" cy="75" r="6"/>
+    <circle class="d z" cx="553" cy="75" r="6"/>
+    <circle class="d z" cx="567" cy="75" r="6"/>
+    <circle class="d z" cx="581" cy="75" r="6"/>
+    <circle class="d z" cx="595" cy="75" r="6"/>
+    <circle class="d z" cx="609" cy="75" r="6"/>
+    <circle class="d z" cx="623" cy="75" r="6"/>
+    <circle class="d z" cx="637" cy="75" r="6"/>
+    <circle class="d z" cx="651" cy="75" r="6"/>
+    <circle class="d z" cx="665" cy="75" r="6"/>
+    <circle class="d z" cx="679" cy="75" r="6"/>
+    <circle class="d z" cx="693" cy="75" r="6"/>
+    <circle class="d z" cx="707" cy="75" r="6"/>
+    <circle class="d z" cx="721" cy="75" r="6"/>
+    <circle class="d z" cx="735" cy="75" r="6"/>
+    <circle class="d z" cx="749" cy="75" r="6"/>
+    <circle class="d z" cx="763" cy="75" r="6"/>
+    <circle class="d z" cx="777" cy="75" r="6"/>
+    <circle class="d z" cx="791" cy="75" r="6"/>
+    <circle class="d z" cx="805" cy="75" r="6"/>
+    <circle class="d z" cx="819" cy="75" r="6"/>
+    <circle class="d z" cx="833" cy="75" r="6"/>
+    <circle class="d z" cx="847" cy="75" r="6"/>
+    <circle class="d z" cx="861" cy="75" r="6"/>
+    <circle class="d z" cx="875" cy="75" r="6"/>
+    <circle class="d z" cx="889" cy="75" r="6"/>
+    <circle class="d z" cx="903" cy="75" r="6"/>
+    <circle class="d z" cx="917" cy="75" r="6"/>
+    <circle class="d z" cx="931" cy="75" r="6"/>
+    <circle class="d z" cx="945" cy="75" r="6"/>
+    <circle class="d z" cx="959" cy="75" r="6"/>
+    <circle class="d z p-00001" cx="973" cy="75" r="6" style="animation-delay:0.556s"/>
+    <circle class="d z p-00001" cx="987" cy="75" r="6" style="animation-delay:0.619s"/>
+    <circle class="d z" cx="1001" cy="75" r="6"/>
+    <circle class="d z" cx="1015" cy="75" r="6"/>
+    <circle class="d z p-10000" cx="1029" cy="75" r="6" style="animation-delay:0.602s"/>
+    <circle class="d z p-10000" cx="1043" cy="75" r="6" style="animation-delay:0.626s"/>
+    <circle class="d z" cx="1057" cy="75" r="6"/>
+    <circle class="d z p-00010" cx="1071" cy="75" r="6" style="animation-delay:0.611s"/>
+    <circle class="d z p-00010" cx="1085" cy="75" r="6" style="animation-delay:0.679s"/>
+    <circle class="d z" cx="1099" cy="75" r="6"/>
+    <circle class="d z" cx="1113" cy="75" r="6"/>
+    <circle class="d z" cx="1127" cy="75" r="6"/>
+    <circle class="d z p-10000" cx="1141" cy="75" r="6" style="animation-delay:0.696s"/>
+    <circle class="d z p-10000" cx="1155" cy="75" r="6" style="animation-delay:0.671s"/>
+    <circle class="d z" cx="1169" cy="75" r="6"/>
+    <circle class="d z" cx="1183" cy="75" r="6"/>
+    <circle class="d z" cx="1197" cy="75" r="6"/>
+    <circle class="d z" cx="1211" cy="75" r="6"/>
+    <circle class="d z" cx="1225" cy="75" r="6"/>
+    <circle class="d z" cx="35" cy="89" r="6"/>
+    <circle class="d z" cx="49" cy="89" r="6"/>
+    <circle class="d z" cx="63" cy="89" r="6"/>
+    <circle class="d z" cx="77" cy="89" r="6"/>
+    <circle class="d z" cx="91" cy="89" r="6"/>
+    <circle class="d z" cx="105" cy="89" r="6"/>
+    <circle class="d z p-00001" cx="119" cy="89" r="6" style="animation-delay:0.084s"/>
+    <circle class="d z p-10001" cx="133" cy="89" r="6" style="animation-delay:0.067s"/>
+    <circle class="d z p-10000" cx="147" cy="89" r="6" style="animation-delay:0.117s"/>
+    <circle class="d z p-00001" cx="161" cy="89" r="6" style="animation-delay:0.1s"/>
+    <circle class="d z p-10001" cx="175" cy="89" r="6" style="animation-delay:0.166s"/>
+    <circle class="d z p-10000" cx="189" cy="89" r="6" style="animation-delay:0.117s"/>
+    <circle class="d z" cx="203" cy="89" r="6"/>
+    <circle class="d z p-00010" cx="217" cy="89" r="6" style="animation-delay:0.149s"/>
+    <circle class="d z p-00010" cx="231" cy="89" r="6" style="animation-delay:0.18s"/>
+    <circle class="d z p-00011" cx="245" cy="89" r="6" style="animation-delay:0.169s"/>
+    <circle class="d z p-10011" cx="259" cy="89" r="6" style="animation-delay:0.215s"/>
+    <circle class="d z p-10001" cx="273" cy="89" r="6" style="animation-delay:0.193s"/>
+    <circle class="d z p-10001" cx="287" cy="89" r="6" style="animation-delay:0.16s"/>
+    <circle class="d z p-10000" cx="301" cy="89" r="6" style="animation-delay:0.164s"/>
+    <circle class="d z p-00110" cx="315" cy="89" r="6" style="animation-delay:0.215s"/>
+    <circle class="d z p-00110" cx="329" cy="89" r="6" style="animation-delay:0.182s"/>
+    <circle class="d z p-00100" cx="343" cy="89" r="6" style="animation-delay:0.217s"/>
+    <circle class="d z p-01101" cx="357" cy="89" r="6" style="animation-delay:0.204s"/>
+    <circle class="d z p-11111" cx="371" cy="89" r="6" style="animation-delay:0.221s"/>
+    <circle class="d z p-11011" cx="385" cy="89" r="6" style="animation-delay:0.216s"/>
+    <circle class="d z p-00001" cx="399" cy="89" r="6" style="animation-delay:0.276s"/>
+    <circle class="d z" cx="413" cy="89" r="6"/>
+    <circle class="d z p-00010" cx="427" cy="89" r="6" style="animation-delay:0.298s"/>
+    <circle class="d z p-11110" cx="441" cy="89" r="6" style="animation-delay:0.246s"/>
+    <circle class="d z p-11110" cx="455" cy="89" r="6" style="animation-delay:0.283s"/>
+    <circle class="d z p-01110" cx="469" cy="89" r="6" style="animation-delay:0.312s"/>
+    <circle class="d z p-01111" cx="483" cy="89" r="6" style="animation-delay:0.343s"/>
+    <circle class="d z p-01001" cx="497" cy="89" r="6" style="animation-delay:0.294s"/>
+    <circle class="d z p-10001" cx="511" cy="89" r="6" style="animation-delay:0.324s"/>
+    <circle class="d z p-10001" cx="525" cy="89" r="6" style="animation-delay:0.304s"/>
+    <circle class="d z p-10010" cx="539" cy="89" r="6" style="animation-delay:0.314s"/>
+    <circle class="d z p-10110" cx="553" cy="89" r="6" style="animation-delay:0.328s"/>
+    <circle class="d z p-01100" cx="567" cy="89" r="6" style="animation-delay:0.381s"/>
+    <circle class="d z p-01010" cx="581" cy="89" r="6" style="animation-delay:0.404s"/>
+    <circle class="d z p-01111" cx="595" cy="89" r="6" style="animation-delay:0.408s"/>
+    <circle class="d z p-01101" cx="609" cy="89" r="6" style="animation-delay:0.382s"/>
+    <circle class="d z p-01001" cx="623" cy="89" r="6" style="animation-delay:0.409s"/>
+    <circle class="d z p-00001" cx="637" cy="89" r="6" style="animation-delay:0.368s"/>
+    <circle class="d z p-10000" cx="651" cy="89" r="6" style="animation-delay:0.404s"/>
+    <circle class="d z p-10110" cx="665" cy="89" r="6" style="animation-delay:0.394s"/>
+    <circle class="d z p-00110" cx="679" cy="89" r="6" style="animation-delay:0.414s"/>
+    <circle class="d z p-10010" cx="693" cy="89" r="6" style="animation-delay:0.455s"/>
+    <circle class="d z p-11010" cx="707" cy="89" r="6" style="animation-delay:0.444s"/>
+    <circle class="d z p-01100" cx="721" cy="89" r="6" style="animation-delay:0.435s"/>
+    <circle class="d z p-10100" cx="735" cy="89" r="6" style="animation-delay:0.464s"/>
+    <circle class="d z p-11001" cx="749" cy="89" r="6" style="animation-delay:0.432s"/>
+    <circle class="d z p-01011" cx="763" cy="89" r="6" style="animation-delay:0.47s"/>
+    <circle class="d z p-00111" cx="777" cy="89" r="6" style="animation-delay:0.509s"/>
+    <circle class="d z p-01101" cx="791" cy="89" r="6" style="animation-delay:0.469s"/>
+    <circle class="d z p-11010" cx="805" cy="89" r="6" style="animation-delay:0.502s"/>
+    <circle class="d z p-10110" cx="819" cy="89" r="6" style="animation-delay:0.519s"/>
+    <circle class="d z p-10100" cx="833" cy="89" r="6" style="animation-delay:0.539s"/>
+    <circle class="d z p-10011" cx="847" cy="89" r="6" style="animation-delay:0.483s"/>
+    <circle class="d z p-01011" cx="861" cy="89" r="6" style="animation-delay:0.505s"/>
+    <circle class="d z p-01000" cx="875" cy="89" r="6" style="animation-delay:0.542s"/>
+    <circle class="d z p-01000" cx="889" cy="89" r="6" style="animation-delay:0.581s"/>
+    <circle class="d z p-11101" cx="903" cy="89" r="6" style="animation-delay:0.522s"/>
+    <circle class="d z p-10111" cx="917" cy="89" r="6" style="animation-delay:0.586s"/>
+    <circle class="d z p-00110" cx="931" cy="89" r="6" style="animation-delay:0.598s"/>
+    <circle class="d z p-10110" cx="945" cy="89" r="6" style="animation-delay:0.546s"/>
+    <circle class="d z p-10011" cx="959" cy="89" r="6" style="animation-delay:0.555s"/>
+    <circle class="d z p-00001" cx="973" cy="89" r="6" style="animation-delay:0.595s"/>
+    <circle class="d z p-00001" cx="987" cy="89" r="6" style="animation-delay:0.632s"/>
+    <circle class="d z p-00001" cx="1001" cy="89" r="6" style="animation-delay:0.59s"/>
+    <circle class="d z p-00001" cx="1015" cy="89" r="6" style="animation-delay:0.649s"/>
+    <circle class="d z p-10010" cx="1029" cy="89" r="6" style="animation-delay:0.633s"/>
+    <circle class="d z p-10010" cx="1043" cy="89" r="6" style="animation-delay:0.674s"/>
+    <circle class="d z" cx="1057" cy="89" r="6"/>
+    <circle class="d z p-00010" cx="1071" cy="89" r="6" style="animation-delay:0.661s"/>
+    <circle class="d z p-00010" cx="1085" cy="89" r="6" style="animation-delay:0.633s"/>
+    <circle class="d z p-10000" cx="1099" cy="89" r="6" style="animation-delay:0.635s"/>
+    <circle class="d z p-10000" cx="1113" cy="89" r="6" style="animation-delay:0.672s"/>
+    <circle class="d z" cx="1127" cy="89" r="6"/>
+    <circle class="d z p-10000" cx="1141" cy="89" r="6" style="animation-delay:0.661s"/>
+    <circle class="d z p-10000" cx="1155" cy="89" r="6" style="animation-delay:0.714s"/>
+    <circle class="d z" cx="1169" cy="89" r="6"/>
+    <circle class="d z" cx="1183" cy="89" r="6"/>
+    <circle class="d z" cx="1197" cy="89" r="6"/>
+    <circle class="d z" cx="1211" cy="89" r="6"/>
+    <circle class="d z" cx="1225" cy="89" r="6"/>
+    <circle class="d z" cx="35" cy="103" r="6"/>
+    <circle class="d z" cx="49" cy="103" r="6"/>
+    <circle class="d z" cx="63" cy="103" r="6"/>
+    <circle class="d z" cx="77" cy="103" r="6"/>
+    <circle class="d z" cx="91" cy="103" r="6"/>
+    <circle class="d z p-00001" cx="105" cy="103" r="6" style="animation-delay:0.077s"/>
+    <circle class="d z p-10001" cx="119" cy="103" r="6" style="animation-delay:0.124s"/>
+    <circle class="d z p-10001" cx="133" cy="103" r="6" style="animation-delay:0.12s"/>
+    <circle class="d z p-10000" cx="147" cy="103" r="6" style="animation-delay:0.107s"/>
+    <circle class="d z p-00001" cx="161" cy="103" r="6" style="animation-delay:0.15s"/>
+    <circle class="d z p-10001" cx="175" cy="103" r="6" style="animation-delay:0.14s"/>
+    <circle class="d z p-10010" cx="189" cy="103" r="6" style="animation-delay:0.127s"/>
+    <circle class="d z p-00010" cx="203" cy="103" r="6" style="animation-delay:0.133s"/>
+    <circle class="d z p-00001" cx="217" cy="103" r="6" style="animation-delay:0.167s"/>
+    <circle class="d z p-10001" cx="231" cy="103" r="6" style="animation-delay:0.18s"/>
+    <circle class="d z p-10010" cx="245" cy="103" r="6" style="animation-delay:0.191s"/>
+    <circle class="d z p-00010" cx="259" cy="103" r="6" style="animation-delay:0.212s"/>
+    <circle class="d z p-00001" cx="273" cy="103" r="6" style="animation-delay:0.167s"/>
+    <circle class="d z p-10001" cx="287" cy="103" r="6" style="animation-delay:0.231s"/>
+    <circle class="d z p-10010" cx="301" cy="103" r="6" style="animation-delay:0.181s"/>
+    <circle class="d z p-00110" cx="315" cy="103" r="6" style="animation-delay:0.253s"/>
+    <circle class="d z p-00100" cx="329" cy="103" r="6" style="animation-delay:0.228s"/>
+    <circle class="d z" cx="343" cy="103" r="6"/>
+    <circle class="d z p-11010" cx="357" cy="103" r="6" style="animation-delay:0.208s"/>
+    <circle class="d z p-11010" cx="371" cy="103" r="6" style="animation-delay:0.218s"/>
+    <circle class="d z p-00001" cx="385" cy="103" r="6" style="animation-delay:0.278s"/>
+    <circle class="d z p-00001" cx="399" cy="103" r="6" style="animation-delay:0.281s"/>
+    <circle class="d z" cx="413" cy="103" r="6"/>
+    <circle class="d z p-10010" cx="427" cy="103" r="6" style="animation-delay:0.273s"/>
+    <circle class="d z p-11010" cx="441" cy="103" r="6" style="animation-delay:0.29s"/>
+    <circle class="d z p-01001" cx="455" cy="103" r="6" style="animation-delay:0.262s"/>
+    <circle class="d z p-00101" cx="469" cy="103" r="6" style="animation-delay:0.298s"/>
+    <circle class="d z p-10100" cx="483" cy="103" r="6" style="animation-delay:0.331s"/>
+    <circle class="d z p-10000" cx="497" cy="103" r="6" style="animation-delay:0.344s"/>
+    <circle class="d z p-00001" cx="511" cy="103" r="6" style="animation-delay:0.348s"/>
+    <circle class="d z p-00011" cx="525" cy="103" r="6" style="animation-delay:0.345s"/>
+    <circle class="d z p-11110" cx="539" cy="103" r="6" style="animation-delay:0.366s"/>
+    <circle class="d z p-11110" cx="553" cy="103" r="6" style="animation-delay:0.396s"/>
+    <circle class="d z p-00101" cx="567" cy="103" r="6" style="animation-delay:0.397s"/>
+    <circle class="d z p-00011" cx="581" cy="103" r="6" style="animation-delay:0.362s"/>
+    <circle class="d z p-00110" cx="595" cy="103" r="6" style="animation-delay:0.404s"/>
+    <circle class="d z p-00100" cx="609" cy="103" r="6" style="animation-delay:0.357s"/>
+    <circle class="d z p-00001" cx="623" cy="103" r="6" style="animation-delay:0.368s"/>
+    <circle class="d z p-10011" cx="637" cy="103" r="6" style="animation-delay:0.435s"/>
+    <circle class="d z p-10110" cx="651" cy="103" r="6" style="animation-delay:0.426s"/>
+    <circle class="d z p-00100" cx="665" cy="103" r="6" style="animation-delay:0.432s"/>
+    <circle class="d z p-10000" cx="679" cy="103" r="6" style="animation-delay:0.447s"/>
+    <circle class="d z p-11010" cx="693" cy="103" r="6" style="animation-delay:0.425s"/>
+    <circle class="d z p-01110" cx="707" cy="103" r="6" style="animation-delay:0.474s"/>
+    <circle class="d z p-11101" cx="721" cy="103" r="6" style="animation-delay:0.435s"/>
+    <circle class="d z p-11001" cx="735" cy="103" r="6" style="animation-delay:0.474s"/>
+    <circle class="d z p-01010" cx="749" cy="103" r="6" style="animation-delay:0.457s"/>
+    <circle class="d z p-01110" cx="763" cy="103" r="6" style="animation-delay:0.446s"/>
+    <circle class="d z p-11101" cx="777" cy="103" r="6" style="animation-delay:0.475s"/>
+    <circle class="d z p-11111" cx="791" cy="103" r="6" style="animation-delay:0.526s"/>
+    <circle class="d z p-00010" cx="805" cy="103" r="6" style="animation-delay:0.538s"/>
+    <circle class="d z p-00100" cx="819" cy="103" r="6" style="animation-delay:0.512s"/>
+    <circle class="d z p-11111" cx="833" cy="103" r="6" style="animation-delay:0.553s"/>
+    <circle class="d z p-11011" cx="847" cy="103" r="6" style="animation-delay:0.518s"/>
+    <circle class="d z" cx="861" cy="103" r="6"/>
+    <circle class="d z" cx="875" cy="103" r="6"/>
+    <circle class="d z p-11011" cx="889" cy="103" r="6" style="animation-delay:0.563s"/>
+    <circle class="d z p-11011" cx="903" cy="103" r="6" style="animation-delay:0.562s"/>
+    <circle class="d z p-10000" cx="917" cy="103" r="6" style="animation-delay:0.545s"/>
+    <circle class="d z p-00100" cx="931" cy="103" r="6" style="animation-delay:0.617s"/>
+    <circle class="d z p-10110" cx="945" cy="103" r="6" style="animation-delay:0.558s"/>
+    <circle class="d z p-10011" cx="959" cy="103" r="6" style="animation-delay:0.627s"/>
+    <circle class="d z p-00001" cx="973" cy="103" r="6" style="animation-delay:0.622s"/>
+    <circle class="d z" cx="987" cy="103" r="6"/>
+    <circle class="d z p-00010" cx="1001" cy="103" r="6" style="animation-delay:0.606s"/>
+    <circle class="d z p-10010" cx="1015" cy="103" r="6" style="animation-delay:0.614s"/>
+    <circle class="d z p-10000" cx="1029" cy="103" r="6" style="animation-delay:0.631s"/>
+    <circle class="d z p-00010" cx="1043" cy="103" r="6" style="animation-delay:0.679s"/>
+    <circle class="d z p-00010" cx="1057" cy="103" r="6" style="animation-delay:0.637s"/>
+    <circle class="d z p-10010" cx="1071" cy="103" r="6" style="animation-delay:0.639s"/>
+    <circle class="d z p-10001" cx="1085" cy="103" r="6" style="animation-delay:0.646s"/>
+    <circle class="d z p-00001" cx="1099" cy="103" r="6" style="animation-delay:0.657s"/>
+    <circle class="d z p-10000" cx="1113" cy="103" r="6" style="animation-delay:0.667s"/>
+    <circle class="d z p-10000" cx="1127" cy="103" r="6" style="animation-delay:0.687s"/>
+    <circle class="d z p-10000" cx="1141" cy="103" r="6" style="animation-delay:0.69s"/>
+    <circle class="d z" cx="1155" cy="103" r="6"/>
+    <circle class="d z" cx="1169" cy="103" r="6"/>
+    <circle class="d z" cx="1183" cy="103" r="6"/>
+    <circle class="d z" cx="1197" cy="103" r="6"/>
+    <circle class="d z" cx="1211" cy="103" r="6"/>
+    <circle class="d z" cx="1225" cy="103" r="6"/>
+    <circle class="d z" cx="35" cy="117" r="6"/>
+    <circle class="d z" cx="49" cy="117" r="6"/>
+    <circle class="d z" cx="63" cy="117" r="6"/>
+    <circle class="d z" cx="77" cy="117" r="6"/>
+    <circle class="d z" cx="91" cy="117" r="6"/>
+    <circle class="d z p-00001" cx="105" cy="117" r="6" style="animation-delay:0.079s"/>
+    <circle class="d z p-10001" cx="119" cy="117" r="6" style="animation-delay:0.08s"/>
+    <circle class="d z p-10000" cx="133" cy="117" r="6" style="animation-delay:0.154s"/>
+    <circle class="d z" cx="147" cy="117" r="6"/>
+    <circle class="d z p-00001" cx="161" cy="117" r="6" style="animation-delay:0.136s"/>
+    <circle class="d z p-10001" cx="175" cy="117" r="6" style="animation-delay:0.16s"/>
+    <circle class="d z p-10010" cx="189" cy="117" r="6" style="animation-delay:0.121s"/>
+    <circle class="d z p-00010" cx="203" cy="117" r="6" style="animation-delay:0.134s"/>
+    <circle class="d z p-00001" cx="217" cy="117" r="6" style="animation-delay:0.145s"/>
+    <circle class="d z p-10001" cx="231" cy="117" r="6" style="animation-delay:0.147s"/>
+    <circle class="d z p-10011" cx="245" cy="117" r="6" style="animation-delay:0.188s"/>
+    <circle class="d z p-10011" cx="259" cy="117" r="6" style="animation-delay:0.224s"/>
+    <circle class="d z p-10001" cx="273" cy="117" r="6" style="animation-delay:0.172s"/>
+    <circle class="d z p-10001" cx="287" cy="117" r="6" style="animation-delay:0.199s"/>
+    <circle class="d z p-10010" cx="301" cy="117" r="6" style="animation-delay:0.216s"/>
+    <circle class="d z p-00110" cx="315" cy="117" r="6" style="animation-delay:0.224s"/>
+    <circle class="d z p-00100" cx="329" cy="117" r="6" style="animation-delay:0.217s"/>
+    <circle class="d z p-00001" cx="343" cy="117" r="6" style="animation-delay:0.221s"/>
+    <circle class="d z p-11011" cx="357" cy="117" r="6" style="animation-delay:0.228s"/>
+    <circle class="d z p-11011" cx="371" cy="117" r="6" style="animation-delay:0.243s"/>
+    <circle class="d z p-00001" cx="385" cy="117" r="6" style="animation-delay:0.263s"/>
+    <circle class="d z p-00001" cx="399" cy="117" r="6" style="animation-delay:0.28s"/>
+    <circle class="d z" cx="413" cy="117" r="6"/>
+    <circle class="d z p-10110" cx="427" cy="117" r="6" style="animation-delay:0.268s"/>
+    <circle class="d z p-11110" cx="441" cy="117" r="6" style="animation-delay:0.341s"/>
+    <circle class="d z p-01101" cx="455" cy="117" r="6" style="animation-delay:0.306s"/>
+    <circle class="d z p-00101" cx="469" cy="117" r="6" style="animation-delay:0.294s"/>
+    <circle class="d z p-10100" cx="483" cy="117" r="6" style="animation-delay:0.333s"/>
+    <circle class="d z p-10000" cx="497" cy="117" r="6" style="animation-delay:0.371s"/>
+    <circle class="d z" cx="511" cy="117" r="6"/>
+    <circle class="d z p-00010" cx="525" cy="117" r="6" style="animation-delay:0.393s"/>
+    <circle class="d z p-10110" cx="539" cy="117" r="6" style="animation-delay:0.366s"/>
+    <circle class="d z p-11100" cx="553" cy="117" r="6" style="animation-delay:0.37s"/>
+    <circle class="d z p-01001" cx="567" cy="117" r="6" style="animation-delay:0.391s"/>
+    <circle class="d z p-01011" cx="581" cy="117" r="6" style="animation-delay:0.405s"/>
+    <circle class="d z p-01111" cx="595" cy="117" r="6" style="animation-delay:0.381s"/>
+    <circle class="d z p-00101" cx="609" cy="117" r="6" style="animation-delay:0.443s"/>
+    <circle class="d z p-00001" cx="623" cy="117" r="6" style="animation-delay:0.384s"/>
+    <circle class="d z p-10011" cx="637" cy="117" r="6" style="animation-delay:0.422s"/>
+    <circle class="d z p-10110" cx="651" cy="117" r="6" style="animation-delay:0.435s"/>
+    <circle class="d z p-00100" cx="665" cy="117" r="6" style="animation-delay:0.466s"/>
+    <circle class="d z p-10000" cx="679" cy="117" r="6" style="animation-delay:0.433s"/>
+    <circle class="d z p-11010" cx="693" cy="117" r="6" style="animation-delay:0.461s"/>
+    <circle class="d z p-01110" cx="707" cy="117" r="6" style="animation-delay:0.449s"/>
+    <circle class="d z p-10101" cx="721" cy="117" r="6" style="animation-delay:0.449s"/>
+    <circle class="d z p-11001" cx="735" cy="117" r="6" style="animation-delay:0.457s"/>
+    <circle class="d z p-01010" cx="749" cy="117" r="6" style="animation-delay:0.476s"/>
+    <circle class="d z p-00110" cx="763" cy="117" r="6" style="animation-delay:0.473s"/>
+    <circle class="d z p-11101" cx="777" cy="117" r="6" style="animation-delay:0.49s"/>
+    <circle class="d z p-11011" cx="791" cy="117" r="6" style="animation-delay:0.478s"/>
+    <circle class="d z p-00010" cx="805" cy="117" r="6" style="animation-delay:0.503s"/>
+    <circle class="d z p-00100" cx="819" cy="117" r="6" style="animation-delay:0.524s"/>
+    <circle class="d z p-11111" cx="833" cy="117" r="6" style="animation-delay:0.573s"/>
+    <circle class="d z p-11011" cx="847" cy="117" r="6" style="animation-delay:0.529s"/>
+    <circle class="d z p-01000" cx="861" cy="117" r="6" style="animation-delay:0.527s"/>
+    <circle class="d z p-01000" cx="875" cy="117" r="6" style="animation-delay:0.581s"/>
+    <circle class="d z p-11111" cx="889" cy="117" r="6" style="animation-delay:0.542s"/>
+    <circle class="d z p-11111" cx="903" cy="117" r="6" style="animation-delay:0.597s"/>
+    <circle class="d z p-00110" cx="917" cy="117" r="6" style="animation-delay:0.594s"/>
+    <circle class="d z p-00110" cx="931" cy="117" r="6" style="animation-delay:0.554s"/>
+    <circle class="d z p-10110" cx="945" cy="117" r="6" style="animation-delay:0.595s"/>
+    <circle class="d z p-10011" cx="959" cy="117" r="6" style="animation-delay:0.572s"/>
+    <circle class="d z p-00001" cx="973" cy="117" r="6" style="animation-delay:0.59s"/>
+    <circle class="d z" cx="987" cy="117" r="6"/>
+    <circle class="d z p-00010" cx="1001" cy="117" r="6" style="animation-delay:0.596s"/>
+    <circle class="d z p-10010" cx="1015" cy="117" r="6" style="animation-delay:0.671s"/>
+    <circle class="d z p-10000" cx="1029" cy="117" r="6" style="animation-delay:0.63s"/>
+    <circle class="d z" cx="1043" cy="117" r="6"/>
+    <circle class="d z p-00010" cx="1057" cy="117" r="6" style="animation-delay:0.637s"/>
+    <circle class="d z p-10011" cx="1071" cy="117" r="6" style="animation-delay:0.676s"/>
+    <circle class="d z p-10001" cx="1085" cy="117" r="6" style="animation-delay:0.693s"/>
+    <circle class="d z p-00001" cx="1099" cy="117" r="6" style="animation-delay:0.661s"/>
+    <circle class="d z p-00001" cx="1113" cy="117" r="6" style="animation-delay:0.701s"/>
+    <circle class="d z p-10000" cx="1127" cy="117" r="6" style="animation-delay:0.73s"/>
+    <circle class="d z p-10000" cx="1141" cy="117" r="6" style="animation-delay:0.721s"/>
+    <circle class="d z" cx="1155" cy="117" r="6"/>
+    <circle class="d z" cx="1169" cy="117" r="6"/>
+    <circle class="d z" cx="1183" cy="117" r="6"/>
+    <circle class="d z" cx="1197" cy="117" r="6"/>
+    <circle class="d z" cx="1211" cy="117" r="6"/>
+    <circle class="d z" cx="1225" cy="117" r="6"/>
+    <circle class="d z" cx="35" cy="131" r="6"/>
+    <circle class="d z" cx="49" cy="131" r="6"/>
+    <circle class="d z" cx="63" cy="131" r="6"/>
+    <circle class="d z" cx="77" cy="131" r="6"/>
+    <circle class="d z p-00001" cx="91" cy="131" r="6" style="animation-delay:0.124s"/>
+    <circle class="d z p-10001" cx="105" cy="131" r="6" style="animation-delay:0.132s"/>
+    <circle class="d z p-10001" cx="119" cy="131" r="6" style="animation-delay:0.154s"/>
+    <circle class="d z" cx="133" cy="131" r="6"/>
+    <circle class="d z p-00001" cx="147" cy="131" r="6" style="animation-delay:0.135s"/>
+    <circle class="d z p-10001" cx="161" cy="131" r="6" style="animation-delay:0.169s"/>
+    <circle class="d z p-10010" cx="175" cy="131" r="6" style="animation-delay:0.199s"/>
+    <circle class="d z p-00010" cx="189" cy="131" r="6" style="animation-delay:0.16s"/>
+    <circle class="d z p-00001" cx="203" cy="131" r="6" style="animation-delay:0.171s"/>
+    <circle class="d z p-10001" cx="217" cy="131" r="6" style="animation-delay:0.178s"/>
+    <circle class="d z p-10011" cx="231" cy="131" r="6" style="animation-delay:0.154s"/>
+    <circle class="d z p-10011" cx="245" cy="131" r="6" style="animation-delay:0.188s"/>
+    <circle class="d z p-10001" cx="259" cy="131" r="6" style="animation-delay:0.183s"/>
+    <circle class="d z p-10001" cx="273" cy="131" r="6" style="animation-delay:0.213s"/>
+    <circle class="d z p-10010" cx="287" cy="131" r="6" style="animation-delay:0.255s"/>
+    <circle class="d z p-00110" cx="301" cy="131" r="6" style="animation-delay:0.214s"/>
+    <circle class="d z p-00101" cx="315" cy="131" r="6" style="animation-delay:0.247s"/>
+    <circle class="d z p-00001" cx="329" cy="131" r="6" style="animation-delay:0.226s"/>
+    <circle class="d z p-11010" cx="343" cy="131" r="6" style="animation-delay:0.272s"/>
+    <circle class="d z p-11010" cx="357" cy="131" r="6" style="animation-delay:0.247s"/>
+    <circle class="d z p-00001" cx="371" cy="131" r="6" style="animation-delay:0.261s"/>
+    <circle class="d z p-00001" cx="385" cy="131" r="6" style="animation-delay:0.251s"/>
+    <circle class="d z p-00100" cx="399" cy="131" r="6" style="animation-delay:0.319s"/>
+    <circle class="d z p-10110" cx="413" cy="131" r="6" style="animation-delay:0.283s"/>
+    <circle class="d z p-11010" cx="427" cy="131" r="6" style="animation-delay:0.324s"/>
+    <circle class="d z p-01001" cx="441" cy="131" r="6" style="animation-delay:0.317s"/>
+    <circle class="d z p-00101" cx="455" cy="131" r="6" style="animation-delay:0.293s"/>
+    <circle class="d z p-10100" cx="469" cy="131" r="6" style="animation-delay:0.363s"/>
+    <circle class="d z p-10000" cx="483" cy="131" r="6" style="animation-delay:0.336s"/>
+    <circle class="d z" cx="497" cy="131" r="6"/>
+    <circle class="d z p-00010" cx="511" cy="131" r="6" style="animation-delay:0.389s"/>
+    <circle class="d z p-10110" cx="525" cy="131" r="6" style="animation-delay:0.367s"/>
+    <circle class="d z p-10100" cx="539" cy="131" r="6" style="animation-delay:0.355s"/>
+    <circle class="d z p-00001" cx="553" cy="131" r="6" style="animation-delay:0.415s"/>
+    <circle class="d z p-00001" cx="567" cy="131" r="6" style="animation-delay:0.354s"/>
+    <circle class="d z p-01001" cx="581" cy="131" r="6" style="animation-delay:0.413s"/>
+    <circle class="d z p-01001" cx="595" cy="131" r="6" style="animation-delay:0.43s"/>
+    <circle class="d z p-00001" cx="609" cy="131" r="6" style="animation-delay:0.404s"/>
+    <circle class="d z p-10011" cx="623" cy="131" r="6" style="animation-delay:0.456s"/>
+    <circle class="d z p-10110" cx="637" cy="131" r="6" style="animation-delay:0.426s"/>
+    <circle class="d z p-00100" cx="651" cy="131" r="6" style="animation-delay:0.44s"/>
+    <circle class="d z p-10000" cx="665" cy="131" r="6" style="animation-delay:0.45s"/>
+    <circle class="d z p-11010" cx="679" cy="131" r="6" style="animation-delay:0.494s"/>
+    <circle class="d z p-01110" cx="693" cy="131" r="6" style="animation-delay:0.446s"/>
+    <circle class="d z p-10101" cx="707" cy="131" r="6" style="animation-delay:0.496s"/>
+    <circle class="d z p-11001" cx="721" cy="131" r="6" style="animation-delay:0.514s"/>
+    <circle class="d z p-01010" cx="735" cy="131" r="6" style="animation-delay:0.503s"/>
+    <circle class="d z p-00110" cx="749" cy="131" r="6" style="animation-delay:0.522s"/>
+    <circle class="d z p-11101" cx="763" cy="131" r="6" style="animation-delay:0.468s"/>
+    <circle class="d z p-11011" cx="777" cy="131" r="6" style="animation-delay:0.552s"/>
+    <circle class="d z p-00010" cx="791" cy="131" r="6" style="animation-delay:0.507s"/>
+    <circle class="d z p-00100" cx="805" cy="131" r="6" style="animation-delay:0.547s"/>
+    <circle class="d z p-11111" cx="819" cy="131" r="6" style="animation-delay:0.504s"/>
+    <circle class="d z p-11011" cx="833" cy="131" r="6" style="animation-delay:0.546s"/>
+    <circle class="d z p-01000" cx="847" cy="131" r="6" style="animation-delay:0.573s"/>
+    <circle class="d z p-01100" cx="861" cy="131" r="6" style="animation-delay:0.532s"/>
+    <circle class="d z p-11111" cx="875" cy="131" r="6" style="animation-delay:0.59s"/>
+    <circle class="d z p-11011" cx="889" cy="131" r="6" style="animation-delay:0.605s"/>
+    <circle class="d z p-00010" cx="903" cy="131" r="6" style="animation-delay:0.576s"/>
+    <circle class="d z p-00110" cx="917" cy="131" r="6" style="animation-delay:0.606s"/>
+    <circle class="d z p-00110" cx="931" cy="131" r="6" style="animation-delay:0.613s"/>
+    <circle class="d z p-00011" cx="945" cy="131" r="6" style="animation-delay:0.643s"/>
+    <circle class="d z p-00001" cx="959" cy="131" r="6" style="animation-delay:0.622s"/>
+    <circle class="d z" cx="973" cy="131" r="6"/>
+    <circle class="d z p-00010" cx="987" cy="131" r="6" style="animation-delay:0.619s"/>
+    <circle class="d z p-10010" cx="1001" cy="131" r="6" style="animation-delay:0.632s"/>
+    <circle class="d z p-10000" cx="1015" cy="131" r="6" style="animation-delay:0.629s"/>
+    <circle class="d z" cx="1029" cy="131" r="6"/>
+    <circle class="d z p-00011" cx="1043" cy="131" r="6" style="animation-delay:0.671s"/>
+    <circle class="d z p-10011" cx="1057" cy="131" r="6" style="animation-delay:0.649s"/>
+    <circle class="d z p-10000" cx="1071" cy="131" r="6" style="animation-delay:0.694s"/>
+    <circle class="d z" cx="1085" cy="131" r="6"/>
+    <circle class="d z p-00001" cx="1099" cy="131" r="6" style="animation-delay:0.696s"/>
+    <circle class="d z p-10001" cx="1113" cy="131" r="6" style="animation-delay:0.736s"/>
+    <circle class="d z p-10000" cx="1127" cy="131" r="6" style="animation-delay:0.692s"/>
+    <circle class="d z" cx="1141" cy="131" r="6"/>
+    <circle class="d z" cx="1155" cy="131" r="6"/>
+    <circle class="d z" cx="1169" cy="131" r="6"/>
+    <circle class="d z" cx="1183" cy="131" r="6"/>
+    <circle class="d z" cx="1197" cy="131" r="6"/>
+    <circle class="d z" cx="1211" cy="131" r="6"/>
+    <circle class="d z" cx="1225" cy="131" r="6"/>
+    <circle class="d z" cx="35" cy="145" r="6"/>
+    <circle class="d z" cx="49" cy="145" r="6"/>
+    <circle class="d z" cx="63" cy="145" r="6"/>
+    <circle class="d z" cx="77" cy="145" r="6"/>
+    <circle class="d z p-00001" cx="91" cy="145" r="6" style="animation-delay:0.16s"/>
+    <circle class="d z p-10001" cx="105" cy="145" r="6" style="animation-delay:0.123s"/>
+    <circle class="d z p-10000" cx="119" cy="145" r="6" style="animation-delay:0.173s"/>
+    <circle class="d z p-00001" cx="133" cy="145" r="6" style="animation-delay:0.112s"/>
+    <circle class="d z p-00001" cx="147" cy="145" r="6" style="animation-delay:0.141s"/>
+    <circle class="d z p-10000" cx="161" cy="145" r="6" style="animation-delay:0.125s"/>
+    <circle class="d z p-10010" cx="175" cy="145" r="6" style="animation-delay:0.178s"/>
+    <circle class="d z p-00010" cx="189" cy="145" r="6" style="animation-delay:0.153s"/>
+    <circle class="d z p-00001" cx="203" cy="145" r="6" style="animation-delay:0.155s"/>
+    <circle class="d z p-10001" cx="217" cy="145" r="6" style="animation-delay:0.177s"/>
+    <circle class="d z p-10010" cx="231" cy="145" r="6" style="animation-delay:0.205s"/>
+    <circle class="d z p-00010" cx="245" cy="145" r="6" style="animation-delay:0.245s"/>
+    <circle class="d z" cx="259" cy="145" r="6"/>
+    <circle class="d z" cx="273" cy="145" r="6"/>
+    <circle class="d z p-00010" cx="287" cy="145" r="6" style="animation-delay:0.204s"/>
+    <circle class="d z p-00110" cx="301" cy="145" r="6" style="animation-delay:0.275s"/>
+    <circle class="d z p-00101" cx="315" cy="145" r="6" style="animation-delay:0.271s"/>
+    <circle class="d z p-00001" cx="329" cy="145" r="6" style="animation-delay:0.256s"/>
+    <circle class="d z p-11010" cx="343" cy="145" r="6" style="animation-delay:0.265s"/>
+    <circle class="d z p-11010" cx="357" cy="145" r="6" style="animation-delay:0.246s"/>
+    <circle class="d z p-00001" cx="371" cy="145" r="6" style="animation-delay:0.305s"/>
+    <circle class="d z p-00001" cx="385" cy="145" r="6" style="animation-delay:0.316s"/>
+    <circle class="d z p-00100" cx="399" cy="145" r="6" style="animation-delay:0.301s"/>
+    <circle class="d z p-10110" cx="413" cy="145" r="6" style="animation-delay:0.317s"/>
+    <circle class="d z p-11010" cx="427" cy="145" r="6" style="animation-delay:0.283s"/>
+    <circle class="d z p-01001" cx="441" cy="145" r="6" style="animation-delay:0.318s"/>
+    <circle class="d z p-00101" cx="455" cy="145" r="6" style="animation-delay:0.371s"/>
+    <circle class="d z p-10100" cx="469" cy="145" r="6" style="animation-delay:0.346s"/>
+    <circle class="d z p-10000" cx="483" cy="145" r="6" style="animation-delay:0.348s"/>
+    <circle class="d z" cx="497" cy="145" r="6"/>
+    <circle class="d z p-00010" cx="511" cy="145" r="6" style="animation-delay:0.396s"/>
+    <circle class="d z p-10110" cx="525" cy="145" r="6" style="animation-delay:0.343s"/>
+    <circle class="d z p-10100" cx="539" cy="145" r="6" style="animation-delay:0.37s"/>
+    <circle class="d z p-00001" cx="553" cy="145" r="6" style="animation-delay:0.368s"/>
+    <circle class="d z p-00001" cx="567" cy="145" r="6" style="animation-delay:0.384s"/>
+    <circle class="d z p-01000" cx="581" cy="145" r="6" style="animation-delay:0.41s"/>
+    <circle class="d z p-01000" cx="595" cy="145" r="6" style="animation-delay:0.424s"/>
+    <circle class="d z" cx="609" cy="145" r="6"/>
+    <circle class="d z p-10010" cx="623" cy="145" r="6" style="animation-delay:0.467s"/>
+    <circle class="d z p-10110" cx="637" cy="145" r="6" style="animation-delay:0.419s"/>
+    <circle class="d z p-00100" cx="651" cy="145" r="6" style="animation-delay:0.429s"/>
+    <circle class="d z p-10000" cx="665" cy="145" r="6" style="animation-delay:0.422s"/>
+    <circle class="d z p-11010" cx="679" cy="145" r="6" style="animation-delay:0.448s"/>
+    <circle class="d z p-01110" cx="693" cy="145" r="6" style="animation-delay:0.449s"/>
+    <circle class="d z p-10101" cx="707" cy="145" r="6" style="animation-delay:0.489s"/>
+    <circle class="d z p-11001" cx="721" cy="145" r="6" style="animation-delay:0.528s"/>
+    <circle class="d z p-01010" cx="735" cy="145" r="6" style="animation-delay:0.519s"/>
+    <circle class="d z p-00110" cx="749" cy="145" r="6" style="animation-delay:0.485s"/>
+    <circle class="d z p-11101" cx="763" cy="145" r="6" style="animation-delay:0.534s"/>
+    <circle class="d z p-11011" cx="777" cy="145" r="6" style="animation-delay:0.516s"/>
+    <circle class="d z p-00010" cx="791" cy="145" r="6" style="animation-delay:0.507s"/>
+    <circle class="d z p-00100" cx="805" cy="145" r="6" style="animation-delay:0.522s"/>
+    <circle class="d z p-11111" cx="819" cy="145" r="6" style="animation-delay:0.561s"/>
+    <circle class="d z p-11011" cx="833" cy="145" r="6" style="animation-delay:0.558s"/>
+    <circle class="d z" cx="847" cy="145" r="6"/>
+    <circle class="d z p-00100" cx="861" cy="145" r="6" style="animation-delay:0.573s"/>
+    <circle class="d z p-10111" cx="875" cy="145" r="6" style="animation-delay:0.599s"/>
+    <circle class="d z p-10011" cx="889" cy="145" r="6" style="animation-delay:0.593s"/>
+    <circle class="d z" cx="903" cy="145" r="6"/>
+    <circle class="d z p-00100" cx="917" cy="145" r="6" style="animation-delay:0.585s"/>
+    <circle class="d z p-00100" cx="931" cy="145" r="6" style="animation-delay:0.652s"/>
+    <circle class="d z p-00001" cx="945" cy="145" r="6" style="animation-delay:0.621s"/>
+    <circle class="d z p-00001" cx="959" cy="145" r="6" style="animation-delay:0.653s"/>
+    <circle class="d z" cx="973" cy="145" r="6"/>
+    <circle class="d z p-00010" cx="987" cy="145" r="6" style="animation-delay:0.677s"/>
+    <circle class="d z p-10010" cx="1001" cy="145" r="6" style="animation-delay:0.68s"/>
+    <circle class="d z p-10000" cx="1015" cy="145" r="6" style="animation-delay:0.662s"/>
+    <circle class="d z" cx="1029" cy="145" r="6"/>
+    <circle class="d z p-00010" cx="1043" cy="145" r="6" style="animation-delay:0.64s"/>
+    <circle class="d z p-10010" cx="1057" cy="145" r="6" style="animation-delay:0.707s"/>
+    <circle class="d z p-10000" cx="1071" cy="145" r="6" style="animation-delay:0.72s"/>
+    <circle class="d z p-00001" cx="1085" cy="145" r="6" style="animation-delay:0.68s"/>
+    <circle class="d z p-00001" cx="1099" cy="145" r="6" style="animation-delay:0.725s"/>
+    <circle class="d z p-10001" cx="1113" cy="145" r="6" style="animation-delay:0.757s"/>
+    <circle class="d z p-10001" cx="1127" cy="145" r="6" style="animation-delay:0.72s"/>
+    <circle class="d z" cx="1141" cy="145" r="6"/>
+    <circle class="d z" cx="1155" cy="145" r="6"/>
+    <circle class="d z" cx="1169" cy="145" r="6"/>
+    <circle class="d z" cx="1183" cy="145" r="6"/>
+    <circle class="d z" cx="1197" cy="145" r="6"/>
+    <circle class="d z" cx="1211" cy="145" r="6"/>
+    <circle class="d z" cx="1225" cy="145" r="6"/>
+    <circle class="d z" cx="35" cy="159" r="6"/>
+    <circle class="d z" cx="49" cy="159" r="6"/>
+    <circle class="d z" cx="63" cy="159" r="6"/>
+    <circle class="d z p-00001" cx="77" cy="159" r="6" style="animation-delay:0.131s"/>
+    <circle class="d z p-10001" cx="91" cy="159" r="6" style="animation-delay:0.162s"/>
+    <circle class="d z p-10000" cx="105" cy="159" r="6" style="animation-delay:0.16s"/>
+    <circle class="d z" cx="119" cy="159" r="6"/>
+    <circle class="d z" cx="133" cy="159" r="6"/>
+    <circle class="d z p-10000" cx="147" cy="159" r="6" style="animation-delay:0.187s"/>
+    <circle class="d z p-10010" cx="161" cy="159" r="6" style="animation-delay:0.161s"/>
+    <circle class="d z p-00010" cx="175" cy="159" r="6" style="animation-delay:0.182s"/>
+    <circle class="d z p-00001" cx="189" cy="159" r="6" style="animation-delay:0.161s"/>
+    <circle class="d z p-10001" cx="203" cy="159" r="6" style="animation-delay:0.171s"/>
+    <circle class="d z p-10010" cx="217" cy="159" r="6" style="animation-delay:0.206s"/>
+    <circle class="d z p-00010" cx="231" cy="159" r="6" style="animation-delay:0.187s"/>
+    <circle class="d z p-00001" cx="245" cy="159" r="6" style="animation-delay:0.21s"/>
+    <circle class="d z p-10001" cx="259" cy="159" r="6" style="animation-delay:0.265s"/>
+    <circle class="d z p-10010" cx="273" cy="159" r="6" style="animation-delay:0.256s"/>
+    <circle class="d z p-00110" cx="287" cy="159" r="6" style="animation-delay:0.247s"/>
+    <circle class="d z p-00101" cx="301" cy="159" r="6" style="animation-delay:0.226s"/>
+    <circle class="d z p-00011" cx="315" cy="159" r="6" style="animation-delay:0.253s"/>
+    <circle class="d z p-11110" cx="329" cy="159" r="6" style="animation-delay:0.241s"/>
+    <circle class="d z p-11111" cx="343" cy="159" r="6" style="animation-delay:0.243s"/>
+    <circle class="d z p-00001" cx="357" cy="159" r="6" style="animation-delay:0.251s"/>
+    <circle class="d z p-00001" cx="371" cy="159" r="6" style="animation-delay:0.31s"/>
+    <circle class="d z p-00100" cx="385" cy="159" r="6" style="animation-delay:0.285s"/>
+    <circle class="d z p-10110" cx="399" cy="159" r="6" style="animation-delay:0.28s"/>
+    <circle class="d z p-11010" cx="413" cy="159" r="6" style="animation-delay:0.32s"/>
+    <circle class="d z p-01101" cx="427" cy="159" r="6" style="animation-delay:0.369s"/>
+    <circle class="d z p-00111" cx="441" cy="159" r="6" style="animation-delay:0.329s"/>
+    <circle class="d z p-11110" cx="455" cy="159" r="6" style="animation-delay:0.323s"/>
+    <circle class="d z p-11000" cx="469" cy="159" r="6" style="animation-delay:0.353s"/>
+    <circle class="d z p-00001" cx="483" cy="159" r="6" style="animation-delay:0.383s"/>
+    <circle class="d z p-00011" cx="497" cy="159" r="6" style="animation-delay:0.374s"/>
+    <circle class="d z p-11110" cx="511" cy="159" r="6" style="animation-delay:0.344s"/>
+    <circle class="d z p-11100" cx="525" cy="159" r="6" style="animation-delay:0.394s"/>
+    <circle class="d z p-00001" cx="539" cy="159" r="6" style="animation-delay:0.435s"/>
+    <circle class="d z p-00001" cx="553" cy="159" r="6" style="animation-delay:0.395s"/>
+    <circle class="d z p-01000" cx="567" cy="159" r="6" style="animation-delay:0.448s"/>
+    <circle class="d z p-01000" cx="581" cy="159" r="6" style="animation-delay:0.391s"/>
+    <circle class="d z p-00001" cx="595" cy="159" r="6" style="animation-delay:0.466s"/>
+    <circle class="d z p-10011" cx="609" cy="159" r="6" style="animation-delay:0.456s"/>
+    <circle class="d z p-10110" cx="623" cy="159" r="6" style="animation-delay:0.423s"/>
+    <circle class="d z p-10100" cx="637" cy="159" r="6" style="animation-delay:0.418s"/>
+    <circle class="d z p-10000" cx="651" cy="159" r="6" style="animation-delay:0.494s"/>
+    <circle class="d z p-11110" cx="665" cy="159" r="6" style="animation-delay:0.492s"/>
+    <circle class="d z p-11110" cx="679" cy="159" r="6" style="animation-delay:0.494s"/>
+    <circle class="d z p-10101" cx="693" cy="159" r="6" style="animation-delay:0.469s"/>
+    <circle class="d z p-11001" cx="707" cy="159" r="6" style="animation-delay:0.466s"/>
+    <circle class="d z p-01010" cx="721" cy="159" r="6" style="animation-delay:0.502s"/>
+    <circle class="d z p-00110" cx="735" cy="159" r="6" style="animation-delay:0.533s"/>
+    <circle class="d z p-11111" cx="749" cy="159" r="6" style="animation-delay:0.509s"/>
+    <circle class="d z p-11011" cx="763" cy="159" r="6" style="animation-delay:0.546s"/>
+    <circle class="d z p-00010" cx="777" cy="159" r="6" style="animation-delay:0.57s"/>
+    <circle class="d z p-00110" cx="791" cy="159" r="6" style="animation-delay:0.535s"/>
+    <circle class="d z p-11111" cx="805" cy="159" r="6" style="animation-delay:0.541s"/>
+    <circle class="d z p-11011" cx="819" cy="159" r="6" style="animation-delay:0.59s"/>
+    <circle class="d z" cx="833" cy="159" r="6"/>
+    <circle class="d z p-00101" cx="847" cy="159" r="6" style="animation-delay:0.569s"/>
+    <circle class="d z p-11111" cx="861" cy="159" r="6" style="animation-delay:0.564s"/>
+    <circle class="d z p-11011" cx="875" cy="159" r="6" style="animation-delay:0.625s"/>
+    <circle class="d z p-00100" cx="889" cy="159" r="6" style="animation-delay:0.566s"/>
+    <circle class="d z p-00100" cx="903" cy="159" r="6" style="animation-delay:0.582s"/>
+    <circle class="d z p-00110" cx="917" cy="159" r="6" style="animation-delay:0.609s"/>
+    <circle class="d z p-00011" cx="931" cy="159" r="6" style="animation-delay:0.647s"/>
+    <circle class="d z p-00001" cx="945" cy="159" r="6" style="animation-delay:0.654s"/>
+    <circle class="d z" cx="959" cy="159" r="6"/>
+    <circle class="d z p-00011" cx="973" cy="159" r="6" style="animation-delay:0.657s"/>
+    <circle class="d z p-10011" cx="987" cy="159" r="6" style="animation-delay:0.647s"/>
+    <circle class="d z p-10000" cx="1001" cy="159" r="6" style="animation-delay:0.653s"/>
+    <circle class="d z p-00010" cx="1015" cy="159" r="6" style="animation-delay:0.665s"/>
+    <circle class="d z p-00010" cx="1029" cy="159" r="6" style="animation-delay:0.714s"/>
+    <circle class="d z p-10010" cx="1043" cy="159" r="6" style="animation-delay:0.697s"/>
+    <circle class="d z p-10000" cx="1057" cy="159" r="6" style="animation-delay:0.676s"/>
+    <circle class="d z" cx="1071" cy="159" r="6"/>
+    <circle class="d z p-10001" cx="1085" cy="159" r="6" style="animation-delay:0.717s"/>
+    <circle class="d z p-10001" cx="1099" cy="159" r="6" style="animation-delay:0.738s"/>
+    <circle class="d z p-10000" cx="1113" cy="159" r="6" style="animation-delay:0.769s"/>
+    <circle class="d z" cx="1127" cy="159" r="6"/>
+    <circle class="d z" cx="1141" cy="159" r="6"/>
+    <circle class="d z" cx="1155" cy="159" r="6"/>
+    <circle class="d z" cx="1169" cy="159" r="6"/>
+    <circle class="d z" cx="1183" cy="159" r="6"/>
+    <circle class="d z" cx="1197" cy="159" r="6"/>
+    <circle class="d z" cx="1211" cy="159" r="6"/>
+    <circle class="d z" cx="1225" cy="159" r="6"/>
+    <circle class="d z" cx="35" cy="173" r="6"/>
+    <circle class="d z" cx="49" cy="173" r="6"/>
+    <circle class="d z" cx="63" cy="173" r="6"/>
+    <circle class="d z p-00001" cx="77" cy="173" r="6" style="animation-delay:0.154s"/>
+    <circle class="d z p-10001" cx="91" cy="173" r="6" style="animation-delay:0.146s"/>
+    <circle class="d z p-10000" cx="105" cy="173" r="6" style="animation-delay:0.179s"/>
+    <circle class="d z" cx="119" cy="173" r="6"/>
+    <circle class="d z" cx="133" cy="173" r="6"/>
+    <circle class="d z p-10000" cx="147" cy="173" r="6" style="animation-delay:0.16s"/>
+    <circle class="d z p-10000" cx="161" cy="173" r="6" style="animation-delay:0.212s"/>
+    <circle class="d z p-00010" cx="175" cy="173" r="6" style="animation-delay:0.181s"/>
+    <circle class="d z p-00010" cx="189" cy="173" r="6" style="animation-delay:0.224s"/>
+    <circle class="d z p-00011" cx="203" cy="173" r="6" style="animation-delay:0.175s"/>
+    <circle class="d z p-10011" cx="217" cy="173" r="6" style="animation-delay:0.252s"/>
+    <circle class="d z p-10001" cx="231" cy="173" r="6" style="animation-delay:0.234s"/>
+    <circle class="d z p-10001" cx="245" cy="173" r="6" style="animation-delay:0.213s"/>
+    <circle class="d z p-10000" cx="259" cy="173" r="6" style="animation-delay:0.24s"/>
+    <circle class="d z" cx="273" cy="173" r="6"/>
+    <circle class="d z p-00010" cx="287" cy="173" r="6" style="animation-delay:0.231s"/>
+    <circle class="d z p-00110" cx="301" cy="173" r="6" style="animation-delay:0.25s"/>
+    <circle class="d z p-01101" cx="315" cy="173" r="6" style="animation-delay:0.281s"/>
+    <circle class="d z p-11111" cx="329" cy="173" r="6" style="animation-delay:0.311s"/>
+    <circle class="d z p-11011" cx="343" cy="173" r="6" style="animation-delay:0.319s"/>
+    <circle class="d z p-01000" cx="357" cy="173" r="6" style="animation-delay:0.338s"/>
+    <circle class="d z p-00001" cx="371" cy="173" r="6" style="animation-delay:0.283s"/>
+    <circle class="d z p-00001" cx="385" cy="173" r="6" style="animation-delay:0.279s"/>
+    <circle class="d z p-10100" cx="399" cy="173" r="6" style="animation-delay:0.287s"/>
+    <circle class="d z p-10110" cx="413" cy="173" r="6" style="animation-delay:0.33s"/>
+    <circle class="d z p-01110" cx="427" cy="173" r="6" style="animation-delay:0.357s"/>
+    <circle class="d z p-01011" cx="441" cy="173" r="6" style="animation-delay:0.369s"/>
+    <circle class="d z p-01101" cx="455" cy="173" r="6" style="animation-delay:0.39s"/>
+    <circle class="d z p-10101" cx="469" cy="173" r="6" style="animation-delay:0.329s"/>
+    <circle class="d z p-10001" cx="483" cy="173" r="6" style="animation-delay:0.39s"/>
+    <circle class="d z p-10010" cx="497" cy="173" r="6" style="animation-delay:0.387s"/>
+    <circle class="d z p-10110" cx="511" cy="173" r="6" style="animation-delay:0.376s"/>
+    <circle class="d z p-01100" cx="525" cy="173" r="6" style="animation-delay:0.393s"/>
+    <circle class="d z p-01000" cx="539" cy="173" r="6" style="animation-delay:0.411s"/>
+    <circle class="d z p-01001" cx="553" cy="173" r="6" style="animation-delay:0.409s"/>
+    <circle class="d z p-01001" cx="567" cy="173" r="6" style="animation-delay:0.417s"/>
+    <circle class="d z p-00001" cx="581" cy="173" r="6" style="animation-delay:0.456s"/>
+    <circle class="d z p-00001" cx="595" cy="173" r="6" style="animation-delay:0.408s"/>
+    <circle class="d z" cx="609" cy="173" r="6"/>
+    <circle class="d z p-10010" cx="623" cy="173" r="6" style="animation-delay:0.492s"/>
+    <circle class="d z p-10110" cx="637" cy="173" r="6" style="animation-delay:0.49s"/>
+    <circle class="d z p-00110" cx="651" cy="173" r="6" style="animation-delay:0.492s"/>
+    <circle class="d z p-01010" cx="665" cy="173" r="6" style="animation-delay:0.48s"/>
+    <circle class="d z p-11100" cx="679" cy="173" r="6" style="animation-delay:0.459s"/>
+    <circle class="d z p-10100" cx="693" cy="173" r="6" style="animation-delay:0.496s"/>
+    <circle class="d z p-01001" cx="707" cy="173" r="6" style="animation-delay:0.544s"/>
+    <circle class="d z p-01001" cx="721" cy="173" r="6" style="animation-delay:0.512s"/>
+    <circle class="d z p-00111" cx="735" cy="173" r="6" style="animation-delay:0.494s"/>
+    <circle class="d z p-01111" cx="749" cy="173" r="6" style="animation-delay:0.506s"/>
+    <circle class="d z p-11000" cx="763" cy="173" r="6" style="animation-delay:0.541s"/>
+    <circle class="d z p-10000" cx="777" cy="173" r="6" style="animation-delay:0.507s"/>
+    <circle class="d z p-10110" cx="791" cy="173" r="6" style="animation-delay:0.544s"/>
+    <circle class="d z p-10110" cx="805" cy="173" r="6" style="animation-delay:0.593s"/>
+    <circle class="d z p-01001" cx="819" cy="173" r="6" style="animation-delay:0.531s"/>
+    <circle class="d z p-01001" cx="833" cy="173" r="6" style="animation-delay:0.564s"/>
+    <circle class="d z p-01000" cx="847" cy="173" r="6" style="animation-delay:0.59s"/>
+    <circle class="d z p-11101" cx="861" cy="173" r="6" style="animation-delay:0.604s"/>
+    <circle class="d z p-10111" cx="875" cy="173" r="6" style="animation-delay:0.623s"/>
+    <circle class="d z p-00110" cx="889" cy="173" r="6" style="animation-delay:0.585s"/>
+    <circle class="d z p-00010" cx="903" cy="173" r="6" style="animation-delay:0.61s"/>
+    <circle class="d z p-00110" cx="917" cy="173" r="6" style="animation-delay:0.668s"/>
+    <circle class="d z p-00100" cx="931" cy="173" r="6" style="animation-delay:0.66s"/>
+    <circle class="d z p-00001" cx="945" cy="173" r="6" style="animation-delay:0.662s"/>
+    <circle class="d z p-00001" cx="959" cy="173" r="6" style="animation-delay:0.652s"/>
+    <circle class="d z p-00001" cx="973" cy="173" r="6" style="animation-delay:0.651s"/>
+    <circle class="d z p-10010" cx="987" cy="173" r="6" style="animation-delay:0.66s"/>
+    <circle class="d z p-10010" cx="1001" cy="173" r="6" style="animation-delay:0.7s"/>
+    <circle class="d z" cx="1015" cy="173" r="6"/>
+    <circle class="d z p-00010" cx="1029" cy="173" r="6" style="animation-delay:0.71s"/>
+    <circle class="d z p-00010" cx="1043" cy="173" r="6" style="animation-delay:0.712s"/>
+    <circle class="d z p-10000" cx="1057" cy="173" r="6" style="animation-delay:0.736s"/>
+    <circle class="d z p-10000" cx="1071" cy="173" r="6" style="animation-delay:0.738s"/>
+    <circle class="d z" cx="1085" cy="173" r="6"/>
+    <circle class="d z p-10000" cx="1099" cy="173" r="6" style="animation-delay:0.714s"/>
+    <circle class="d z p-10000" cx="1113" cy="173" r="6" style="animation-delay:0.747s"/>
+    <circle class="d z" cx="1127" cy="173" r="6"/>
+    <circle class="d z" cx="1141" cy="173" r="6"/>
+    <circle class="d z" cx="1155" cy="173" r="6"/>
+    <circle class="d z" cx="1169" cy="173" r="6"/>
+    <circle class="d z" cx="1183" cy="173" r="6"/>
+    <circle class="d z" cx="1197" cy="173" r="6"/>
+    <circle class="d z" cx="1211" cy="173" r="6"/>
+    <circle class="d z" cx="1225" cy="173" r="6"/>
+    <circle class="d z" cx="35" cy="187" r="6"/>
+    <circle class="d z" cx="49" cy="187" r="6"/>
+    <circle class="d z" cx="63" cy="187" r="6"/>
+    <circle class="d z" cx="77" cy="187" r="6"/>
+    <circle class="d z" cx="91" cy="187" r="6"/>
+    <circle class="d z" cx="105" cy="187" r="6"/>
+    <circle class="d z" cx="119" cy="187" r="6"/>
+    <circle class="d z" cx="133" cy="187" r="6"/>
+    <circle class="d z" cx="147" cy="187" r="6"/>
+    <circle class="d z" cx="161" cy="187" r="6"/>
+    <circle class="d z" cx="175" cy="187" r="6"/>
+    <circle class="d z" cx="189" cy="187" r="6"/>
+    <circle class="d z" cx="203" cy="187" r="6"/>
+    <circle class="d z" cx="217" cy="187" r="6"/>
+    <circle class="d z" cx="231" cy="187" r="6"/>
+    <circle class="d z" cx="245" cy="187" r="6"/>
+    <circle class="d z" cx="259" cy="187" r="6"/>
+    <circle class="d z" cx="273" cy="187" r="6"/>
+    <circle class="d z" cx="287" cy="187" r="6"/>
+    <circle class="d z" cx="301" cy="187" r="6"/>
+    <circle class="d z" cx="315" cy="187" r="6"/>
+    <circle class="d z" cx="329" cy="187" r="6"/>
+    <circle class="d z" cx="343" cy="187" r="6"/>
+    <circle class="d z" cx="357" cy="187" r="6"/>
+    <circle class="d z" cx="371" cy="187" r="6"/>
+    <circle class="d z" cx="385" cy="187" r="6"/>
+    <circle class="d z" cx="399" cy="187" r="6"/>
+    <circle class="d z" cx="413" cy="187" r="6"/>
+    <circle class="d z" cx="427" cy="187" r="6"/>
+    <circle class="d z" cx="441" cy="187" r="6"/>
+    <circle class="d z" cx="455" cy="187" r="6"/>
+    <circle class="d z" cx="469" cy="187" r="6"/>
+    <circle class="d z" cx="483" cy="187" r="6"/>
+    <circle class="d z" cx="497" cy="187" r="6"/>
+    <circle class="d z" cx="511" cy="187" r="6"/>
+    <circle class="d z" cx="525" cy="187" r="6"/>
+    <circle class="d z" cx="539" cy="187" r="6"/>
+    <circle class="d z" cx="553" cy="187" r="6"/>
+    <circle class="d z" cx="567" cy="187" r="6"/>
+    <circle class="d z" cx="581" cy="187" r="6"/>
+    <circle class="d z" cx="595" cy="187" r="6"/>
+    <circle class="d z" cx="609" cy="187" r="6"/>
+    <circle class="d z" cx="623" cy="187" r="6"/>
+    <circle class="d z" cx="637" cy="187" r="6"/>
+    <circle class="d z" cx="651" cy="187" r="6"/>
+    <circle class="d z" cx="665" cy="187" r="6"/>
+    <circle class="d z" cx="679" cy="187" r="6"/>
+    <circle class="d z" cx="693" cy="187" r="6"/>
+    <circle class="d z" cx="707" cy="187" r="6"/>
+    <circle class="d z" cx="721" cy="187" r="6"/>
+    <circle class="d z" cx="735" cy="187" r="6"/>
+    <circle class="d z" cx="749" cy="187" r="6"/>
+    <circle class="d z" cx="763" cy="187" r="6"/>
+    <circle class="d z" cx="777" cy="187" r="6"/>
+    <circle class="d z" cx="791" cy="187" r="6"/>
+    <circle class="d z" cx="805" cy="187" r="6"/>
+    <circle class="d z" cx="819" cy="187" r="6"/>
+    <circle class="d z" cx="833" cy="187" r="6"/>
+    <circle class="d z" cx="847" cy="187" r="6"/>
+    <circle class="d z" cx="861" cy="187" r="6"/>
+    <circle class="d z" cx="875" cy="187" r="6"/>
+    <circle class="d z" cx="889" cy="187" r="6"/>
+    <circle class="d z" cx="903" cy="187" r="6"/>
+    <circle class="d z" cx="917" cy="187" r="6"/>
+    <circle class="d z" cx="931" cy="187" r="6"/>
+    <circle class="d z" cx="945" cy="187" r="6"/>
+    <circle class="d z" cx="959" cy="187" r="6"/>
+    <circle class="d z" cx="973" cy="187" r="6"/>
+    <circle class="d z" cx="987" cy="187" r="6"/>
+    <circle class="d z" cx="1001" cy="187" r="6"/>
+    <circle class="d z" cx="1015" cy="187" r="6"/>
+    <circle class="d z" cx="1029" cy="187" r="6"/>
+    <circle class="d z" cx="1043" cy="187" r="6"/>
+    <circle class="d z" cx="1057" cy="187" r="6"/>
+    <circle class="d z" cx="1071" cy="187" r="6"/>
+    <circle class="d z" cx="1085" cy="187" r="6"/>
+    <circle class="d z" cx="1099" cy="187" r="6"/>
+    <circle class="d z" cx="1113" cy="187" r="6"/>
+    <circle class="d z" cx="1127" cy="187" r="6"/>
+    <circle class="d z" cx="1141" cy="187" r="6"/>
+    <circle class="d z" cx="1155" cy="187" r="6"/>
+    <circle class="d z" cx="1169" cy="187" r="6"/>
+    <circle class="d z" cx="1183" cy="187" r="6"/>
+    <circle class="d z" cx="1197" cy="187" r="6"/>
+    <circle class="d z" cx="1211" cy="187" r="6"/>
+    <circle class="d z" cx="1225" cy="187" r="6"/>
+    <circle class="d z" cx="35" cy="201" r="6"/>
+    <circle class="d z" cx="49" cy="201" r="6"/>
+    <circle class="d z" cx="63" cy="201" r="6"/>
+    <circle class="d z" cx="77" cy="201" r="6"/>
+    <circle class="d z" cx="91" cy="201" r="6"/>
+    <circle class="d z" cx="105" cy="201" r="6"/>
+    <circle class="d z" cx="119" cy="201" r="6"/>
+    <circle class="d z" cx="133" cy="201" r="6"/>
+    <circle class="d z" cx="147" cy="201" r="6"/>
+    <circle class="d z" cx="161" cy="201" r="6"/>
+    <circle class="d z" cx="175" cy="201" r="6"/>
+    <circle class="d z" cx="189" cy="201" r="6"/>
+    <circle class="d z" cx="203" cy="201" r="6"/>
+    <circle class="d z" cx="217" cy="201" r="6"/>
+    <circle class="d z" cx="231" cy="201" r="6"/>
+    <circle class="d z" cx="245" cy="201" r="6"/>
+    <circle class="d z" cx="259" cy="201" r="6"/>
+    <circle class="d z" cx="273" cy="201" r="6"/>
+    <circle class="d z" cx="287" cy="201" r="6"/>
+    <circle class="d z" cx="301" cy="201" r="6"/>
+    <circle class="d z" cx="315" cy="201" r="6"/>
+    <circle class="d z" cx="329" cy="201" r="6"/>
+    <circle class="d z" cx="343" cy="201" r="6"/>
+    <circle class="d z" cx="357" cy="201" r="6"/>
+    <circle class="d z" cx="371" cy="201" r="6"/>
+    <circle class="d z" cx="385" cy="201" r="6"/>
+    <circle class="d z" cx="399" cy="201" r="6"/>
+    <circle class="d z" cx="413" cy="201" r="6"/>
+    <circle class="d z" cx="427" cy="201" r="6"/>
+    <circle class="d z" cx="441" cy="201" r="6"/>
+    <circle class="d z" cx="455" cy="201" r="6"/>
+    <circle class="d z" cx="469" cy="201" r="6"/>
+    <circle class="d z" cx="483" cy="201" r="6"/>
+    <circle class="d z" cx="497" cy="201" r="6"/>
+    <circle class="d z" cx="511" cy="201" r="6"/>
+    <circle class="d z" cx="525" cy="201" r="6"/>
+    <circle class="d z" cx="539" cy="201" r="6"/>
+    <circle class="d z" cx="553" cy="201" r="6"/>
+    <circle class="d z" cx="567" cy="201" r="6"/>
+    <circle class="d z" cx="581" cy="201" r="6"/>
+    <circle class="d z" cx="595" cy="201" r="6"/>
+    <circle class="d z" cx="609" cy="201" r="6"/>
+    <circle class="d z" cx="623" cy="201" r="6"/>
+    <circle class="d z" cx="637" cy="201" r="6"/>
+    <circle class="d z" cx="651" cy="201" r="6"/>
+    <circle class="d z" cx="665" cy="201" r="6"/>
+    <circle class="d z" cx="679" cy="201" r="6"/>
+    <circle class="d z" cx="693" cy="201" r="6"/>
+    <circle class="d z" cx="707" cy="201" r="6"/>
+    <circle class="d z" cx="721" cy="201" r="6"/>
+    <circle class="d z" cx="735" cy="201" r="6"/>
+    <circle class="d z" cx="749" cy="201" r="6"/>
+    <circle class="d z" cx="763" cy="201" r="6"/>
+    <circle class="d z" cx="777" cy="201" r="6"/>
+    <circle class="d z" cx="791" cy="201" r="6"/>
+    <circle class="d z" cx="805" cy="201" r="6"/>
+    <circle class="d z" cx="819" cy="201" r="6"/>
+    <circle class="d z" cx="833" cy="201" r="6"/>
+    <circle class="d z" cx="847" cy="201" r="6"/>
+    <circle class="d z" cx="861" cy="201" r="6"/>
+    <circle class="d z" cx="875" cy="201" r="6"/>
+    <circle class="d z" cx="889" cy="201" r="6"/>
+    <circle class="d z" cx="903" cy="201" r="6"/>
+    <circle class="d z" cx="917" cy="201" r="6"/>
+    <circle class="d z" cx="931" cy="201" r="6"/>
+    <circle class="d z" cx="945" cy="201" r="6"/>
+    <circle class="d z" cx="959" cy="201" r="6"/>
+    <circle class="d z" cx="973" cy="201" r="6"/>
+    <circle class="d z" cx="987" cy="201" r="6"/>
+    <circle class="d z" cx="1001" cy="201" r="6"/>
+    <circle class="d z" cx="1015" cy="201" r="6"/>
+    <circle class="d z" cx="1029" cy="201" r="6"/>
+    <circle class="d z" cx="1043" cy="201" r="6"/>
+    <circle class="d z" cx="1057" cy="201" r="6"/>
+    <circle class="d z" cx="1071" cy="201" r="6"/>
+    <circle class="d z" cx="1085" cy="201" r="6"/>
+    <circle class="d z" cx="1099" cy="201" r="6"/>
+    <circle class="d z" cx="1113" cy="201" r="6"/>
+    <circle class="d z" cx="1127" cy="201" r="6"/>
+    <circle class="d z" cx="1141" cy="201" r="6"/>
+    <circle class="d z" cx="1155" cy="201" r="6"/>
+    <circle class="d z" cx="1169" cy="201" r="6"/>
+    <circle class="d z" cx="1183" cy="201" r="6"/>
+    <circle class="d z" cx="1197" cy="201" r="6"/>
+    <circle class="d z" cx="1211" cy="201" r="6"/>
+    <circle class="d z" cx="1225" cy="201" r="6"/>
+  </g>
+</svg>
