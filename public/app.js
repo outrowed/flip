@@ -66,6 +66,8 @@ const copyMarkdownBtn = document.getElementById("copyMarkdownBtn");
 const copySvgBtn = document.getElementById("copySvgBtn");
 const downloadSvgBtn = document.getElementById("downloadSvgBtn");
 const copyUrlBtn = document.getElementById("copyUrlBtn");
+const downloadAllFramesBtn = document.getElementById("downloadAllFramesBtn");
+const framesGrid = document.getElementById("framesGrid");
 const toast = document.getElementById("toast");
 const snippetCode = document.getElementById("snippetCode");
 const tabButtons = document.querySelectorAll(".tab-btn");
@@ -125,6 +127,7 @@ async function generateSvg() {
     const kb = (new Blob([data.svg]).size / 1024).toFixed(1);
     fileSize.textContent = `~${kb} KB`;
 
+    renderStillFrames(data.frames || []);
     updateSnippet();
   } catch (err) {
     svgContainer.innerHTML = `<div class="stage-loading" style="color:#ef4444">Error: ${err.message}</div>`;
@@ -299,15 +302,214 @@ copyUrlBtn.addEventListener("click", async () => {
   showToast("Direct API URL copied!");
 });
 
-// Snippet tab switching
-tabButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    tabButtons.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    state.activeTab = btn.dataset.tab;
-    updateSnippet();
-  });
-});
+// Render Still Frame Cards & Downloads
+function sanitizeFileName(str) {
+  return str.toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "") || "frame";
+}
 
-// Initialize on load
-generateSvg();
+function renderStillFrames(frames) {
+  if (!framesGrid) return;
+  framesGrid.innerHTML = "";
+
+  if (!frames || frames.length === 0) {
+    framesGrid.innerHTML = '<div style="color:var(--text-dim);padding:14px;font-size:12px;">No frames available</div>';
+    return;
+  }
+
+  frames.forEach((frame, idx) => {
+    const card = document.createElement("div");
+    card.className = "frame-card";
+
+    const preview = document.createElement("div");
+    preview.className = "frame-card-preview";
+    preview.innerHTML = frame.svg;
+
+    const meta = document.createElement("div");
+    meta.className = "frame-card-meta";
+
+    const info = document.createElement("div");
+    info.className = "frame-card-info";
+
+    const title = document.createElement("span");
+    title.className = "frame-card-title";
+    title.textContent = `Frame ${idx + 1}: "${frame.text}"`;
+
+    const details = document.createElement("span");
+    details.className = "frame-card-details";
+    details.textContent = `${frame.activeCount} dots active`;
+
+    info.appendChild(title);
+    info.appendChild(details);
+
+    const actions = document.createElement("div");
+    actions.className = "frame-card-actions";
+
+    // Download SVG
+    const svgBtn = document.createElement("button");
+    svgBtn.type = "button";
+    svgBtn.className = "frame-action-btn";
+    svgBtn.title = "Download static SVG";
+    svgBtn.textContent = ".SVG";
+    svgBtn.addEventListener("click", () => {
+      downloadFile(frame.svg, `flip-frame-${idx + 1}-${sanitizeFileName(frame.text)}.svg`, "image/svg+xml;charset=utf-8");
+      showToast(`Downloaded Frame ${idx + 1} (.SVG)`);
+    });
+
+    // Download PNG
+    const pngBtn = document.createElement("button");
+    pngBtn.type = "button";
+    pngBtn.className = "frame-action-btn";
+    pngBtn.title = "Rasterize and download PNG";
+    pngBtn.textContent = ".PNG";
+    pngBtn.addEventListener("click", () => {
+      rasterizeSvgToPng(frame.svg, frame.width, frame.height, `flip-frame-${idx + 1}-${sanitizeFileName(frame.text)}.png`);
+    });
+
+    actions.appendChild(svgBtn);
+    actions.appendChild(pngBtn);
+
+    meta.appendChild(info);
+    meta.appendChild(actions);
+
+    card.appendChild(preview);
+    card.appendChild(meta);
+    framesGrid.appendChild(card);
+  });
+}
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function rasterizeSvgToPng(svgStr, width, height, filename) {
+  const blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+
+  img.onload = () => {
+    const canvas = document.createElement("canvas");
+    // 2x supersampling for high DPI crispness
+    const scale = 2;
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0, width, height);
+
+    canvas.toBlob((pngBlob) => {
+      if (pngBlob) {
+        const pngUrl = URL.createObjectURL(pngBlob);
+        const a = document.createElement("a");
+        a.href = pngUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(pngUrl), 2000);
+        showToast(`Downloaded ${filename}!`);
+      }
+      URL.revokeObjectURL(url);
+    }, "image/png");
+  };
+
+  img.onerror = () => {
+    URL.revokeObjectURL(url);
+    showToast("PNG export failed");
+  };
+
+  img.src = url;
+}
+
+if (downloadAllFramesBtn) {
+  downloadAllFramesBtn.addEventListener("click", async () => {
+    if (!state.svgData || !state.svgData.frames || state.svgData.frames.length === 0) return;
+    const frames = state.svgData.frames;
+
+    if (typeof window.JSZip === "undefined") {
+      showToast("JSZip library not loaded");
+      return;
+    }
+
+    try {
+      downloadAllFramesBtn.disabled = true;
+      downloadAllFramesBtn.innerHTML = '<span class="icon">⌛</span> Zipping...';
+
+      const zip = new window.JSZip();
+      const svgFolder = zip.folder("svg");
+      const pngFolder = zip.folder("png");
+
+      // Helper to render frame PNG blob
+      const getPngBlob = (svgStr, width, height) =>
+        new Promise((resolve) => {
+          const blob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const scale = 2; // 2x supersampling
+            canvas.width = width * scale;
+            canvas.height = height * scale;
+            const ctx = canvas.getContext("2d");
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob((pngBlob) => {
+              URL.revokeObjectURL(url);
+              resolve(pngBlob);
+            }, "image/png");
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            resolve(null);
+          };
+          img.src = url;
+        });
+
+      for (let i = 0; i < frames.length; i += 1) {
+        const frame = frames[i];
+        const num = String(i + 1).padStart(2, "0");
+        const baseName = `frame-${num}-${sanitizeFileName(frame.text)}`;
+
+        // Add SVG
+        svgFolder.file(`${baseName}.svg`, frame.svg);
+
+        // Add PNG
+        const pngBlob = await getPngBlob(frame.svg, frame.width, frame.height);
+        if (pngBlob) {
+          pngFolder.file(`${baseName}.png`, pngBlob);
+        }
+      }
+
+      const zipContent = await zip.generateAsync({ type: "blob" });
+      const zipUrl = URL.createObjectURL(zipContent);
+      const a = document.createElement("a");
+      a.href = zipUrl;
+      a.download = `flip-dots-frames.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(zipUrl), 2000);
+
+      showToast(`Downloaded all ${frames.length} frames as ZIP!`);
+    } catch (err) {
+      showToast(`ZIP generation failed: ${err.message}`);
+    } finally {
+      downloadAllFramesBtn.disabled = false;
+      downloadAllFramesBtn.innerHTML = '<span class="icon">📦</span> Download All (.ZIP)';
+    }
+  });
+}
+
+// Initial automatic load
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", generateSvg);
+} else {
+  generateSvg();
+}

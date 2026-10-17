@@ -431,3 +431,187 @@ ${dotElements.join("\n")}
     rows: totalRows
   };
 }
+
+/**
+ * Builds a single static (non-animated) still SVG of the settled flip-dot display
+ * for a specific frame, without any transition animation keyframes or delays.
+ */
+export function generateStillFlipDotSvg(options = {}) {
+  const config = { ...DEFAULT_SVG_OPTIONS };
+  for (const [key, value] of Object.entries(options)) {
+    if (value !== undefined && key !== "palette") {
+      config[key] = value;
+    }
+  }
+
+  // Resolve palette preset or custom overrides
+  const basePalette = PALETTES[config.theme] || PALETTES.amber;
+  config.palette = {
+    ...basePalette,
+    ...(options.palette || {})
+  };
+
+  const textList = Array.isArray(config.texts) && config.texts.length > 0
+    ? config.texts
+    : [config.text || "hello world"];
+
+  const frameIndex = Math.max(
+    0,
+    Math.min(
+      Number.isInteger(options.frameIndex) ? options.frameIndex : 0,
+      textList.length - 1
+    )
+  );
+  const currentText = textList[frameIndex];
+
+  // Lay out each message to determine common board dimensions
+  const layouts = textList.map((txt) =>
+    layoutFlipDotMatrix({
+      text: txt,
+      italic: config.italic,
+      rows: config.rows,
+      minCols: config.minCols,
+      letterSpacing: config.letterSpacing,
+      wordSpacing: config.wordSpacing,
+      padX: config.padX,
+      padY: config.padY
+    })
+  );
+
+  const totalRows = Math.max(...layouts.map((l) => l.rows));
+  const totalCols = Math.max(...layouts.map((l) => l.cols));
+
+  const gridWidth = totalCols * config.cellPitch;
+  const gridHeight = totalRows * config.cellPitch;
+
+  const width = gridWidth + config.boardPaddingX * 2;
+  const height = gridHeight + config.boardPaddingY * 2;
+
+  const gridOriginX = config.boardPaddingX;
+  const gridOriginY = config.boardPaddingY;
+
+  const { palette } = config;
+  const dotRadius = config.dotSize / 2;
+  const dotCenterOffset = config.cellPitch / 2;
+  const dotSquareOffset = (config.cellPitch - config.dotSize) / 2;
+  const isCircle = config.dotShape !== "square";
+
+  const targetLayout = layouts[frameIndex];
+  const dotElements = [];
+  let activeCount = 0;
+
+  for (let r = 0; r < totalRows; r += 1) {
+    for (let c = 0; c < totalCols; c += 1) {
+      const isLit = targetLayout.grid[r] && targetLayout.grid[r][c];
+      if (isLit) activeCount += 1;
+      const cls = isLit ? "d a" : "d z";
+
+      if (isCircle) {
+        const cx = +(gridOriginX + c * config.cellPitch + dotCenterOffset).toFixed(2);
+        const cy = +(gridOriginY + r * config.cellPitch + dotCenterOffset).toFixed(2);
+        dotElements.push(
+          `    <circle class="${cls}" cx="${cx}" cy="${cy}" r="${dotRadius}"/>`
+        );
+      } else {
+        const x = +(gridOriginX + c * config.cellPitch + dotSquareOffset).toFixed(2);
+        const y = +(gridOriginY + r * config.cellPitch + dotSquareOffset).toFixed(2);
+        const rx = config.dotRadius ?? 2;
+        dotElements.push(
+          `    <rect class="${cls}" x="${x}" y="${y}" width="${config.dotSize}" height="${config.dotSize}" rx="${rx}"/>`
+        );
+      }
+    }
+  }
+
+  const screwPositions = [
+    [14, 14],
+    [width - 14, 14],
+    [14, height - 14],
+    [width - 14, height - 14]
+  ];
+
+  const screwsSvg = screwPositions
+    .map(
+      ([sx, sy]) =>
+        `    <g transform="translate(${sx},${sy})">
+      <circle r="4.5" fill="${palette.screwFill}" stroke="${palette.casingStroke}" stroke-width="1"/>
+      <line x1="-2.6" y1="-1.5" x2="2.6" y2="1.5" stroke="${palette.screwSlot}" stroke-width="1.2" stroke-linecap="round"/>
+    </g>`
+    )
+    .join("\n");
+
+  const safeLabel = escapeXml(currentText);
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="100%" role="img" aria-label="${safeLabel}">
+  <title>${safeLabel}</title>
+  <defs>
+    <linearGradient id="casing-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141923"/>
+      <stop offset="100%" stop-color="${palette.casingOuter}"/>
+    </linearGradient>
+    <linearGradient id="active-dot-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="${palette.flipFlash}"/>
+      <stop offset="28%" stop-color="${palette.activeDotBright}"/>
+      <stop offset="100%" stop-color="${palette.activeDot}"/>
+    </linearGradient>
+    <filter id="dot-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="1.35" flood-color="${palette.activeDotBright}" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <style>
+    .d {
+      transform-box: fill-box;
+      transform-origin: center;
+      stroke-width: 0.75px;
+    }
+    .z {
+      fill: ${palette.zeroDot};
+      stroke: ${palette.zeroDotStroke};
+    }
+    .a {
+      fill: url(#active-dot-grad);
+      stroke: ${palette.activeDotStroke};
+      filter: url(#dot-glow);
+    }
+  </style>
+
+  <!-- Outer anodized aluminum frame -->
+  <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="12" fill="url(#casing-grad)" stroke="${palette.casingStroke}" stroke-width="2"/>
+
+  <!-- Inner recessed bezel -->
+  <rect x="${gridOriginX - 8}" y="${gridOriginY - 8}" width="${gridWidth + 16}" height="${gridHeight + 16}" rx="6" fill="${palette.recessBg}" stroke="#1b2230" stroke-width="1.5"/>
+
+  <!-- Corner mounting screws -->
+${screwsSvg}
+
+  <!-- Flip-dot array -->
+  <g id="flip-dot-matrix">
+${dotElements.join("\n")}
+  </g>
+</svg>
+`;
+
+  return {
+    svg,
+    width,
+    height,
+    text: currentText,
+    frameIndex,
+    cols: totalCols,
+    rows: totalRows,
+    activeCount
+  };
+}
+
+/**
+ * Builds static still SVGs for all frames in the rotation sequence.
+ */
+export function generateStillFlipDotFrames(options = {}) {
+  const textList = Array.isArray(options.texts) && options.texts.length > 0
+    ? options.texts
+    : [options.text || "hello world"];
+
+  return textList.map((_, idx) =>
+    generateStillFlipDotSvg({ ...options, texts: textList, frameIndex: idx })
+  );
+}

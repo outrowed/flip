@@ -2,7 +2,13 @@ import { createServer } from "node:http";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve, extname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { generateFlipDotSvg, PALETTES, DEFAULT_ROTATING_TEXTS } from "./svg.mjs";
+import {
+  generateFlipDotSvg,
+  generateStillFlipDotSvg,
+  generateStillFlipDotFrames,
+  PALETTES,
+  DEFAULT_ROTATING_TEXTS
+} from "./svg.mjs";
 
 const __dirname = resolve(fileURLToPath(import.meta.url), "..");
 const rootDir = resolve(__dirname, "..");
@@ -40,8 +46,13 @@ export function createFlipServer() {
       return;
     }
 
-    // Dynamic SVG generation API (GET /api/svg or GET /flip-dots-hello-world.svg)
-    if (pathname === "/api/svg" || pathname === "/flip-dots-hello-world.svg" || pathname === "/flip.svg") {
+    // Dynamic SVG generation API (GET /api/svg, GET /api/frame, or prebuilt alias)
+    if (
+      pathname === "/api/svg" ||
+      pathname === "/api/frame" ||
+      pathname === "/flip-dots-hello-world.svg" ||
+      pathname === "/flip.svg"
+    ) {
       try {
         const textParam = params.get("text");
         const textsParam = params.get("texts");
@@ -68,23 +79,43 @@ export function createFlipServer() {
         const durationPerText = Number.parseFloat(params.get("duration")) || 3.8;
         const cellPitch = Number.parseFloat(params.get("pitch")) || 14;
         const dotSize = Number.parseFloat(params.get("dotSize")) || (dotShape === "square" ? 12 : 12);
+        const resolvedTexts = texts && texts.length > 0 ? texts : DEFAULT_ROTATING_TEXTS;
 
-        const result = generateFlipDotSvg({
-          texts: texts && texts.length > 0 ? texts : DEFAULT_ROTATING_TEXTS,
-          dotShape,
-          theme,
-          italic,
-          durationPerText,
-          cellPitch,
-          dotSize
-        });
+        // Check if still (static non-animated frame) is requested
+        const isStill = pathname === "/api/frame" || params.get("still") === "true" || params.has("frame");
+        let resultSvg;
+
+        if (isStill) {
+          const frameIndex = Number.parseInt(params.get("frame") || "0", 10) || 0;
+          const stillResult = generateStillFlipDotSvg({
+            texts: resolvedTexts,
+            frameIndex,
+            dotShape,
+            theme,
+            italic,
+            cellPitch,
+            dotSize
+          });
+          resultSvg = stillResult.svg;
+        } else {
+          const animResult = generateFlipDotSvg({
+            texts: resolvedTexts,
+            dotShape,
+            theme,
+            italic,
+            durationPerText,
+            cellPitch,
+            dotSize
+          });
+          resultSvg = animResult.svg;
+        }
 
         res.writeHead(200, {
           "Content-Type": "image/svg+xml; charset=utf-8",
           "Cache-Control": "public, max-age=30",
           "Access-Control-Allow-Origin": "*"
         });
-        res.end(result.svg);
+        res.end(resultSvg);
         return;
       } catch (err) {
         res.writeHead(500, { "Content-Type": "application/json" });
@@ -93,7 +124,7 @@ export function createFlipServer() {
       }
     }
 
-    // POST /api/generate: returns JSON with SVG markup and telemetry metadata
+    // POST /api/generate: returns JSON with animated SVG, telemetry metadata, and all still frames
     if (pathname === "/api/generate" && req.method === "POST") {
       let body = "";
       req.on("data", (chunk) => {
@@ -107,7 +138,7 @@ export function createFlipServer() {
             ? payload.texts
             : (payload.text ? [payload.text] : DEFAULT_ROTATING_TEXTS);
 
-          const result = generateFlipDotSvg({
+          const commonOptions = {
             texts,
             dotShape: payload.dotShape === "square" ? "square" : "circle",
             theme: payload.theme || "amber",
@@ -117,7 +148,10 @@ export function createFlipServer() {
             dotSize: Number.parseFloat(payload.dotSize) || 12,
             minCols: Number.parseInt(payload.minCols, 10) || 86,
             rows: Number.parseInt(payload.rows, 10) || 13
-          });
+          };
+
+          const animResult = generateFlipDotSvg(commonOptions);
+          const stillFrames = generateStillFlipDotFrames(commonOptions);
 
           res.writeHead(200, {
             "Content-Type": "application/json; charset=utf-8",
@@ -125,12 +159,20 @@ export function createFlipServer() {
           });
           res.end(JSON.stringify({
             ok: true,
-            svg: result.svg,
-            width: result.width,
-            height: result.height,
-            cols: result.cols,
-            rows: result.rows,
-            textCount: result.layouts.length
+            svg: animResult.svg,
+            width: animResult.width,
+            height: animResult.height,
+            cols: animResult.cols,
+            rows: animResult.rows,
+            textCount: animResult.layouts.length,
+            frames: stillFrames.map((f) => ({
+              index: f.frameIndex,
+              text: f.text,
+              svg: f.svg,
+              width: f.width,
+              height: f.height,
+              activeCount: f.activeCount
+            }))
           }));
         } catch (err) {
           res.writeHead(400, { "Content-Type": "application/json" });

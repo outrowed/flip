@@ -30,7 +30,6 @@
       <section class="controls-panel">
         <div class="panel-header">
           <h2>Display Configuration</h2>
-          <span class="panel-tag">SVG Generator</span>
         </div>
 
         <form id="flipForm" class="controls-form" onsubmit="return false;">
@@ -185,13 +184,29 @@ peace out~</textarea>
                 <span class="icon">📄</span> Copy Raw SVG
               </button>
               <button type="button" id="downloadSvgBtn" class="export-btn">
-                <span class="icon">💾</span> Download .SVG
+                <span class="icon">💾</span> Download Animated SVG
               </button>
               <button type="button" id="copyUrlBtn" class="export-btn">
                 <span class="icon">🔗</span> Copy Direct URL
               </button>
             </div>
             <div id="toast" class="toast hidden">Copied to clipboard!</div>
+          </div>
+
+          <!-- Frame-by-Frame Still Images Section -->
+          <div class="frames-section" id="framesSection">
+            <div class="frames-header">
+              <div class="frames-title-row">
+                <h3 class="frames-title">Still Frames (Static Images)</h3>
+                <span class="frames-subtitle">Settled state per phrase &mdash; clean standalone vector &amp; PNG downloads without animation</span>
+              </div>
+              <button type="button" id="downloadAllFramesBtn" class="export-btn btn-accent">
+                <span class="icon">📦</span> Download All (.ZIP)
+              </button>
+            </div>
+            <div class="frames-grid" id="framesGrid">
+              <!-- Dynamically populated frame cards -->
+            </div>
           </div>
 
           <!-- Snippet preview section -->
@@ -218,6 +233,7 @@ peace out~</textarea>
     </footer>
   </div>
 
+  <script src="/jszip.min.js"></script>
   <script src="/app.js"></script>
 </body>
 </html>

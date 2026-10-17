@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { generateFlipDotSvg } from "../src/svg.mjs";
+import {
+  generateFlipDotSvg,
+  generateStillFlipDotSvg,
+  generateStillFlipDotFrames
+} from "../src/svg.mjs";
 
 describe("animated flip-dot SVG generator", () => {
   it("generates a wide flip-dot SVG starting in zero-state and rotating through texts", () => {
@@ -31,4 +35,35 @@ describe("animated flip-dot SVG generator", () => {
     assert.ok(svg.includes("a &lt; b &amp; c"));
     assert.ok(!svg.includes("a < b & c"));
   });
+
+  it("generates static still frame SVGs without CSS animation keyframes", () => {
+    const texts = ["hello world", "its me", "taruna", "outrowed", "peace out~"];
+    const frames = generateStillFlipDotFrames({ texts, italic: true });
+
+    assert.equal(frames.length, 5);
+    for (let i = 0; i < frames.length; i += 1) {
+      const frame = frames[i];
+      assert.equal(frame.frameIndex, i);
+      assert.equal(frame.text, texts[i]);
+      assert.ok(frame.svg.startsWith("<svg "));
+      assert.ok(frame.svg.trim().endsWith("</svg>"));
+      assert.ok(frame.activeCount > 0);
+      // Still frames must NOT have @keyframes animation
+      assert.ok(!frame.svg.includes("@keyframes"));
+      assert.ok(!frame.svg.includes("animation:"));
+    }
+  });
+
+  it("generates a specific still frame with generateStillFlipDotSvg", () => {
+    const frame = generateStillFlipDotSvg({
+      texts: ["hello world", "outrowed"],
+      frameIndex: 1
+    });
+
+    assert.equal(frame.frameIndex, 1);
+    assert.equal(frame.text, "outrowed");
+    assert.ok(frame.svg.includes("<title>outrowed</title>"));
+    assert.ok(!frame.svg.includes("@keyframes"));
+  });
 });
+

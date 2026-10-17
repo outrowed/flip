@@ -9,5 +9,7 @@ export {
   DEFAULT_ROTATING_TEXTS,
   DEFAULT_SVG_OPTIONS,
   PALETTES,
-  generateFlipDotSvg
+  generateFlipDotSvg,
+  generateStillFlipDotSvg,
+  generateStillFlipDotFrames
 } from "./svg.mjs";
