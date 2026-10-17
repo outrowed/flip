@@ -1,15 +1,49 @@
 {
-  "name": "flip",
-  "version": "0.2.0",
-  "private": true,
-  "description": "FLIP - Flip-dot Letter & Image Playground: Text-to-flipdots animated SVG generator for Markdown and web",
-  "type": "module",
-  "scripts": {
-    "start": "node ./src/server.mjs",
-    "dev": "node ./src/server.mjs",
-    "preview": "node ./src/server.mjs",
-    "build": "node ./src/cli.mjs",
-    "generate": "node ./src/cli.mjs",
-    "test": "node --test ./tests/*.test.mjs"
-  }
+    "name": "flip",
+    "version": "0.2.0",
+    "private": true,
+    "description": "FLIP - Flip-dot Letter & Image Playground: Text-to-flipdots animated SVG generator for Markdown and web",
+    "type": "module",
+    "scripts": {
+        "dev": "vite --host 0.0.0.0",
+        "dev:api": "PORT=3029 node --watch src/server/server.ts",
+        "build:client": "vite build",
+        "build:server": "vite build --ssr src/server/server.ts --outDir dist --emptyOutDir false",
+        "build:cli": "vite build --ssr src/cli/cli.ts --outDir dist --emptyOutDir false",
+        "build": "tsc --noEmit && pnpm build:client && pnpm build:server && pnpm build:cli",
+        "start": "node ./dist/server.js",
+        "generate": "node ./dist/cli.js",
+        "preview": "vite preview --host 0.0.0.0 --port 4329",
+        "test": "vitest run",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint . && biome lint .",
+        "format": "biome format --write . && eslint --fix .",
+        "check": "biome check . && eslint ."
+    },
+    "engines": {
+        "node": ">=22.18.0"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^2.5.15",
+        "@stylistic/eslint-plugin": "^5.10.0",
+        "@tailwindcss/vite": "^4.3.3",
+        "@types/node": "^26.6.5",
+        "@types/react": "^19.3.0",
+        "@types/react-dom": "^19.3.0",
+        "@vitejs/plugin-react": "^6.1.2",
+        "eslint": "^10.13.0",
+        "tailwindcss": "^4.3.3",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.71.2",
+        "vite": "^8.3.4",
+        "vitest": "^5.0.5"
+    },
+    "dependencies": {
+        "@fastify/cors": "^11.3.1",
+        "@fastify/static": "^10.1.6",
+        "fastify": "^5.12.7",
+        "jszip": "^3.10.2",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1"
+    }
 }
