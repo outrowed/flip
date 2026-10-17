@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>FLIP — Flip-dot Letter &amp; Image Playground</title>
+  <link rel="stylesheet" href="/style.css"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2244%22 fill=%22%23f59e0b%22/><circle cx=%2250%22 cy=%2250%22 r=%2238%22 fill=%22%23090b10%22/><circle cx=%2250%22 cy=%2250%22 r=%2226%22 fill=%22%23fbbf24%22/></svg>"/>
+</head>
+<body>
+  <div class="app-layout">
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-badge">
+          <span class="disc"></span>
+          <span class="disc active"></span>
+          <span class="disc"></span>
+        </div>
+        <div>
+          <h1 class="brand-title">FLIP</h1>
+          <p class="brand-subtitle">Flip-dot Letter &amp; Image Playground</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="#quick-start" class="header-link">Guide</a>
+        <button id="themeToggleStage" class="btn-ghost" title="Toggle Stage Canvas Background">
+          <span class="icon">🌓</span> Stage Theme
+        </button>
+      </div>
+    </header>
+
+    <main class="playground-grid">
+      <!-- Left Configuration Panel -->
+      <section class="controls-panel">
+        <div class="panel-header">
+          <h2>Display Configuration</h2>
+          <span class="panel-tag">SVG Generator</span>
+        </div>
+
+        <form id="flipForm" class="controls-form" onsubmit="return false;">
+          <!-- Text Input -->
+          <div class="form-group">
+            <div class="label-row">
+              <label for="textInput">Display Messages</label>
+              <span class="hint">1 line per frame to rotate</span>
+            </div>
+            <textarea
+              id="textInput"
+              rows="5"
+              placeholder="hello world&#10;its me&#10;taruna&#10;outrowed&#10;peace out~"
+              spellcheck="false"
+            >hello world
+its me
+taruna
+outrowed
+peace out~</textarea>
+            <div class="preset-pills">
+              <span class="pills-label">Presets:</span>
+              <button type="button" class="preset-btn" data-preset="rotation">Default Rotation</button>
+              <button type="button" class="preset-btn" data-preset="single">Hello World</button>
+              <button type="button" class="preset-btn" data-preset="terminal">Status Alert</button>
+              <button type="button" class="preset-btn" data-preset="minimal">Personal</button>
+            </div>
+          </div>
+
+          <!-- Dot Shape & Slant -->
+          <div class="form-row">
+            <div class="form-group col">
+              <label>Dot Shape</label>
+              <div class="segmented-control" id="shapeGroup">
+                <button type="button" class="segment-btn active" data-shape="circle">
+                  <span class="shape-icon circle"></span> Round
+                </button>
+                <button type="button" class="segment-btn" data-shape="square">
+                  <span class="shape-icon square"></span> Square
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group col">
+              <label>Typography</label>
+              <div class="segmented-control" id="italicGroup">
+                <button type="button" class="segment-btn active" data-italic="true">
+                  <em>Italic (24°)</em>
+                </button>
+                <button type="button" class="segment-btn" data-italic="false">
+                  <span>Upright</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Palette / Color Theme -->
+          <div class="form-group">
+            <div class="label-row">
+              <label>Color Theme</label>
+              <span id="themeName" class="hint">Amber Solenoid</span>
+            </div>
+            <div class="palette-grid" id="paletteGrid">
+              <button type="button" class="palette-swatch active" data-theme="amber" title="Amber Solenoid">
+                <span class="swatch-sample" style="background:#f59e0b"></span>
+                <span class="swatch-label">Amber</span>
+              </button>
+              <button type="button" class="palette-swatch" data-theme="emerald" title="Emerald Green">
+                <span class="swatch-sample" style="background:#10b981"></span>
+                <span class="swatch-label">Emerald</span>
+              </button>
+              <button type="button" class="palette-swatch" data-theme="white" title="Monochrome White">
+                <span class="swatch-sample" style="background:#e2e8f0"></span>
+                <span class="swatch-label">Mono</span>
+              </button>
+              <button type="button" class="palette-swatch" data-theme="cyan" title="Cyber Cyan">
+                <span class="swatch-sample" style="background:#06b6d4"></span>
+                <span class="swatch-label">Cyan</span>
+              </button>
+              <button type="button" class="palette-swatch" data-theme="crimson" title="Crimson Hazard">
+                <span class="swatch-sample" style="background:#ef4444"></span>
+                <span class="swatch-label">Crimson</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Timing Controls -->
+          <div class="form-row">
+            <div class="form-group col">
+              <div class="label-row">
+                <label for="durationInput">Hold Per Frame</label>
+                <span id="durationVal" class="val-tag">3.8s</span>
+              </div>
+              <input type="range" id="durationInput" min="1.5" max="7.0" step="0.2" value="3.8"/>
+            </div>
+
+            <div class="form-group col">
+              <div class="label-row">
+                <label for="pitchInput">Dot Pitch / Scale</label>
+                <span id="pitchVal" class="val-tag">14px</span>
+              </div>
+              <input type="range" id="pitchInput" min="10" max="18" step="1" value="14"/>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="form-actions">
+            <button type="button" id="generateBtn" class="btn-primary">
+              <span class="icon">⚡</span> Update Display
+            </button>
+            <button type="button" id="resetBtn" class="btn-secondary">
+              Reset
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Right Stage & Export Panel -->
+      <section class="stage-panel">
+        <div class="stage-card">
+          <div class="stage-header">
+            <div class="stage-telemetry">
+              <span class="status-indicator live"></span>
+              <span class="telemetry-item" id="boardDims">86 × 13 dots</span>
+              <span class="telemetry-sep">•</span>
+              <span class="telemetry-item" id="pixelDims">1260 × 234 px</span>
+              <span class="telemetry-sep">•</span>
+              <span class="telemetry-item" id="frameCount">5 frames</span>
+              <span class="telemetry-sep">•</span>
+              <span class="telemetry-item" id="fileSize">~134 KB</span>
+            </div>
+            <div class="stage-view-toggles">
+              <button type="button" class="view-toggle active" data-bg="dark" title="Dark Background">Dark</button>
+              <button type="button" class="view-toggle" data-bg="light" title="Light Background">Light</button>
+              <button type="button" class="view-toggle" data-bg="grid" title="Blueprint Grid">Grid</button>
+            </div>
+          </div>
+
+          <!-- Live SVG Display Stage -->
+          <div class="stage-viewport stage-dark" id="stageViewport">
+            <div class="svg-container" id="svgContainer">
+              <div class="stage-loading">Generating Flip-Dots Display...</div>
+            </div>
+          </div>
+
+          <!-- Export & Integration Bar -->
+          <div class="export-bar">
+            <div class="export-buttons">
+              <button type="button" id="copyMarkdownBtn" class="export-btn btn-accent">
+                <span class="icon">📋</span> Copy Markdown
+              </button>
+              <button type="button" id="copySvgBtn" class="export-btn">
+                <span class="icon">📄</span> Copy Raw SVG
+              </button>
+              <button type="button" id="downloadSvgBtn" class="export-btn">
+                <span class="icon">💾</span> Download .SVG
+              </button>
+              <button type="button" id="copyUrlBtn" class="export-btn">
+                <span class="icon">🔗</span> Copy Direct URL
+              </button>
+            </div>
+            <div id="toast" class="toast hidden">Copied to clipboard!</div>
+          </div>
+
+          <!-- Snippet preview section -->
+          <div class="snippets-section" id="quick-start">
+            <div class="snippet-tabs">
+              <button type="button" class="tab-btn active" data-tab="markdown">Markdown</button>
+              <button type="button" class="tab-btn" data-tab="html">HTML</button>
+              <button type="button" class="tab-btn" data-tab="api">Live API</button>
+            </div>
+            <div class="snippet-content">
+              <pre><code id="snippetCode">![FLIP Banner](./flip.svg)</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        <strong>FLIP</strong> &mdash; Flip-dot Letter &amp; Image Playground.
+        Electromechanical solenoid simulation with pure CSS keyframe animations. Markdown and web compatible.
+      </p>
+    </footer>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

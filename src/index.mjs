@@ -5,4 +5,9 @@ export {
   layoutFlipDotMatrix,
   renderMatrixAscii
 } from "./matrix.mjs";
-export { DEFAULT_SVG_OPTIONS, generateFlipDotSvg } from "./svg.mjs";
+export {
+  DEFAULT_ROTATING_TEXTS,
+  DEFAULT_SVG_OPTIONS,
+  PALETTES,
+  generateFlipDotSvg
+} from "./svg.mjs";

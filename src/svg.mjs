@@ -1,39 +1,18 @@
 /**
- * Generates a self-contained animated SVG of a wide electromechanical
- * flip-dot display board compatible with GitHub README Markdown (`<img>` / `![]()`).
+ * FLIP - Flip-dot Letter & Image Playground
  *
- * Supports single text mode or multi-text rotating sequence. All dots begin
- * in the dark "zero"-state (`0` / unflipped) and mechanically flip along a diagonal
- * electromagnetic wave through each message in the rotation sequence, followed by a
- * wipe back to the dark zero state before looping.
+ * Generates self-contained animated SVGs of electromechanical flip-dot
+ * display boards compatible with GitHub README Markdown (`<img>` / `![]()`).
+ *
+ * Supports single-text or rotating multi-text sequences, circular or square
+ * flip-dots, customizable color palettes, and realistic solenoid-flip animations.
  */
 
 import { layoutFlipDotMatrix } from "./matrix.mjs";
 
-export const DEFAULT_ROTATING_TEXTS = [
-  "hello world",
-  "its me",
-  "taruna",
-  "outrowed",
-  "peace out~"
-];
-
-export const DEFAULT_SVG_OPTIONS = {
-  text: DEFAULT_ROTATING_TEXTS[0],
-  texts: DEFAULT_ROTATING_TEXTS,
-  italic: true,
-  rows: 13,
-  minCols: 86,
-  cellPitch: 14,
-  dotSize: 12,
-  boardPaddingX: 28,
-  boardPaddingY: 26,
-  cycleSeconds: 24,
-  durationPerText: 3.8,
-  initialHold: 0.8,
-  flipDuration: 0.35,
-  sweepMax: 0.85,
-  palette: {
+export const PALETTES = {
+  amber: {
+    name: "Amber Solenoid (Classic)",
     casingOuter: "#090b10",
     casingInner: "#10141d",
     casingStroke: "#232a38",
@@ -47,7 +26,100 @@ export const DEFAULT_SVG_OPTIONS = {
     activeDotStroke: "#fcd34d",
     screwFill: "#1a202c",
     screwSlot: "#090b10"
+  },
+  emerald: {
+    name: "Emerald Green (Transit)",
+    casingOuter: "#06120d",
+    casingInner: "#0a1f17",
+    casingStroke: "#1a3a2d",
+    recessBg: "#07140e",
+    zeroDot: "#11261d",
+    zeroDotStroke: "#1b3c2e",
+    zeroHighlight: "#23533f",
+    flipFlash: "#a7f3d0",
+    activeDot: "#059669",
+    activeDotBright: "#34d399",
+    activeDotStroke: "#6ee7b7",
+    screwFill: "#142c22",
+    screwSlot: "#05130d"
+  },
+  white: {
+    name: "Monochrome Split-Flap",
+    casingOuter: "#0a0a0c",
+    casingInner: "#141418",
+    casingStroke: "#272730",
+    recessBg: "#0d0d10",
+    zeroDot: "#1c1c24",
+    zeroDotStroke: "#2c2c38",
+    zeroHighlight: "#3f3f50",
+    flipFlash: "#ffffff",
+    activeDot: "#cbd5e1",
+    activeDotBright: "#f8fafc",
+    activeDotStroke: "#ffffff",
+    screwFill: "#22222c",
+    screwSlot: "#0a0a0e"
+  },
+  cyan: {
+    name: "Cyber Cyan (Neon)",
+    casingOuter: "#050f16",
+    casingInner: "#0b1b26",
+    casingStroke: "#15364b",
+    recessBg: "#07131b",
+    zeroDot: "#112433",
+    zeroDotStroke: "#1a3950",
+    zeroHighlight: "#23506e",
+    flipFlash: "#cffafe",
+    activeDot: "#0891b2",
+    activeDotBright: "#22d3ee",
+    activeDotStroke: "#67e8f9",
+    screwFill: "#142d3e",
+    screwSlot: "#050f16"
+  },
+  crimson: {
+    name: "Crimson Hazard",
+    casingOuter: "#140608",
+    casingInner: "#220b0e",
+    casingStroke: "#3d151a",
+    recessBg: "#170709",
+    zeroDot: "#2a1014",
+    zeroDotStroke: "#42181e",
+    zeroHighlight: "#5c212a",
+    flipFlash: "#fee2e2",
+    activeDot: "#dc2626",
+    activeDotBright: "#f87171",
+    activeDotStroke: "#fca5a5",
+    screwFill: "#2e1216",
+    screwSlot: "#120507"
   }
+};
+
+export const DEFAULT_ROTATING_TEXTS = [
+  "hello world",
+  "its me",
+  "taruna",
+  "outrowed",
+  "peace out~"
+];
+
+export const DEFAULT_SVG_OPTIONS = {
+  text: DEFAULT_ROTATING_TEXTS[0],
+  texts: DEFAULT_ROTATING_TEXTS,
+  dotShape: "circle", // "circle" | "square"
+  italic: true,
+  rows: 13,
+  minCols: 86,
+  cellPitch: 14,
+  dotSize: 12,
+  dotRadius: 2.2,
+  boardPaddingX: 28,
+  boardPaddingY: 26,
+  cycleSeconds: 24,
+  durationPerText: 3.8,
+  initialHold: 0.8,
+  flipDuration: 0.35,
+  sweepMax: 0.85,
+  theme: "amber",
+  palette: PALETTES.amber
 };
 
 function escapeXml(value) {
@@ -59,10 +131,6 @@ function escapeXml(value) {
     .replace(/'/g, "&apos;");
 }
 
-/**
- * Deterministic hash in [0, 1) for subtle per-dot mechanical jitter so the
- * flip wave feels like physical solenoids rather than a flat digital wipe.
- */
 function dotJitter(row, col) {
   const seed = Math.sin((row + 1) * 12.9898 + (col + 1) * 78.233) * 43758.5453;
   return seed - Math.floor(seed);
@@ -78,8 +146,11 @@ export function generateFlipDotSvg(options = {}) {
       config[key] = value;
     }
   }
+
+  // Resolve palette preset or custom overrides
+  const basePalette = PALETTES[config.theme] || PALETTES.amber;
   config.palette = {
-    ...DEFAULT_SVG_OPTIONS.palette,
+    ...basePalette,
     ...(options.palette || {})
   };
 
@@ -118,6 +189,8 @@ export function generateFlipDotSvg(options = {}) {
   const { palette } = config;
   const dotRadius = config.dotSize / 2;
   const dotCenterOffset = config.cellPitch / 2;
+  const dotSquareOffset = (config.cellPitch - config.dotSize) / 2;
+  const isCircle = config.dotShape !== "square";
 
   // Total cycle duration and transition timeline
   const durationPerText = config.durationPerText ?? 3.8;
@@ -125,7 +198,9 @@ export function generateFlipDotSvg(options = {}) {
   const flipDuration = config.flipDuration ?? 0.35;
   const sweepMax = config.sweepMax ?? 0.85;
 
-  // One transition per text, plus final reset transition to zero
+  // Single text vs multi-text rotation:
+  // For 1 text: 2 transitions (0 -> Text, Text -> 0 reset)
+  // For N texts: N + 1 transitions (0 -> T0, T0 -> T1, ..., TN-1 -> 0 reset)
   const numTransitions = numTexts + 1;
   const cycleSeconds = config.cycleSeconds ?? (initialHold + numTexts * durationPerText + 3.2);
 
@@ -135,10 +210,9 @@ export function generateFlipDotSvg(options = {}) {
     tTrans.push(+currT.toFixed(2));
     currT += durationPerText;
   }
-  // Final transition back to dark zero
   tTrans.push(+currT.toFixed(2));
 
-  // Compute the boolean state sequence for every (row, col)
+  // Compute boolean state sequence for every (row, col)
   const patternMap = new Map();
   const dotPattern = Array.from({ length: totalRows }, () =>
     Array.from({ length: totalCols }, () => "0".repeat(numTexts))
@@ -188,10 +262,10 @@ export function generateFlipDotSvg(options = {}) {
           `  ${p1}% { fill: ${palette.zeroHighlight}; stroke: ${palette.activeDotStroke}; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }`
         );
         kfSteps.push(
-          `  ${p2}% { fill: ${palette.flipFlash}; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#amber-glow); }`
+          `  ${p2}% { fill: ${palette.flipFlash}; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#dot-glow); }`
         );
         kfSteps.push(
-          `  ${p3}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }`
+          `  ${p3}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#dot-glow); }`
         );
       } else if (prev === 1 && next === 0) {
         const p0 = +(t0 / cycleSeconds * 100).toFixed(2);
@@ -199,7 +273,7 @@ export function generateFlipDotSvg(options = {}) {
         const p2 = +((t0 + flipDuration) / cycleSeconds * 100).toFixed(2);
 
         kfSteps.push(
-          `  ${p0}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }`
+          `  ${p0}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#dot-glow); }`
         );
         kfSteps.push(
           `  ${p1}% { fill: ${palette.zeroHighlight}; stroke: ${palette.zeroDotStroke}; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }`
@@ -213,13 +287,13 @@ export function generateFlipDotSvg(options = {}) {
         const p2 = +((t0 + flipDuration) / cycleSeconds * 100).toFixed(2);
 
         kfSteps.push(
-          `  ${p0}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }`
+          `  ${p0}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#dot-glow); }`
         );
         kfSteps.push(
-          `  ${p1}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(0.72) scaleX(0.96); filter: url(#amber-glow); }`
+          `  ${p1}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(0.72) scaleX(0.96); filter: url(#dot-glow); }`
         );
         kfSteps.push(
-          `  ${p2}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#amber-glow); }`
+          `  ${p2}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#dot-glow); }`
         );
       }
     }
@@ -233,29 +307,44 @@ export function generateFlipDotSvg(options = {}) {
     );
   }
 
-  // Render circular dots
-  const circles = [];
+  // Render flip-dots (circles or rounded square rects)
+  const dotElements = [];
 
   for (let r = 0; r < totalRows; r += 1) {
     for (let c = 0; c < totalCols; c += 1) {
       const seq = dotPattern[r][c];
       const isZeroAll = seq === "0".repeat(numTexts);
-      const cx = +(gridOriginX + c * config.cellPitch + dotCenterOffset).toFixed(2);
-      const cy = +(gridOriginY + r * config.cellPitch + dotCenterOffset).toFixed(2);
 
       // Diagonal sweep wave delay across board
       const normalizedSweep = (c + r * 1.35) / (totalCols + totalRows * 1.35);
       const jitter = (dotJitter(r, c) - 0.5) * 0.08;
       const delay = +(normalizedSweep * sweepMax + jitter).toFixed(3);
 
-      if (isZeroAll) {
-        circles.push(
-          `    <circle class="d z" cx="${cx}" cy="${cy}" r="${dotRadius}"/>`
-        );
+      if (isCircle) {
+        const cx = +(gridOriginX + c * config.cellPitch + dotCenterOffset).toFixed(2);
+        const cy = +(gridOriginY + r * config.cellPitch + dotCenterOffset).toFixed(2);
+        if (isZeroAll) {
+          dotElements.push(
+            `    <circle class="d z" cx="${cx}" cy="${cy}" r="${dotRadius}"/>`
+          );
+        } else {
+          dotElements.push(
+            `    <circle class="d z p-${seq}" cx="${cx}" cy="${cy}" r="${dotRadius}" style="animation-delay:${delay}s"/>`
+          );
+        }
       } else {
-        circles.push(
-          `    <circle class="d z p-${seq}" cx="${cx}" cy="${cy}" r="${dotRadius}" style="animation-delay:${delay}s"/>`
-        );
+        const x = +(gridOriginX + c * config.cellPitch + dotSquareOffset).toFixed(2);
+        const y = +(gridOriginY + r * config.cellPitch + dotSquareOffset).toFixed(2);
+        const rx = config.dotRadius ?? 2;
+        if (isZeroAll) {
+          dotElements.push(
+            `    <rect class="d z" x="${x}" y="${y}" width="${config.dotSize}" height="${config.dotSize}" rx="${rx}"/>`
+          );
+        } else {
+          dotElements.push(
+            `    <rect class="d z p-${seq}" x="${x}" y="${y}" width="${config.dotSize}" height="${config.dotSize}" rx="${rx}" style="animation-delay:${delay}s"/>`
+          );
+        }
       }
     }
   }
@@ -291,7 +380,7 @@ export function generateFlipDotSvg(options = {}) {
       <stop offset="28%" stop-color="${palette.activeDotBright}"/>
       <stop offset="100%" stop-color="${palette.activeDot}"/>
     </linearGradient>
-    <filter id="amber-glow" x="-20%" y="-20%" width="140%" height="140%">
+    <filter id="dot-glow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="0" stdDeviation="1.35" flood-color="${palette.activeDotBright}" flood-opacity="0.45"/>
     </filter>
   </defs>
@@ -311,7 +400,7 @@ ${keyframes.join("\n")}
         animation: none;
         fill: url(#active-dot-grad);
         stroke: ${palette.activeDotStroke};
-        filter: url(#amber-glow);
+        filter: url(#dot-glow);
       }
     }
   </style>
@@ -327,7 +416,7 @@ ${screwsSvg}
 
   <!-- Flip-dot array -->
   <g id="flip-dot-matrix">
-${circles.join("\n")}
+${dotElements.join("\n")}
   </g>
 </svg>
 `;
