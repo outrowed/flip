@@ -741,3 +741,11 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .app-footer strong {
   color: var(--text-muted);
 }
+
+ .brand { text-decoration: none; }
+.brand-logo { display: block; width: 68px; height: 32px; flex-shrink: 0; }
+@media (max-width: 600px) {
+  .app-header { padding: 16px; flex-wrap: wrap; gap: 16px; }
+  .brand { gap: 10px; }
+  .brand-subtitle { font-size: 10px; }
+}

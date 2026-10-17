@@ -160,6 +160,9 @@ function updateSnippet() {
     snippetCode.textContent = `<p align="center">\n  <img src="./flip.svg" width="100%" alt="${label}" />\n</p>`;
   } else if (state.activeTab === "api") {
     snippetCode.textContent = `# Direct SVG URL (returns image/svg+xml):\n${url}\n\n# Markdown direct link:\n![FLIP Banner](${url})`;
+  } else if (state.activeTab === "brand") {
+    const origin = window.location.origin;
+    snippetCode.textContent = `<!-- FLIP Brand Assets -->\n\n<!-- 1. Minimal Three-dot Emblem -->\n![FLIP Logo](./logo.svg)\n<!-- Hosted URL: ${origin}/logo.svg -->\n\n<!-- 2. Three-dot Emblem (alias) -->\n![FLIP Headlight](./headlight.svg)\n<!-- Hosted URL: ${origin}/headlight.svg -->\n\n<!-- 3. Solenoid Disc Favicon -->\n![FLIP Favicon](./favicon.svg)\n<!-- Hosted URL: ${origin}/favicon.svg -->`;
   }
 }
 

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 32" width="68" height="32" role="img" aria-label="FLIP three-dot emblem">
+  <rect x=".5" y=".5" width="67" height="31" rx="7" fill="#0b0e15" stroke="#2e384d"/>
+  <circle cx="16" cy="16" r="5.5" fill="#202736" stroke="#334155"/>
+  <circle cx="52" cy="16" r="5.5" fill="#202736" stroke="#334155"/>
+  <g transform="translate(34 16)">
+    <circle class="disc" r="6" fill="#fbbf24"/>
+    <path class="shine" d="M-3-3a4.2 4.2 0 0 1 6 0" fill="none" stroke="#fef3c7" stroke-linecap="round" opacity=".65"/>
+  </g>
+  <style>
+    .disc,.shine{animation:flip 8s ease-in-out infinite;transform-origin:0 0}
+    @keyframes flip{0%,86%,100%{transform:scaleY(1)}90%{transform:scaleY(.08)}94%{transform:scaleY(1)}}
+    @media(prefers-reduced-motion:reduce){.disc,.shine{animation:none}}
+  </style>
+</svg>
