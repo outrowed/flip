@@ -1,6 +1,6 @@
 # FLIP
 
-![FLIP Banner](https://flip.taruna.me/api/svg?text=%7Eflip%7E)
+![FLIP Banner](https://flip.taruna.me/api/svg?texts=%7Eflip%7E%2Cflip-dot%2Cletter%2Cimage%2Cplayground)
 
 <p align="center" style="font-size: 18px; font-weight: bold;">Flip-dot Letter & Image Playground</p>
 
@@ -35,11 +35,19 @@ You can reference the live API endpoint directly in any Markdown document or Git
 ![FLIP Banner](https://flip.taruna.me/api/svg?texts=hello+world,its+me,taruna,peace+out~)
 ```
 
+Which results in:
+
+> ![FLIP Banner](https://flip.taruna.me/api/svg?texts=hello+world,its+me,taruna,peace+out~)
+
 To render static non-animated frames, use the `/api/frame` endpoint:
 
 ```markdown
 ![Still Frame](https://flip.taruna.me/api/frame?texts=hello+world&frame=0)
 ```
+
+Which results in:
+
+> ![Still Frame](https://flip.taruna.me/api/frame?texts=hello+world&frame=0)
 
 ### Command Line Interface
 
