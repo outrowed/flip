@@ -93,6 +93,8 @@ export const PALETTES = {
     },
 };
 
+export type RenderTech = "compound-path" | "original";
+
 export const DEFAULT_ROTATING_TEXTS = [
     "hello world",
     "its me",
@@ -105,6 +107,7 @@ export const DEFAULT_SVG_OPTIONS = {
     text: DEFAULT_ROTATING_TEXTS[0],
     texts: DEFAULT_ROTATING_TEXTS,
     dotShape: "circle", // "circle" | "square"
+    renderTech: "compound-path" as RenderTech,
     italic: true,
     rows: 13,
     minCols: 86,
@@ -130,6 +133,7 @@ export type SvgOptions = Partial<Omit<typeof DEFAULT_SVG_OPTIONS, "palette">> & 
     wordSpacing?: number;
     padX?: number;
     padY?: number;
+    renderTech?: RenderTech;
 };
 
 function escapeXml(value: string) {
@@ -330,13 +334,12 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
 
     // Render flip-dots (circles or rounded square rects)
     const dotElements = [];
+    const compoundDots: string[] = [];
 
     for (let r = 0; r < totalRows; r += 1) {
         for (let c = 0; c < totalCols; c += 1) {
             const seq = dotPattern[r][c];
             const isZeroAll = seq === "0".repeat(numTexts);
-
-            // Diagonal sweep wave delay across board
             const normalizedSweep = (c + r * 1.35) / (totalCols + totalRows * 1.35);
             const jitter = (dotJitter(r, c) - 0.5) * 0.08;
             const delay = +(normalizedSweep * sweepMax + jitter).toFixed(3);
@@ -345,15 +348,13 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                 const cx = +(gridOriginX + c * config.cellPitch + dotCenterOffset).toFixed(2);
                 const cy = +(gridOriginY + r * config.cellPitch + dotCenterOffset).toFixed(2);
 
-                if (isZeroAll) {
-                    dotElements.push(
-                        `    <circle class="d z" cx="${cx}" cy="${cy}" r="${dotRadius}"/>`,
-                    );
+                if (isZeroAll && config.renderTech === "compound-path") {
+                    compoundDots.push(`M${(cx - dotRadius).toFixed(2)} ${cy}a${dotRadius} ${dotRadius} 0 1 0 ${dotRadius * 2} 0a${dotRadius} ${dotRadius} 0 1 0 ${-dotRadius * 2} 0`);
                 }
                 else {
-                    dotElements.push(
-                        `    <circle class="d z p-${seq}" cx="${cx}" cy="${cy}" r="${dotRadius}" style="animation-delay:${delay}s"/>`,
-                    );
+                    const cls = isZeroAll ? "d z" : `d z p-${seq}`;
+                    const style = isZeroAll ? "" : ` style="animation-delay:${delay}s"`;
+                    dotElements.push(`    <circle class="${cls}" cx="${cx}" cy="${cy}" r="${dotRadius}"${style}/>`);
                 }
             }
             else {
@@ -361,15 +362,14 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                 const y = +(gridOriginY + r * config.cellPitch + dotSquareOffset).toFixed(2);
                 const rx = config.dotRadius ?? 2;
 
-                if (isZeroAll) {
-                    dotElements.push(
-                        `    <rect class="d z" x="${x}" y="${y}" width="${config.dotSize}" height="${config.dotSize}" rx="${rx}"/>`,
-                    );
+                if (isZeroAll && config.renderTech === "compound-path") {
+                    const radius = Math.min(rx, config.dotSize / 2);
+                    compoundDots.push(`M${(x + radius).toFixed(2)} ${y}h${config.dotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${radius}v${config.dotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${radius}h${-config.dotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${-radius}v${-config.dotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${-radius}z`);
                 }
                 else {
-                    dotElements.push(
-                        `    <rect class="d z p-${seq}" x="${x}" y="${y}" width="${config.dotSize}" height="${config.dotSize}" rx="${rx}" style="animation-delay:${delay}s"/>`,
-                    );
+                    const cls = isZeroAll ? "d z" : `d z p-${seq}`;
+                    const style = isZeroAll ? "" : ` style="animation-delay:${delay}s"`;
+                    dotElements.push(`    <rect class="${cls}" x="${x}" y="${y}" width="${config.dotSize}" height="${config.dotSize}" rx="${rx}"${style}/>`);
                 }
             }
         }
@@ -381,6 +381,8 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         [14, height - 14],
         [width - 14, height - 14],
     ];
+
+    if (compoundDots.length > 0) dotElements.unshift(`    <path class="d z" d="${compoundDots.join("")}"/>`);
 
     const screwsSvg = screwPositions
         .map(
@@ -525,6 +527,8 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
     const dotElements = [];
     let activeCount = 0;
 
+    const compoundDots: string[] = [];
+
     for (let r = 0; r < totalRows; r += 1) {
         for (let c = 0; c < totalCols; c += 1) {
             const isLit = targetLayout.grid[r]?.[c];
@@ -536,17 +540,26 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
             if (isCircle) {
                 const cx = +(gridOriginX + c * config.cellPitch + dotCenterOffset).toFixed(2);
                 const cy = +(gridOriginY + r * config.cellPitch + dotCenterOffset).toFixed(2);
-                dotElements.push(
-                    `    <circle class="${cls}" cx="${cx}" cy="${cy}" r="${dotRadius}"/>`,
-                );
+
+                if (!isLit && config.renderTech === "compound-path") {
+                    compoundDots.push(`M${(cx - dotRadius).toFixed(2)} ${cy}a${dotRadius} ${dotRadius} 0 1 0 ${dotRadius * 2} 0a${dotRadius} ${dotRadius} 0 1 0 ${-dotRadius * 2} 0`);
+                }
+                else {
+                    dotElements.push(`    <circle class="${cls}" cx="${cx}" cy="${cy}" r="${dotRadius}"/>`);
+                }
             }
             else {
                 const x = +(gridOriginX + c * config.cellPitch + dotSquareOffset).toFixed(2);
                 const y = +(gridOriginY + r * config.cellPitch + dotSquareOffset).toFixed(2);
                 const rx = config.dotRadius ?? 2;
-                dotElements.push(
-                    `    <rect class="${cls}" x="${x}" y="${y}" width="${config.dotSize}" height="${config.dotSize}" rx="${rx}"/>`,
-                );
+
+                if (!isLit && config.renderTech === "compound-path") {
+                    const radius = Math.min(rx, config.dotSize / 2);
+                    compoundDots.push(`M${(x + radius).toFixed(2)} ${y}h${config.dotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${radius}v${config.dotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${radius}h${-config.dotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${-radius}v${-config.dotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${-radius}z`);
+                }
+                else {
+                    dotElements.push(`    <rect class="${cls}" x="${x}" y="${y}" width="${config.dotSize}" height="${config.dotSize}" rx="${rx}"/>`);
+                }
             }
         }
     }
@@ -557,6 +570,8 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
         [14, height - 14],
         [width - 14, height - 14],
     ];
+
+    if (compoundDots.length > 0) dotElements.unshift(`    <path class="d z" d="${compoundDots.join("")}"/>`);
 
     const screwsSvg = screwPositions
         .map(

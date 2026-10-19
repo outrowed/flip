@@ -18,6 +18,7 @@ interface SvgQuery {
     text?: string;
     texts?: string;
     shape?: string;
+    renderTech?: "original" | "compound-path";
     theme?: string;
     italic?: string;
     duration?: string;
@@ -31,6 +32,7 @@ interface GenerateBody {
     text?: string;
     texts?: string[];
     dotShape?: "square" | "circle";
+    renderTech?: "original" | "compound-path";
     theme?: "amber" | "emerald" | "white" | "cyan" | "crimson";
     italic?: boolean;
     durationPerText?: number;
@@ -96,6 +98,7 @@ export async function createFlipApp(options: {
                 texts: resolvedTexts,
                 frameIndex,
                 dotShape,
+                renderTech: params.renderTech,
                 theme,
                 italic,
                 cellPitch,
@@ -107,6 +110,7 @@ export async function createFlipApp(options: {
             const animResult = generateFlipDotSvg({
                 texts: resolvedTexts,
                 dotShape,
+                renderTech: params.renderTech,
                 theme,
                 italic,
                 durationPerText,
@@ -136,6 +140,7 @@ export async function createFlipApp(options: {
 
         const commonOptions = {
             texts,
+            renderTech: payload.renderTech,
             dotShape: (payload.dotShape === "square" ? "square" : "circle") as "square" | "circle",
             theme: (payload.theme || "amber") as "amber" | "emerald" | "white" | "cyan" | "crimson",
             italic: payload.italic !== false,

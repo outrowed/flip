@@ -1,4 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
+import { Footer } from "./Footer.js";
+import { Header } from "./Header.js";
 import {
     DEFAULT_ROTATING_TEXTS,
     generateFlipDotSvg,
@@ -17,6 +19,7 @@ const PRESETS: Record<string, string[]> = {
 export default function App() {
     const [rawText, setRawText] = useState(PRESETS.rotation.join("\n"));
     const [dotShape, setDotShape] = useState<"circle" | "square">("circle");
+    const [renderTech, setRenderTech] = useState<"compound-path" | "original">("compound-path");
     const [italic, setItalic] = useState(true);
     const [theme, setTheme] = useState<keyof typeof PALETTES>("amber");
     const [durationPerText, setDurationPerText] = useState(3.8);
@@ -54,13 +57,14 @@ export default function App() {
         return generateFlipDotSvg({
             texts,
             dotShape,
+            renderTech,
             italic,
             theme,
             durationPerText,
             cellPitch,
             dotSize,
         });
-    }, [texts, dotShape, italic, theme, durationPerText, cellPitch, dotSize]);
+    }, [texts, dotShape, renderTech, italic, theme, durationPerText, cellPitch, dotSize]);
 
     // Data URI for the live preview to guarantee CSS isolation
     const generatedDataUri = useMemo(() => {
@@ -72,12 +76,13 @@ export default function App() {
         return generateStillFlipDotFrames({
             texts,
             dotShape,
+            renderTech,
             italic,
             theme,
             cellPitch,
             dotSize,
         });
-    }, [texts, dotShape, italic, theme, cellPitch, dotSize]);
+    }, [texts, dotShape, renderTech, italic, theme, cellPitch, dotSize]);
 
     // Data URIs for still frames to prevent CSS class leakage
     const stillFrameDataUris = useMemo(() => {
@@ -105,6 +110,8 @@ export default function App() {
 
         if (dotShape !== "circle") params.set("shape", dotShape);
 
+        if (renderTech !== "compound-path") params.set("renderTech", renderTech);
+
         if (theme !== "amber") params.set("theme", theme);
 
         if (!italic) params.set("italic", "false");
@@ -114,7 +121,7 @@ export default function App() {
         if (cellPitch !== 14) params.set("pitch", String(cellPitch));
 
         return `${origin}/api/svg?${params.toString()}`;
-    }, [texts, dotShape, theme, italic, durationPerText, cellPitch]);
+    }, [texts, dotShape, renderTech, theme, italic, durationPerText, cellPitch]);
 
     const label = texts.join(" • ") || "FLIP Display";
 
@@ -171,6 +178,7 @@ export default function App() {
     const handleReset = useCallback(() => {
         setRawText(PRESETS.rotation.join("\n"));
         setDotShape("circle");
+        setRenderTech("compound-path");
         setItalic(true);
         setTheme("amber");
         setDurationPerText(3.8);
@@ -180,31 +188,7 @@ export default function App() {
 
     return (
         <div className="flex min-h-screen flex-col bg-[#080a0f] text-[#f1f5f9]">
-            {/* Header */}
-            <header className="sticky top-0 z-40 flex items-center justify-between border-b border-[#202736] bg-[#0f131a] px-6 py-4 sm:px-8">
-                <a href="/" className="flex items-center gap-3.5 no-underline" aria-label="FLIP home">
-                    <img src="/logo.svg" alt="" width={68} height={32} className="block shrink-0" />
-                    <div>
-                        <h1 className="text-xl font-bold tracking-tight text-[#f1f5f9]">FLIP</h1>
-                        <p className="text-xs text-[#94a3b8]">Flip-dot Letter &amp; Image Playground</p>
-                    </div>
-                </a>
-
-                <div className="flex items-center gap-3">
-                    <a href="#quick-start" className="text-xs font-semibold text-[#94a3b8] transition hover:text-[#f59e0b]">
-                        Guide
-                    </a>
-                    <button
-                        type="button"
-                        onClick={() => setBgTheme(b => b === "dark" ? "light" : "dark")}
-                        className="flex items-center gap-1.5 rounded-md border border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#94a3b8] transition hover:border-[#f59e0b] hover:text-[#f1f5f9]"
-                    >
-                        <span>🌓</span>
-                        {" "}
-                        Stage Theme
-                    </button>
-                </div>
-            </header>
+            <Header />
 
             {/* Main Grid */}
             <main className="grid flex-1 grid-cols-1 gap-6 p-4 sm:p-8 lg:grid-cols-[420px_1fr]">
@@ -292,6 +276,14 @@ export default function App() {
                                     </button>
                                 </div>
                             </div>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                            <label htmlFor="renderTech" className="text-xs font-medium text-[#94a3b8]">Render tech</label>
+                            <select id="renderTech" value={renderTech} onChange={e => setRenderTech(e.target.value as "compound-path" | "original")} className="rounded-lg border border-[#202736] bg-[#080a0f] px-3 py-2 text-xs text-[#f1f5f9]">
+                                <option value="compound-path">Compound path</option>
+                                <option value="original">Original</option>
+                            </select>
                         </div>
 
                         {/* Palette Swatches */}
@@ -606,12 +598,7 @@ export default function App() {
                 </section>
             </main>
 
-            {/* Footer */}
-            <footer className="border-t border-[#202736] bg-[#080a0f] px-8 py-5 text-center text-xs text-[#64748b]">
-                <strong className="text-[#94a3b8]">FLIP</strong>
-                {" "}
-                &mdash; Flip-dot Letter &amp; Image Playground.
-            </footer>
+            <Footer />
 
             {/* Toast Notification */}
             {toast && (
