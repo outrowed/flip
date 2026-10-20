@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { variants } from "./variants.ts";
-import { generateFlipDotSvg } from "../engine/svg.ts";
+import { generateFlipDotSvg } from "../../core/svg.ts";
 
 describe("SVG lab representation experiments", () => {
     for (const dotShape of ["circle", "square"]) {

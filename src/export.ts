@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import type { generateStillFlipDotFrames } from "./engine/svg.js";
+import type { generateStillFlipDotFrames } from "../core/svg.js";
 
 type Frame = ReturnType<typeof generateStillFlipDotFrames>[number];
 

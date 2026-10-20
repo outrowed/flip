@@ -1,4 +1,4 @@
-import { generateFlipDotSvg, generateStillFlipDotSvg, type SvgOptions } from "../engine/svg.ts";
+import { generateFlipDotSvg, generateStillFlipDotSvg, type SvgOptions } from "../../core/svg.ts";
 
 export type Variant = {
     id: string;

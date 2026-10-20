@@ -18,9 +18,10 @@ ENV NODE_ENV=production PORT=4329 HOST=0.0.0.0
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/dist-server ./dist-server
 COPY --from=build /app/assets ./assets
 
 USER 1002:1002
 EXPOSE 4329
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist-server/server.js"]

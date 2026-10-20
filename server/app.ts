@@ -9,10 +9,10 @@ import {
     generateFlipDotSvg,
     generateStillFlipDotFrames,
     generateStillFlipDotSvg,
-} from "../engine/svg.ts";
+} from "../core/svg.ts";
 
 const __dirname = resolve(fileURLToPath(import.meta.url), "..");
-const rootDir = resolve(__dirname, "../..");
+const rootDir = resolve(__dirname, "..");
 
 interface SvgQuery {
     text?: string;

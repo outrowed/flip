@@ -4,7 +4,7 @@ import {
     generateFlipDotSvg,
     generateStillFlipDotFrames,
     PALETTES,
-} from "../engine/svg.ts";
+} from "../../core/svg.ts";
 import { download, downloadFrames, png } from "../export.ts";
 
 const PRESETS: Record<string, string[]> = {

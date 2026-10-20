@@ -3,7 +3,7 @@ import {
     generateFlipDotSvg,
     generateStillFlipDotFrames,
     generateStillFlipDotSvg,
-} from "../src/engine/svg.ts";
+} from "../core/svg.ts";
 
 describe("animated flip-dot SVG generator", () => {
     it("generates a wide flip-dot SVG starting in zero-state and rotating through texts", () => {

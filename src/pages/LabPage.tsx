@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { SvgOptions } from "../engine/svg.ts";
+import type { SvgOptions } from "../../core/svg.ts";
 import { variants as buildVariants, type Variant } from "../lab/variants.ts";
 
 const DEFAULT_TEXTS = ["hello world", "its me", "taruna", "outrowed", "peace out~"];

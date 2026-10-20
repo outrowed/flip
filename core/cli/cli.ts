@@ -9,8 +9,8 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
-import { renderMatrixAscii } from "../engine/matrix.ts";
-import { generateFlipDotSvg } from "../engine/svg.ts";
+import { renderMatrixAscii } from "../matrix.ts";
+import { generateFlipDotSvg } from "../svg.ts";
 
 export function runCli(argv = process.argv.slice(2)) {
     const { values } = parseArgs({

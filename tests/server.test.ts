@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createFlipApp } from "../src/server/app.ts";
+import { createFlipApp } from "../server/app.ts";
 
 describe("render tech API", () => {
     it("uses compound by default and honors original for animated, still, and POST exports", async () => {

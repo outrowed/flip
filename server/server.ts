@@ -8,7 +8,7 @@ const __dirname = resolve(fileURLToPath(import.meta.url), "..");
 // In development, staticRoot is ../../dist.
 const staticDir = existsSync(resolve(__dirname, "index.html"))
     ? __dirname
-    : resolve(__dirname, "../../dist");
+    : resolve(__dirname, "../dist");
 
 const port = Number(process.env.PORT || 4329);
 const host = process.env.HOST || "0.0.0.0";
