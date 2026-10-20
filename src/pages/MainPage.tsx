@@ -23,7 +23,7 @@ export function MainPage() {
     const [durationPerText, setDurationPerText] = useState(3.8);
     const [cellPitch, setCellPitch] = useState(14);
     const [bgTheme, setBgTheme] = useState<"dark" | "light" | "grid">("dark");
-    const [activeTab, setActiveTab] = useState<"markdown" | "html" | "api" | "brand">("markdown");
+    const [activeTab, setActiveTab] = useState<"markdown" | "html" | "api" | "embed">("markdown");
     const [toast, setToast] = useState<string | null>(null);
     const [isZipping, setIsZipping] = useState(false);
     const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -122,36 +122,37 @@ export function MainPage() {
     }, [texts, dotShape, renderTech, theme, italic, durationPerText, cellPitch]);
 
     const label = texts.join(" • ") || "FLIP Display";
+    const liveMarkdownSnippet = `![${label}](${queryUrl})`;
 
     const snippetText = useMemo(() => {
         if (activeTab === "markdown") {
-            return `![${label}](./flip.svg)\n\n<!-- Or via live API endpoint: -->\n![${label}](${queryUrl})`;
+            return `<!-- Live animated banner from API -->\n${liveMarkdownSnippet}\n\n<!-- Or standalone local file after download -->\n![${label}](./flip.svg)`;
         }
 
         if (activeTab === "html") {
-            return `<p align="center">\n  <img src="./flip.svg" width="100%" alt="${label}" />\n</p>`;
+            return `<!-- Responsive image container using the live API -->\n<p align="center">\n  <a href="${queryUrl}">\n    <img src="${queryUrl}" width="100%" alt="${label}" />\n  </a>\n</p>`;
         }
 
         if (activeTab === "api") {
-            return `# Direct SVG URL (returns image/svg+xml):\n${queryUrl}\n\n# Markdown direct link:\n![FLIP Banner](${queryUrl})`;
+            return `# Direct API endpoint (Content-Type: image/svg+xml)\nGET ${queryUrl}\n\n# Single still frame endpoint\nGET ${queryUrl.replace("/api/svg?", "/api/frame?")}&frame=0`;
         }
 
-        const origin = typeof window !== "undefined" ? window.location.origin : "";
-        return `<!-- FLIP Brand Assets -->\n\n<!-- 1. Minimal Three-dot Emblem -->\n![FLIP Logo](./logo.svg)\n<!-- Hosted URL: ${origin}/logo.svg -->\n\n<!-- 2. Three-dot Emblem (alias) -->\n![FLIP Headlight](./headlight.svg)\n<!-- Hosted URL: ${origin}/headlight.svg -->\n\n<!-- 3. Solenoid Disc Favicon -->\n![FLIP Favicon](./favicon.svg)\n<!-- Hosted URL: ${origin}/favicon.svg -->`;
-    }, [activeTab, label, queryUrl]);
+        return `<!-- React / Next.js / Astro Component Example -->\n<img\n  src="${queryUrl}"\n  alt="${label}"\n  className="w-full h-auto drop-shadow-md"\n  loading="lazy"\n/>`;
+    }, [activeTab, label, queryUrl, liveMarkdownSnippet]);
 
     const handleCopy = useCallback(async (text: string, msg: string) => {
         await navigator.clipboard.writeText(text);
         showToast(msg);
     }, [showToast]);
 
-    const handleDownloadAllZip = useCallback(async () => {
+    const handleDownloadAllZip = useCallback(async (format: "all" | "svg" | "png" = "all") => {
         if (isZipping || stillFrames.length === 0) return;
 
         try {
             setIsZipping(true);
-            await downloadFrames(stillFrames);
-            showToast(`Downloaded all ${stillFrames.length} frames as ZIP!`);
+            await downloadFrames(stillFrames, format);
+            const label = format === "svg" ? "SVG frames" : format === "png" ? "PNG frames" : "all frames";
+            showToast(`Downloaded ${label} as ZIP!`);
         }
         catch (err) {
             showToast(`ZIP export failed: ${(err as Error).message}`);
@@ -317,20 +318,27 @@ export function MainPage() {
                             {(Object.keys(PALETTES) as Array<keyof typeof PALETTES>).map((pKey) => {
                                 const pal = PALETTES[pKey];
                                 const isActive = theme === pKey;
-
                                 return (
                                     <button
                                         key={pKey}
                                         type="button"
                                         onClick={() => setTheme(pKey)}
-                                        className={`flex flex-col items-center gap-1.5 rounded-lg border p-2 transition ${isActive ? "border-[#f59e0b] bg-[#161c26]" : "border-[#202736] bg-[#080a0f] hover:border-[#64748b]"}`}
+                                        className={`group flex flex-col items-center gap-1.5 rounded-lg border p-2 transition ${
+                                            isActive
+                                                ? "border-[#f59e0b] bg-[#161c26]"
+                                                : "border-[#202736] bg-[#080a0f] hover:border-[#38455d]"
+                                        }`}
                                         title={pal.name}
                                     >
-                                        <span
-                                            className="h-4 w-4 rounded-full shadow-inner"
-                                            style={{ backgroundColor: pal.activeDot }}
+                                        <div
+                                            className="h-5 w-5 rounded-full border shadow-inner transition group-hover:scale-110"
+                                            style={{
+                                                backgroundColor: pal.activeDot,
+                                                borderColor: pal.activeDotStroke,
+                                                boxShadow: `0 0 6px ${pal.activeDotBright}66`,
+                                            }}
                                         />
-                                        <span className="text-[10px] font-semibold text-[#94a3b8] capitalize">
+                                        <span className="text-[10px] font-medium capitalize text-[#94a3b8] group-hover:text-[#f1f5f9]">
                                             {pKey}
                                         </span>
                                     </button>
@@ -339,31 +347,31 @@ export function MainPage() {
                         </div>
                     </div>
 
-                    {/* Timing Sliders */}
+                    {/* Timing & Pitch Sliders */}
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-2">
                             <div className="flex items-center justify-between">
                                 <label htmlFor="durationInput" className="text-xs font-medium text-[#94a3b8]">
-                                    Hold / Frame
+                                    Hold Duration
                                 </label>
                                 <span className="font-mono text-xs text-[#f59e0b]">
-                                    {durationPerText.toFixed(1)}
+                                    {durationPerText}
                                     s
                                 </span>
                             </div>
                             <input
                                 id="durationInput"
                                 type="range"
-                                min="1.5"
-                                max="7.0"
-                                step="0.1"
+                                min="1.0"
+                                max="10.0"
+                                step="0.2"
                                 value={durationPerText}
                                 onChange={e => setDurationPerText(Number.parseFloat(e.target.value))}
                                 className="accent-[#f59e0b]"
                             />
                         </div>
 
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-2">
                             <div className="flex items-center justify-between">
                                 <label htmlFor="pitchInput" className="text-xs font-medium text-[#94a3b8]">
                                     Dot Pitch
@@ -377,7 +385,7 @@ export function MainPage() {
                                 id="pitchInput"
                                 type="range"
                                 min="10"
-                                max="18"
+                                max="22"
                                 step="1"
                                 value={cellPitch}
                                 onChange={e => setCellPitch(Number.parseInt(e.target.value, 10))}
@@ -386,37 +394,24 @@ export function MainPage() {
                         </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex items-center gap-3 pt-2">
-                        <button
-                            type="button"
-                            onClick={() => showToast("Display refreshed")}
-                            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#f59e0b] py-2.5 text-xs font-bold text-[#080a0f] shadow-lg shadow-[#f59e0b]/20 transition hover:bg-[#fbbf24]"
-                        >
-                            <span>
-                                ⚡
-                            </span>
-                            {" "}
-                            Update Display
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleReset}
-                            className="rounded-lg border border-[#202736] bg-[#161c26] px-4 py-2.5 text-xs font-semibold text-[#94a3b8] transition hover:border-[#64748b] hover:text-[#f1f5f9]"
-                        >
-                            Reset
-                        </button>
-                    </div>
+                    {/* Reset Button */}
+                    <button
+                        type="button"
+                        onClick={handleReset}
+                        className="rounded-lg border border-[#202736] bg-[#161c26] py-2 text-xs font-semibold text-[#94a3b8] transition hover:border-[#f59e0b] hover:text-[#f1f5f9]"
+                    >
+                        Reset Configuration
+                    </button>
                 </form>
             </section>
 
-            {/* Right Stage & Export Section */}
-            <section className="flex flex-col gap-6">
+            {/* Stage & Preview Section */}
+            <section className="flex flex-col gap-6 overflow-hidden">
                 <div className="flex flex-col overflow-hidden rounded-xl border border-[#202736] bg-[#0f131a] shadow-xl">
-                    {/* Stage Header / Telemetry */}
-                    <div className="flex flex-wrap items-center justify-between border-b border-[#202736] px-5 py-3 gap-3">
-                        <div className="flex items-center gap-2 font-mono text-xs text-[#94a3b8]">
-                            <span className="h-2 w-2 rounded-full bg-[#10b981] shadow-[0_0_8px_rgba(16,185,129,0.7)] animate-pulse" />
+                    {/* Stage Header / Telemetry Bar */}
+                    <div className="flex flex-wrap items-center justify-between border-b border-[#202736] bg-[#0a0d14] px-5 py-3 gap-2">
+                        <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-[#94a3b8]">
+                            <span className="flex h-2 w-2 rounded-full bg-[#10b981] animate-pulse" />
                             <span>
                                 {generated.cols}
                                 {" "}
@@ -488,56 +483,57 @@ export function MainPage() {
                         />
                     </div>
 
-                    {/* Export Bar */}
-                    <div className="flex flex-wrap items-center justify-between border-t border-[#202736] bg-[#0f131a] px-5 py-3 gap-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                            <button
-                                type="button"
-                                onClick={() => handleCopy(`![${label}](./flip.svg)`, "Markdown snippet copied!")}
-                                className="flex items-center gap-1.5 rounded border border-[#f59e0b]/40 bg-[#f59e0b]/10 px-3 py-1.5 text-xs font-semibold text-[#f59e0b] transition hover:bg-[#f59e0b]/20"
-                            >
-                                <span>
-                                    📋
+                    {/* Export Bar with Grouped Action Buttons */}
+                    <div className="flex flex-wrap items-center justify-between border-t border-[#202736] bg-[#0f131a] px-5 py-3 gap-3">
+                        <div className="flex flex-wrap items-center gap-3">
+                            {/* Group 1: SVG (Legend: SVG | Download Animated | Copy Raw) */}
+                            <div className="inline-flex rounded-lg border border-[#202736] bg-[#080a0f] p-0.5 shadow-sm">
+                                <span className="inline-flex items-center rounded-l-md bg-[#f59e0b] px-3 py-1.5 text-xs font-bold text-[#080a0f] tracking-wide select-none">
+                                    SVG
                                 </span>
-                                {" "}
-                                Copy Markdown
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleCopy(generated.svg, "Raw SVG markup copied!")}
-                                className="flex items-center gap-1.5 rounded border border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#94a3b8] transition hover:border-[#64748b] hover:text-[#f1f5f9]"
-                            >
-                                <span>
-                                    📄
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        download(generated.svg, "flip.svg", "image/svg+xml");
+                                        showToast("Downloaded flip.svg!");
+                                    }}
+                                    className="border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
+                                    title="Download standalone animated SVG file"
+                                >
+                                    Download Animated
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleCopy(generated.svg, "Raw SVG markup copied!")}
+                                    className="rounded-r-md border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
+                                    title="Copy raw <svg> markup to clipboard"
+                                >
+                                    Copy Raw
+                                </button>
+                            </div>
+
+                            {/* Group 2: Live API (Legend: Live API | Copy URL | Copy Markdown URL) */}
+                            <div className="inline-flex rounded-lg border border-[#202736] bg-[#080a0f] p-0.5 shadow-sm">
+                                <span className="inline-flex items-center rounded-l-md bg-[#38bdf8] px-3 py-1.5 text-xs font-bold text-[#080a0f] tracking-wide select-none">
+                                    Live API
                                 </span>
-                                {" "}
-                                Copy Raw SVG
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    download(generated.svg, "flip.svg", "image/svg+xml");
-                                    showToast("Downloaded flip.svg!");
-                                }}
-                                className="flex items-center gap-1.5 rounded border border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#94a3b8] transition hover:border-[#64748b] hover:text-[#f1f5f9]"
-                            >
-                                <span>
-                                    💾
-                                </span>
-                                {" "}
-                                Download Animated SVG
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleCopy(queryUrl, "Direct API URL copied!")}
-                                className="flex items-center gap-1.5 rounded border border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#94a3b8] transition hover:border-[#64748b] hover:text-[#f1f5f9]"
-                            >
-                                <span>
-                                    🔗
-                                </span>
-                                {" "}
-                                Copy Direct URL
-                            </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleCopy(queryUrl, "Direct API URL copied!")}
+                                    className="border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
+                                    title="Copy raw live API endpoint URL"
+                                >
+                                    Copy URL
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleCopy(liveMarkdownSnippet, "Live API Markdown copied!")}
+                                    className="rounded-r-md border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
+                                    title="Copy Markdown code pointing to live API endpoint"
+                                >
+                                    Copy Markdown URL
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -552,18 +548,38 @@ export function MainPage() {
                                     Settled state per phrase — clean standalone vector &amp; PNG downloads without animation
                                 </p>
                             </div>
-                            <button
-                                type="button"
-                                onClick={handleDownloadAllZip}
-                                disabled={isZipping}
-                                className="flex items-center gap-1.5 rounded border border-[#f59e0b] bg-[#f59e0b]/10 px-3 py-1.5 text-xs font-semibold text-[#f59e0b] transition hover:bg-[#f59e0b]/20"
-                            >
-                                <span>
-                                    📦
-                                </span>
-                                {" "}
-                                {isZipping ? "Zipping..." : "Download All (.ZIP)"}
-                            </button>
+
+                            {/* Grouped Still Frame Batch Download: ( Download ZIP | SVG | PNG ) */}
+                            <div className="inline-flex rounded-lg border border-[#202736] bg-[#080a0f] p-0.5 shadow-sm">
+                                <button
+                                    type="button"
+                                    onClick={() => handleDownloadAllZip("all")}
+                                    disabled={isZipping}
+                                    className="inline-flex items-center gap-1.5 rounded-l-md bg-[#f59e0b] px-3 py-1.5 text-xs font-bold text-[#080a0f] tracking-wide transition hover:bg-[#fbbf24] disabled:opacity-50"
+                                    title="Download all frames with both SVG and PNG in a ZIP"
+                                >
+                                    <span>📦</span>
+                                    {isZipping ? "Zipping..." : "Download ZIP"}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleDownloadAllZip("svg")}
+                                    disabled={isZipping}
+                                    className="border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white disabled:opacity-50"
+                                    title="Download ZIP containing only SVG vector frames"
+                                >
+                                    SVG
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleDownloadAllZip("png")}
+                                    disabled={isZipping}
+                                    className="rounded-r-md border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white disabled:opacity-50"
+                                    title="Download ZIP containing only high-res PNG raster frames"
+                                >
+                                    PNG
+                                </button>
+                            </div>
                         </div>
 
                         {/* Frame Cards Grid */}
@@ -590,7 +606,6 @@ export function MainPage() {
                                                 {frame.text}
                                                 &quot;
                                             </span>
-                                            {/* Omits duplicative width x height; shows unique metric */}
                                             <span className="font-mono text-[11px] text-[#64748b]">
                                                 {frame.activeCount}
                                                 {" "}
@@ -625,19 +640,38 @@ export function MainPage() {
                         </div>
                     </div>
 
-                    {/* Integration Snippets Tabs */}
+                    {/* Integration Snippets Tabs (Redesigned for end users) */}
                     <div id="quick-start" className="flex flex-col gap-3 border-t border-[#202736] bg-[#080a0f] p-5">
-                        <div className="flex items-center gap-2 border-b border-[#202736] pb-2">
-                            {(["markdown", "html", "api", "brand"] as const).map(tab => (
-                                <button
-                                    key={tab}
-                                    type="button"
-                                    onClick={() => setActiveTab(tab)}
-                                    className={`px-2.5 py-1 text-xs font-semibold capitalize transition border-b-2 -mb-[9px] ${activeTab === tab ? "border-[#f59e0b] text-[#f59e0b]" : "border-transparent text-[#64748b] hover:text-[#94a3b8]"}`}
-                                >
-                                    {tab === "api" ? "Live API" : tab === "brand" ? "Brand Assets" : tab}
-                                </button>
-                            ))}
+                        <div className="flex items-center justify-between border-b border-[#202736] pb-2">
+                            <div className="flex items-center gap-2">
+                                {(["markdown", "html", "api", "embed"] as const).map(tab => (
+                                    <button
+                                        key={tab}
+                                        type="button"
+                                        onClick={() => setActiveTab(tab)}
+                                        className={`px-2.5 py-1 text-xs font-semibold capitalize transition border-b-2 -mb-[9px] ${
+                                            activeTab === tab
+                                                ? "border-[#f59e0b] text-[#f59e0b]"
+                                                : "border-transparent text-[#64748b] hover:text-[#94a3b8]"
+                                        }`}
+                                    >
+                                        {tab === "markdown"
+                                            ? "Markdown"
+                                            : tab === "html"
+                                                ? "HTML <img>"
+                                                : tab === "api"
+                                                    ? "API Endpoint"
+                                                    : "Frontend Embed"}
+                                    </button>
+                                ))}
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => handleCopy(snippetText, "Snippet copied to clipboard!")}
+                                className="rounded border border-[#202736] bg-[#161c26] px-2.5 py-1 text-[11px] font-medium text-[#94a3b8] transition hover:border-[#f59e0b] hover:text-[#f1f5f9]"
+                            >
+                                Copy Snippet
+                            </button>
                         </div>
 
                         <pre className="overflow-x-auto rounded-lg border border-[#202736] bg-[#0f131a] p-3 font-mono text-xs text-[#cbd5e1] whitespace-pre-wrap break-all">
