@@ -1,0 +1,6 @@
+<!-- Variant: path -->
+<!-- Inactive dots packed into a single compound path element. -->
+<g id="flip-dot-matrix">
+  <path class="d z" d="{{compoundPath}}"/>
+{{animatedDots}}
+</g>

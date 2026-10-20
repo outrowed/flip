@@ -1,0 +1,5 @@
+{
+    "id": "pattern",
+    "title": "Inactive dots \u2192 clipped pattern",
+    "note": "Repeating tile clipped only to permanently inactive cells. Check antialiasing and tile seams."
+}

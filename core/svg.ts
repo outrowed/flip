@@ -10,88 +10,8 @@
 
 import { layoutFlipDotMatrix } from "./matrix.ts";
 
-export const PALETTES = {
-    amber: {
-        name: "Amber Solenoid (Classic)",
-        casingOuter: "#090b10",
-        casingInner: "#10141d",
-        casingStroke: "#232a38",
-        recessBg: "#0b0e15",
-        zeroDot: "#161b26",
-        zeroDotStroke: "#202736",
-        zeroHighlight: "#263042",
-        flipFlash: "#fef08a",
-        activeDot: "#f59e0b",
-        activeDotBright: "#fbbf24",
-        activeDotStroke: "#fcd34d",
-        screwFill: "#1a202c",
-        screwSlot: "#090b10",
-    },
-    emerald: {
-        name: "Emerald Green (Transit)",
-        casingOuter: "#06120d",
-        casingInner: "#0a1f17",
-        casingStroke: "#1a3a2d",
-        recessBg: "#07140e",
-        zeroDot: "#11261d",
-        zeroDotStroke: "#1b3c2e",
-        zeroHighlight: "#23533f",
-        flipFlash: "#a7f3d0",
-        activeDot: "#059669",
-        activeDotBright: "#34d399",
-        activeDotStroke: "#6ee7b7",
-        screwFill: "#142c22",
-        screwSlot: "#05130d",
-    },
-    white: {
-        name: "Monochrome Split-Flap",
-        casingOuter: "#0a0a0c",
-        casingInner: "#141418",
-        casingStroke: "#272730",
-        recessBg: "#0d0d10",
-        zeroDot: "#1c1c24",
-        zeroDotStroke: "#2c2c38",
-        zeroHighlight: "#3f3f50",
-        flipFlash: "#ffffff",
-        activeDot: "#cbd5e1",
-        activeDotBright: "#f8fafc",
-        activeDotStroke: "#ffffff",
-        screwFill: "#22222c",
-        screwSlot: "#0a0a0e",
-    },
-    cyan: {
-        name: "Cyber Cyan (Neon)",
-        casingOuter: "#050f16",
-        casingInner: "#0b1b26",
-        casingStroke: "#15364b",
-        recessBg: "#07131b",
-        zeroDot: "#112433",
-        zeroDotStroke: "#1a3950",
-        zeroHighlight: "#23506e",
-        flipFlash: "#cffafe",
-        activeDot: "#0891b2",
-        activeDotBright: "#22d3ee",
-        activeDotStroke: "#67e8f9",
-        screwFill: "#142d3e",
-        screwSlot: "#050f16",
-    },
-    crimson: {
-        name: "Crimson Hazard",
-        casingOuter: "#140608",
-        casingInner: "#220b0e",
-        casingStroke: "#3d151a",
-        recessBg: "#170709",
-        zeroDot: "#2a1014",
-        zeroDotStroke: "#42181e",
-        zeroHighlight: "#5c212a",
-        flipFlash: "#fee2e2",
-        activeDot: "#dc2626",
-        activeDotBright: "#f87171",
-        activeDotStroke: "#fca5a5",
-        screwFill: "#2e1216",
-        screwSlot: "#120507",
-    },
-};
+export { PALETTES } from "./resources.ts";
+import { PALETTES, type PaletteDef, getLoadedBoardTemplate } from "./resources.ts";
 
 export type RenderTech = "compound-path" | "original";
 
@@ -122,10 +42,9 @@ export const DEFAULT_SVG_OPTIONS = {
     flipDuration: 0.35,
     sweepMax: 0.85,
     theme: "amber",
-    palette: PALETTES.amber,
 };
 
-export type Palette = typeof PALETTES.amber;
+export type Palette = PaletteDef;
 export type SvgOptions = Partial<Omit<typeof DEFAULT_SVG_OPTIONS, "palette">> & {
     palette?: Partial<Palette>;
     frameIndex?: number;
@@ -150,6 +69,26 @@ function dotJitter(row: number, col: number) {
     return seed - Math.floor(seed);
 }
 
+function renderBoardTemplate(values: Record<string, string | number | PaletteDef | Partial<PaletteDef>>): string {
+    const template = getLoadedBoardTemplate();
+    const palette = values.palette as PaletteDef;
+    const replacements: Record<string, string> = {};
+
+    for (const [key, value] of Object.entries(values)) {
+        if (key !== "palette") replacements[key] = String(value);
+    }
+
+    for (const [key, value] of Object.entries(palette)) {
+        replacements[`palette.${key}`] = String(value);
+    }
+
+    return template.replace(/\{\{([^}]+)\}\}/g, (_match, key: string) => {
+        if (!(key in replacements)) throw new Error(`Missing board template value: ${key}`);
+
+        return replacements[key];
+    });
+}
+
 /**
  * Builds the complete animated SVG document string and layout metadata.
  */
@@ -157,11 +96,15 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const config = {
         ...DEFAULT_SVG_OPTIONS,
         ...Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined && value !== null)),
-        palette: DEFAULT_SVG_OPTIONS.palette,
     } as typeof DEFAULT_SVG_OPTIONS & SvgOptions;
 
     // Resolve palette preset or custom overrides
-    const basePalette = PALETTES[config.theme as keyof typeof PALETTES] || PALETTES.amber;
+    const basePalette = PALETTES[config.theme];
+
+    if (!basePalette) {
+        throw new Error(`Unknown palette: ${config.theme}`);
+    }
+
     config.palette = {
         ...basePalette,
         ...(options.palette || {}),
@@ -396,24 +339,13 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
 
     const safeLabel = escapeXml(textList.join(" &#8226; "));
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="100%" role="img" aria-label="${safeLabel}">
-  <title>${safeLabel}</title>
-  <defs>
-    <linearGradient id="casing-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#141923"/>
-      <stop offset="100%" stop-color="${palette.casingOuter}"/>
-    </linearGradient>
-    <linearGradient id="active-dot-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="${palette.flipFlash}"/>
-      <stop offset="28%" stop-color="${palette.activeDotBright}"/>
-      <stop offset="100%" stop-color="${palette.activeDot}"/>
-    </linearGradient>
-    <filter id="dot-glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="0" stdDeviation="1.35" flood-color="${palette.activeDotBright}" flood-opacity="0.45"/>
-    </filter>
-  </defs>
-  <style>
-    .d {
+    const svg = renderBoardTemplate({
+        width,
+        height,
+        safeLabel,
+        palette,
+        defsExtra: "",
+        styles: `    .d {
       transform-box: fill-box;
       transform-origin: center;
       stroke-width: 0.75px;
@@ -430,24 +362,16 @@ ${keyframes.join("\n")}
         stroke: ${palette.activeDotStroke};
         filter: url(#dot-glow);
       }
-    }
-  </style>
-
-  <!-- Outer anodized aluminum frame -->
-  <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="12" fill="url(#casing-grad)" stroke="${palette.casingStroke}" stroke-width="2"/>
-
-  <!-- Inner recessed bezel -->
-  <rect x="${gridOriginX - 8}" y="${gridOriginY - 8}" width="${gridWidth + 16}" height="${gridHeight + 16}" rx="6" fill="${palette.recessBg}" stroke="#1b2230" stroke-width="1.5"/>
-
-  <!-- Corner mounting screws -->
-${screwsSvg}
-
-  <!-- Flip-dot array -->
-  <g id="flip-dot-matrix">
-${dotElements.join("\n")}
-  </g>
-</svg>
-`;
+    }`,
+        frameWidth: width - 2,
+        frameHeight: height - 2,
+        recessX: gridOriginX - 8,
+        recessY: gridOriginY - 8,
+        recessWidth: gridWidth + 16,
+        recessHeight: gridHeight + 16,
+        screwsSvg,
+        dotElements: dotElements.join("\n"),
+    });
 
     return {
         svg,
@@ -468,11 +392,15 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
     const config = {
         ...DEFAULT_SVG_OPTIONS,
         ...Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined && value !== null)),
-        palette: DEFAULT_SVG_OPTIONS.palette,
     } as typeof DEFAULT_SVG_OPTIONS & SvgOptions;
 
     // Resolve palette preset or custom overrides
-    const basePalette = PALETTES[config.theme as keyof typeof PALETTES] || PALETTES.amber;
+    const basePalette = PALETTES[config.theme];
+
+    if (!basePalette) {
+        throw new Error(`Unknown palette: ${config.theme}`);
+    }
+
     config.palette = {
         ...basePalette,
         ...(options.palette || {}),
@@ -585,24 +513,13 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
 
     const safeLabel = escapeXml(currentText);
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="100%" role="img" aria-label="${safeLabel}">
-  <title>${safeLabel}</title>
-  <defs>
-    <linearGradient id="casing-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#141923"/>
-      <stop offset="100%" stop-color="${palette.casingOuter}"/>
-    </linearGradient>
-    <linearGradient id="active-dot-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="${palette.flipFlash}"/>
-      <stop offset="28%" stop-color="${palette.activeDotBright}"/>
-      <stop offset="100%" stop-color="${palette.activeDot}"/>
-    </linearGradient>
-    <filter id="dot-glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="0" stdDeviation="1.35" flood-color="${palette.activeDotBright}" flood-opacity="0.45"/>
-    </filter>
-  </defs>
-  <style>
-    .d {
+    const svg = renderBoardTemplate({
+        width,
+        height,
+        safeLabel,
+        palette,
+        defsExtra: "",
+        styles: `    .d {
       transform-box: fill-box;
       transform-origin: center;
       stroke-width: 0.75px;
@@ -615,24 +532,16 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
       fill: url(#active-dot-grad);
       stroke: ${palette.activeDotStroke};
       filter: url(#dot-glow);
-    }
-  </style>
-
-  <!-- Outer anodized aluminum frame -->
-  <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="12" fill="url(#casing-grad)" stroke="${palette.casingStroke}" stroke-width="2"/>
-
-  <!-- Inner recessed bezel -->
-  <rect x="${gridOriginX - 8}" y="${gridOriginY - 8}" width="${gridWidth + 16}" height="${gridHeight + 16}" rx="6" fill="${palette.recessBg}" stroke="#1b2230" stroke-width="1.5"/>
-
-  <!-- Corner mounting screws -->
-${screwsSvg}
-
-  <!-- Flip-dot array -->
-  <g id="flip-dot-matrix">
-${dotElements.join("\n")}
-  </g>
-</svg>
-`;
+    }`,
+        frameWidth: width - 2,
+        frameHeight: height - 2,
+        recessX: gridOriginX - 8,
+        recessY: gridOriginY - 8,
+        recessWidth: gridWidth + 16,
+        recessHeight: gridHeight + 16,
+        screwsSvg,
+        dotElements: dotElements.join("\n"),
+    });
 
     return {
         svg,

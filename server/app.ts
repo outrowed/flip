@@ -10,6 +10,7 @@ import {
     generateStillFlipDotFrames,
     generateStillFlipDotSvg,
 } from "../core/svg.ts";
+import { loadResourcesAsync } from "../core/resources-node.ts";
 
 const __dirname = resolve(fileURLToPath(import.meta.url), "..");
 const rootDir = resolve(__dirname, "..");
@@ -46,6 +47,7 @@ export async function createFlipApp(options: {
     staticRoot?: string;
     logger?: boolean;
 } = {}): Promise<FastifyInstance> {
+    await loadResourcesAsync();
     const app = Fastify({ logger: options.logger ?? false });
     const staticRoot = options.staticRoot ?? resolve(rootDir, "dist");
 
@@ -172,6 +174,17 @@ export async function createFlipApp(options: {
             })),
         });
     });
+
+    // Serve dynamic static assets from static/ if it exists
+    const staticDir = resolve(rootDir, "static");
+
+    if (existsSync(staticDir)) {
+        await app.register(fastifyStatic, {
+            root: staticDir,
+            prefix: "/static/",
+            decorateReply: false,
+        });
+    }
 
     // Static SPA serving when staticRoot exists
     if (existsSync(staticRoot)) {

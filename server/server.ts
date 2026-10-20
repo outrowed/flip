@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createFlipApp } from "./app.ts";
+import { loadResourcesAsync } from "../core/resources-node.ts";
 
 const __dirname = resolve(fileURLToPath(import.meta.url), "..");
 // When bundled into dist/server.js, staticRoot is __dirname (/app/dist).
@@ -9,6 +10,8 @@ const __dirname = resolve(fileURLToPath(import.meta.url), "..");
 const staticDir = existsSync(resolve(__dirname, "index.html"))
     ? __dirname
     : resolve(__dirname, "../dist");
+
+await loadResourcesAsync();
 
 const port = Number(process.env.PORT || 4329);
 const host = process.env.HOST || "0.0.0.0";

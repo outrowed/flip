@@ -1,0 +1,5 @@
+{
+    "id": "wrapper",
+    "title": "Filter / motion separation",
+    "note": "Experimental: parent transform, child original filter. Glow can change because operation order changes."
+}

@@ -1,0 +1,56 @@
+[
+    {
+        "id": "original",
+        "title": "Original",
+        "note": "Unmodified production output. Reference for all comparisons.",
+        "template": "variants/original.svg"
+    },
+    {
+        "id": "original-halo",
+        "title": "Original + Technique A: radial halo",
+        "note": "Replaces per-dot drop shadows with animated radial-gradient halos. No blur filters; compare glow fidelity and phone performance.",
+        "template": "variants/original-halo.svg"
+    },
+    {
+        "id": "path",
+        "title": "Inactive dots \u2192 compound path",
+        "note": "Same geometry and stroke, one element for all permanently inactive dots.",
+        "template": "variants/path.svg"
+    },
+    {
+        "id": "path-halo",
+        "title": "Compound path + Technique A",
+        "note": "Combines inactive-dot compound path with radial gradient halos on animated dots.",
+        "template": "variants/path-halo.svg"
+    },
+    {
+        "id": "pattern",
+        "title": "Inactive dots \u2192 clipped pattern",
+        "note": "Repeating tile clipped only to permanently inactive cells. Check antialiasing and tile seams.",
+        "template": "variants/pattern.svg"
+    },
+    {
+        "id": "use",
+        "title": "Reusable dot geometry",
+        "note": "Shared geometry via <use>; same per-instance effects. Browser caching is NOT guaranteed.",
+        "template": "variants/use.svg"
+    },
+    {
+        "id": "combined",
+        "title": "Compound path + reusable geometry",
+        "note": "Combines the static path and shared animated geometry experiments.",
+        "template": "variants/combined.svg"
+    },
+    {
+        "id": "wrapper",
+        "title": "Filter / motion separation",
+        "note": "Experimental: parent transform, child original filter. Glow can change because operation order changes.",
+        "template": "variants/wrapper.svg"
+    },
+    {
+        "id": "holds",
+        "title": "Settled layers during holds",
+        "note": "Experimental display swaps after all flips settle. Hidden animations may still cost CPU; check boundary flashes.",
+        "template": "variants/holds.svg"
+    }
+]

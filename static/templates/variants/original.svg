@@ -1,0 +1,28 @@
+<!-- Variant: original -->
+<!-- Unmodified production output. Reference for all comparisons. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{width}} {{height}}" width="100%" role="img" aria-label="{{safeLabel}}">
+  <title>{{safeLabel}}</title>
+  <defs>
+    <linearGradient id="casing-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141923"/>
+      <stop offset="100%" stop-color="{{palette.casingOuter}}"/>
+    </linearGradient>
+    <linearGradient id="active-dot-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="{{palette.flipFlash}}"/>
+      <stop offset="28%" stop-color="{{palette.activeDotBright}}"/>
+      <stop offset="100%" stop-color="{{palette.activeDot}}"/>
+    </linearGradient>
+    <filter id="dot-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="1.35" flood-color="{{palette.activeDotBright}}" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <style>
+{{styles}}
+  </style>
+  <rect x="1" y="1" width="{{frameWidth}}" height="{{frameHeight}}" rx="12" fill="url(#casing-grad)" stroke="{{palette.casingStroke}}" stroke-width="2"/>
+  <rect x="{{recessX}}" y="{{recessY}}" width="{{recessWidth}}" height="{{recessHeight}}" rx="6" fill="{{palette.recessBg}}" stroke="#1b2230" stroke-width="1.5"/>
+{{screwsSvg}}
+  <g id="flip-dot-matrix">
+{{dotElements}}
+  </g>
+</svg>

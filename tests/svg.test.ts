@@ -1,9 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import {
     generateFlipDotSvg,
     generateStillFlipDotFrames,
     generateStillFlipDotSvg,
 } from "../core/svg.ts";
+import { loadResourcesSync } from "../core/resources-node.ts";
+
+beforeAll(() => loadResourcesSync());
 
 describe("animated flip-dot SVG generator", () => {
     it("generates a wide flip-dot SVG starting in zero-state and rotating through texts", () => {

@@ -1,0 +1,5 @@
+{
+    "id": "combined",
+    "title": "Compound path + reusable geometry",
+    "note": "Combines the static path and shared animated geometry experiments."
+}

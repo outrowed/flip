@@ -1,6 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { beforeAll, describe, it, expect } from "vitest";
 import { variants } from "./variants.ts";
 import { generateFlipDotSvg } from "../../core/svg.ts";
+import { loadResourcesSync } from "../../core/resources-node.ts";
+
+beforeAll(() => loadResourcesSync());
 
 describe("SVG lab representation experiments", () => {
     for (const dotShape of ["circle", "square"]) {

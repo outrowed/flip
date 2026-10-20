@@ -1,0 +1,15 @@
+<!-- Variant: holds -->
+<!-- Settled layer overlays swapped during holds. -->
+<style>
+.lab-live {
+  animation: lab-live {{cycle}}s steps(1, end) infinite;
+}
+@keyframes lab-live {
+{{liveKeyframes}}
+}
+{{holdStyles}}
+</style>
+<g id="flip-dot-matrix" class="lab-live">
+{{matrixContent}}
+</g>
+{{settledOverlays}}

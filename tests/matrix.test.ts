@@ -1,6 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { FONT_HEIGHT, getItalicShift } from "../core/font.ts";
 import { layoutFlipDotMatrix, renderMatrixAscii } from "../core/matrix.ts";
+import { loadResourcesSync } from "../core/resources-node.ts";
+
+beforeAll(() => loadResourcesSync());
 
 describe("flip-dot matrix layout & italic shear", () => {
     it("computes a forward italic shear from top row (+4) to bottom row (+0)", () => {

@@ -1,0 +1,5 @@
+{
+    "id": "original-halo",
+    "title": "Original + Technique A: radial halo",
+    "note": "Replaces per-dot drop shadows with animated radial-gradient halos. No blur filters; compare glow fidelity and phone performance."
+}

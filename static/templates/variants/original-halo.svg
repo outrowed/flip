@@ -1,0 +1,23 @@
+<!-- Variant: original-halo -->
+<!-- Replaces per-dot drop shadows with animated radial-gradient halos. No blur filters. -->
+<defs>
+  <radialGradient id="lab-halo-gradient">
+    <stop offset="0%" stop-color="{{paletteColor}}" stop-opacity=".45"/>
+    <stop offset="30%" stop-color="{{paletteColor}}" stop-opacity=".28"/>
+    <stop offset="65%" stop-color="{{paletteColor}}" stop-opacity=".08"/>
+    <stop offset="100%" stop-color="{{paletteColor}}" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<style>
+{{haloRules}}
+.lab-halo {
+  fill: url(#lab-halo-gradient);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-halo {
+    animation: none;
+    opacity: 0;
+  }
+}
+</style>

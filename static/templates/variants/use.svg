@@ -1,0 +1,8 @@
+<!-- Variant: use -->
+<!-- Reusable dot geometry shared via <use href="#lab-dot">. -->
+<defs>
+  {{dotGeometry}}
+</defs>
+<g id="flip-dot-matrix">
+{{useInstances}}
+</g>

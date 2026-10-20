@@ -11,8 +11,11 @@ import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { renderMatrixAscii } from "../matrix.ts";
 import { generateFlipDotSvg } from "../svg.ts";
+import { loadResourcesSync } from "../resources-node.ts";
 
 export function runCli(argv = process.argv.slice(2)) {
+    loadResourcesSync();
+
     const { values } = parseArgs({
         args: argv,
         options: {

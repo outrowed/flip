@@ -1,0 +1,14 @@
+<!-- Variant: pattern -->
+<!-- Repeating tile clipped only to permanently inactive cells. -->
+<defs>
+  <pattern id="lab-bg" patternUnits="userSpaceOnUse" x="{{ox}}" y="{{oy}}" width="{{pitch}}" height="{{pitch}}">
+    {{tile}}
+  </pattern>
+  <clipPath id="lab-cells">
+    <path d="{{clips}}"/>
+  </clipPath>
+</defs>
+<g id="flip-dot-matrix">
+  <rect width="{{width}}" height="{{height}}" fill="url(#lab-bg)" clip-path="url(#lab-cells)"/>
+{{animatedDots}}
+</g>

@@ -1,0 +1,5 @@
+{
+    "id": "use",
+    "title": "Reusable dot geometry",
+    "note": "Shared geometry via <use>; same per-instance effects. Browser caching is NOT guaranteed."
+}

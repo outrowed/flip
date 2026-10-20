@@ -1,0 +1,9 @@
+<!-- Variant: combined -->
+<!-- Combines static compound path and shared animated geometry experiments. -->
+<defs>
+  {{dotGeometry}}
+</defs>
+<g id="flip-dot-matrix">
+  <path class="d z" d="{{compoundPath}}"/>
+{{useInstances}}
+</g>

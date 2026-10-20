@@ -1,0 +1,5 @@
+{
+    "id": "holds",
+    "title": "Settled layers during holds",
+    "note": "Experimental display swaps after all flips settle. Hidden animations may still cost CPU; check boundary flashes."
+}

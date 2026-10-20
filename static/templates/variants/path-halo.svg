@@ -1,0 +1,14 @@
+<!-- Variant: path-halo -->
+<!-- Combines inactive-dot compound path with radial gradient halos on animated dots. -->
+<defs>
+  <radialGradient id="lab-halo-gradient">
+    <stop offset="0%" stop-color="{{paletteColor}}" stop-opacity=".45"/>
+    <stop offset="30%" stop-color="{{paletteColor}}" stop-opacity=".28"/>
+    <stop offset="65%" stop-color="{{paletteColor}}" stop-opacity=".08"/>
+    <stop offset="100%" stop-color="{{paletteColor}}" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<g id="flip-dot-matrix">
+  <path class="d z" d="{{compoundPath}}"/>
+{{animatedHalosAndDots}}
+</g>

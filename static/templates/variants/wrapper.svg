@@ -1,0 +1,14 @@
+<!-- Variant: wrapper -->
+<!-- Filter and motion separation: parent transform group, child filter. -->
+<style>
+.lab-motion {
+  transform-box: fill-box;
+  transform-origin: center;
+  fill: none !important;
+  stroke: none !important;
+  filter: none !important;
+}
+</style>
+<g id="flip-dot-matrix">
+{{wrappedDots}}
+</g>
