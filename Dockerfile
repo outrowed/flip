@@ -13,13 +13,15 @@ RUN pnpm build && pnpm prune --prod
 FROM node:24-bookworm-slim
 
 WORKDIR /app
-ENV NODE_ENV=production PORT=4329 HOST=0.0.0.0
+ENV NODE_ENV=production PORT=4329 HOST=0.0.0.0 PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/dist-server ./dist-server
 COPY --from=build /app/static ./static
+
+RUN ./node_modules/.bin/playwright install --with-deps chromium && chmod -R a+rX /ms-playwright
 
 USER 1002:1002
 EXPOSE 4329

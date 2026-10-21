@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -11,11 +12,13 @@ import {
     generateStillFlipDotSvg,
 } from "../core/svg.ts";
 import { loadResourcesAsync } from "../core/resources-node.ts";
+import { generatePlaceholder, OutputCache, rasterize } from "./raster.ts";
 
 const __dirname = resolve(fileURLToPath(import.meta.url), "..");
 const rootDir = resolve(__dirname, "..");
 
 interface SvgQuery {
+    format?: string;
     text?: string;
     texts?: string;
     shape?: string;
@@ -27,6 +30,7 @@ interface SvgQuery {
     dotSize?: string;
     still?: string;
     frame?: string;
+    sync?: string;
 }
 
 interface GenerateBody {
@@ -48,11 +52,13 @@ export async function createFlipApp(options: {
     logger?: boolean;
 } = {}): Promise<FastifyInstance> {
     await loadResourcesAsync();
+    const cache = new OutputCache();
     const app = Fastify({ logger: options.logger ?? false });
     const staticRoot = options.staticRoot ?? resolve(rootDir, "dist");
 
     await app.register(cors, {
         origin: true,
+        exposedHeaders: ["ETag", "X-Raster-Status", "Cache-Control", "Retry-After"],
     });
 
     // Health checks
@@ -68,6 +74,16 @@ export async function createFlipApp(options: {
     // SVG generation handler
     const handleSvgRequest = async (request: FastifyRequest<{ Querystring: SvgQuery }>, reply: FastifyReply) => {
         const params = request.query;
+        const format = params.format ?? "svg";
+
+        if (!["svg", "apng", "webp"].includes(format)) {
+            return reply.code(400).send({ error: "format must be svg, apng, or webp" });
+        }
+
+        if ((params.text?.length ?? params.texts?.length ?? 0) > 500) {
+            return reply.code(400).send({ error: "Text is limited to 500 characters" });
+        }
+
         let texts: string[] | undefined;
 
         if (params.texts) {
@@ -93,6 +109,8 @@ export async function createFlipApp(options: {
             || params.frame !== undefined;
 
         let resultSvg: string;
+        let boardWidth: number;
+        let boardHeight: number;
 
         if (isStill) {
             const frameIndex = Number.parseInt(params.frame || "0", 10) || 0;
@@ -107,6 +125,8 @@ export async function createFlipApp(options: {
                 dotSize,
             });
             resultSvg = stillResult.svg;
+            boardWidth = stillResult.width;
+            boardHeight = stillResult.height;
         }
         else {
             const animResult = generateFlipDotSvg({
@@ -120,16 +140,126 @@ export async function createFlipApp(options: {
                 dotSize,
             });
             resultSvg = animResult.svg;
+            boardWidth = animResult.width;
+            boardHeight = animResult.height;
         }
 
-        reply.header("Content-Type", "image/svg+xml; charset=utf-8");
-        reply.header("Cache-Control", "public, max-age=30");
-        return reply.send(resultSvg);
+        const key = createHash("sha256").update(`${format}:${isStill}:${resultSvg}`).digest("hex");
+
+        try {
+            if (format === "svg") {
+                const output = await cache.get(key, () => Promise.resolve(Buffer.from(resultSvg)));
+                reply.header("Content-Type", "image/svg+xml; charset=utf-8");
+                reply.header("Cache-Control", "public, max-age=60, s-maxage=300");
+                reply.header("ETag", output.etag);
+
+                if (request.headers["if-none-match"]?.split(",").map(tag => tag.trim().replace(/^W\//, "")).some(tag => tag === output.etag || tag === "*")) {
+                    return reply.code(304).send();
+                }
+
+                return reply.send(output.data);
+            }
+
+            // For raster formats (WebP, APNG)
+            const rasterFormat = format as "apng" | "webp";
+            const isSync = params.sync === "true";
+
+            // If it's a still frame or explicit sync request, rasterize synchronously
+            if (isStill || isSync) {
+                const output = await cache.get(key, () => rasterize(resultSvg, rasterFormat, isStill));
+                reply.header("Content-Type", `image/${rasterFormat}`);
+                reply.header("Cache-Control", "public, max-age=60, s-maxage=300");
+                reply.header("ETag", output.etag);
+                reply.header("X-Raster-Status", "ready");
+
+                if (request.headers["if-none-match"]?.split(",").map(tag => tag.trim().replace(/^W\//, "")).some(tag => tag === output.etag || tag === "*")) {
+                    return reply.code(304).send();
+                }
+
+                return reply.send(output.data);
+            }
+
+            // For animated raster formats: check if already in cache
+            const cached = cache.peek(key);
+
+            if (cached) {
+                reply.header("Content-Type", `image/${rasterFormat}`);
+                reply.header("Cache-Control", "public, max-age=60, s-maxage=300");
+                reply.header("ETag", cached.etag);
+                reply.header("X-Raster-Status", "ready");
+
+                if (request.headers["if-none-match"]?.split(",").map(tag => tag.trim().replace(/^W\//, "")).some(tag => tag === cached.etag || tag === "*")) {
+                    return reply.code(304).send();
+                }
+
+                return reply.send(cached.data);
+            }
+
+            // Cache miss: trigger background generation if not already pending
+            void cache.trigger(key, () => rasterize(resultSvg, rasterFormat, false)).catch((err) => {
+                request.log.error(err, "Background rasterization failed");
+            });
+
+            // Return a 1-frame placeholder immediately matching exact board dimensions
+            const placeholder = await generatePlaceholder(boardWidth, boardHeight, rasterFormat, theme);
+            const placeholderEtag = `W/"placeholder-${key.slice(0, 16)}"`;
+
+            reply.header("Content-Type", `image/${rasterFormat}`);
+            // Short TTL so Camo and browsers re-check quickly once rendering finishes
+            reply.header("Cache-Control", "public, max-age=4, s-maxage=4, must-revalidate");
+            reply.header("ETag", placeholderEtag);
+            reply.header("X-Raster-Status", "rendering");
+            return reply.send(placeholder);
+        }
+        catch (error) {
+            if (error instanceof RangeError) return reply.code(400).send({ error: error.message });
+
+            reply.header("Retry-After", "5");
+            request.log.error(error);
+            return reply.code(503).send({ error: "Raster rendering unavailable. Retry shortly or use SVG." });
+        }
     };
 
     app.get("/api/svg", handleSvgRequest);
     app.get("/api/frame", handleSvgRequest);
     app.get("/flip.svg", handleSvgRequest);
+
+    // Dedicated developer endpoint to inspect the placeholder directly
+    app.get<{
+        Querystring: {
+            width?: string;
+            height?: string;
+            theme?: string;
+            format?: string;
+        };
+    }>("/api/placeholder", async (request, reply) => {
+        const query = request.query;
+        const width = Number.parseInt(query.width || "1260", 10) || 1260;
+        const height = Number.parseInt(query.height || "234", 10) || 234;
+        const theme = (query.theme || "amber") as "amber" | "emerald" | "white" | "cyan" | "crimson";
+        const format = (query.format || "webp") as "webp" | "apng" | "svg" | "png";
+
+        if (width <= 0 || width > 3000 || height <= 0 || height > 1000) {
+            return reply.code(400).send({ error: "Invalid width or height dimensions" });
+        }
+
+        const placeholder = await generatePlaceholder(
+            width,
+            height,
+            format === "svg" ? "svg" : format === "apng" ? "apng" : format === "png" ? "png" : "webp",
+            theme,
+        );
+
+        const contentType = format === "svg"
+            ? "image/svg+xml; charset=utf-8"
+            : format === "webp"
+                ? "image/webp"
+                : "image/png";
+
+        reply.header("Content-Type", contentType);
+        reply.header("Cache-Control", "no-cache");
+        return reply.send(placeholder);
+    });
 
     // POST /api/generate
     app.post<{ Body: GenerateBody }>("/api/generate", async (request, reply) => {

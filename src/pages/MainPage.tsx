@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     DEFAULT_ROTATING_TEXTS,
     generateFlipDotSvg,
@@ -15,6 +15,10 @@ const PRESETS: Record<string, string[]> = {
 };
 
 export function MainPage() {
+    const [outputType, setOutputType] = useState<"svg" | "apng" | "webp">("svg");
+    const [rasterPreviewUrl, setRasterPreviewUrl] = useState<string | null>(null);
+    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
     const [rawText, setRawText] = useState(PRESETS.rotation.join("\n"));
     const [dotShape, setDotShape] = useState<"circle" | "square">("circle");
     const [renderTech, setRenderTech] = useState<"compound-path" | "original">("compound-path");
@@ -69,6 +73,8 @@ export function MainPage() {
         return `data:image/svg+xml;utf8,${encodeURIComponent(generated.svg)}`;
     }, [generated.svg]);
 
+    const previewUrl = outputType === "svg" ? generatedDataUri : rasterPreviewUrl ?? generatedDataUri;
+
     // Generated settled still frames (no CSS keyframe transitions)
     const stillFrames = useMemo(() => {
         return generateStillFlipDotFrames({
@@ -99,6 +105,8 @@ export function MainPage() {
         const origin = window.location.origin;
         const params = new URLSearchParams();
 
+        if (outputType !== "svg") params.set("format", outputType);
+
         if (texts.length > 1) {
             params.set("texts", texts.join(","));
         }
@@ -119,7 +127,45 @@ export function MainPage() {
         if (cellPitch !== 14) params.set("pitch", String(cellPitch));
 
         return `${origin}/api/svg?${params.toString()}`;
-    }, [texts, dotShape, renderTech, theme, italic, durationPerText, cellPitch]);
+    }, [texts, dotShape, renderTech, theme, italic, durationPerText, cellPitch, outputType]);
+
+    useEffect(() => {
+        if (outputType === "svg") {
+            setRasterPreviewUrl(null);
+            setIsPreviewLoading(false);
+            return;
+        }
+
+        const controller = new AbortController();
+        let objectUrl: string | null = null;
+        setRasterPreviewUrl(null);
+        setIsPreviewLoading(true);
+
+        fetch(`${queryUrl}&sync=true`, { signal: controller.signal })
+            .then(async (response) => {
+                if (!response.ok) throw new Error(`Could not render ${outputType.toUpperCase()} preview (${response.status}).`);
+
+                return response.blob();
+            })
+            .then((blob) => {
+                if (controller.signal.aborted) return;
+
+                objectUrl = URL.createObjectURL(blob);
+                setRasterPreviewUrl(objectUrl);
+            })
+            .catch((error) => {
+                if (!controller.signal.aborted) showToast((error as Error).message);
+            })
+            .finally(() => {
+                if (!controller.signal.aborted) setIsPreviewLoading(false);
+            });
+
+        return () => {
+            controller.abort();
+
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+        };
+    }, [outputType, queryUrl, showToast]);
 
     const label = texts.join(" • ") || "FLIP Display";
     const liveMarkdownSnippet = `![${label}](${queryUrl})`;
@@ -234,6 +280,16 @@ export function MainPage() {
                                 </button>
                             ))}
                         </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                        <label htmlFor="outputType" className="text-xs font-medium text-[#94a3b8]">Output type</label>
+                        <select id="outputType" value={outputType} onChange={event => setOutputType(event.target.value as "svg" | "apng" | "webp")} className="rounded-lg border border-[#202736] bg-[#080a0f] px-3 py-2 text-xs text-[#f1f5f9]">
+                            <option value="svg">SVG (vector, default)</option>
+                            <option value="apng">APNG (animated PNG)</option>
+                            <option value="webp">WebP (animated, compressed)</option>
+                        </select>
+                        <p className="text-xs text-[#94a3b8]">Raster exports use the server and are cached. The first request may take a minute. The loading screen remains visible until the animation is ready.</p>
                     </div>
 
                     {/* Dot Shape & Typography Controls */}
@@ -468,7 +524,7 @@ export function MainPage() {
 
                     {/* Live Animated Stage Canvas */}
                     <div
-                        className={`flex min-h-[300px] items-center justify-center p-8 transition-colors ${
+                        className={`relative flex min-h-[300px] items-center justify-center p-8 transition-colors ${
                             bgTheme === "dark"
                                 ? "bg-[#0b0d13]"
                                 : bgTheme === "light"
@@ -477,40 +533,91 @@ export function MainPage() {
                         }`}
                     >
                         <img
-                            src={generatedDataUri}
+                            hidden={outputType !== "svg" && isPreviewLoading}
+                            src={previewUrl}
                             alt={label}
-                            className="w-full max-w-5xl rounded-lg shadow-2xl block"
+                            className={`w-full max-w-5xl rounded-lg shadow-2xl ${outputType !== "svg" && isPreviewLoading ? "hidden" : "block"}`}
                         />
+                        {outputType !== "svg" && isPreviewLoading && (
+                            <div className="absolute rounded bg-[#080a0f]/80 px-3 py-2 text-xs text-[#cbd5e1]">
+                                Rendering
+                                {" "}
+                                {outputType.toUpperCase()}
+                                {" "}
+                                preview...
+                            </div>
+                        )}
                     </div>
 
                     {/* Export Bar with Grouped Action Buttons */}
                     <div className="flex flex-wrap items-center justify-between border-t border-[#202736] bg-[#0f131a] px-5 py-3 gap-3">
                         <div className="flex flex-wrap items-center gap-3">
-                            {/* Group 1: SVG (Legend: SVG | Download Animated | Copy Raw) */}
-                            <div className="inline-flex rounded-lg border border-[#202736] bg-[#080a0f] p-0.5 shadow-sm">
-                                <span className="inline-flex items-center rounded-l-md bg-[#f59e0b] px-3 py-1.5 text-xs font-bold text-[#080a0f] tracking-wide select-none">
-                                    SVG
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        download(generated.svg, "flip.svg", "image/svg+xml");
-                                        showToast("Downloaded flip.svg!");
-                                    }}
-                                    className="border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
-                                    title="Download standalone animated SVG file"
-                                >
-                                    Download Animated
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleCopy(generated.svg, "Raw SVG markup copied!")}
-                                    className="rounded-r-md border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
-                                    title="Copy raw <svg> markup to clipboard"
-                                >
-                                    Copy Raw
-                                </button>
-                            </div>
+                            {/* SVG output actions */}
+                            {outputType === "svg" && (
+                                <div className="inline-flex rounded-lg border border-[#202736] bg-[#080a0f] p-0.5 shadow-sm">
+                                    <span className="inline-flex items-center rounded-l-md bg-[#f59e0b] px-3 py-1.5 text-xs font-bold text-[#080a0f] tracking-wide select-none">
+                                        SVG
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => download(generated.svg, "flip.svg", "image/svg+xml")}
+                                        className="border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
+                                        title="Download standalone animated SVG"
+                                    >
+                                        Download Animated
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleCopy(generated.svg, "Raw SVG markup copied!")}
+                                        className="rounded-r-md border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
+                                        title="Copy raw SVG markup to clipboard"
+                                    >
+                                        Copy Raw
+                                    </button>
+                                </div>
+                            )}
+
+                            {outputType !== "svg" && (
+                                <div key={outputType} className="inline-flex rounded-lg border border-[#202736] bg-[#080a0f] p-0.5 shadow-sm">
+                                    <button
+                                        type="button"
+                                        onClick={() => setOutputType(outputType)}
+                                        className="inline-flex items-center rounded-l-md bg-[#f59e0b] px-3 py-1.5 text-xs font-bold text-[#080a0f] tracking-wide"
+                                    >
+                                        {outputType.toUpperCase()}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        disabled={isExporting}
+                                        onClick={async () => {
+                                            setIsExporting(true);
+
+                                            try {
+                                                const params = new URLSearchParams(queryUrl.split("?")[1] ?? "");
+                                                params.set("format", outputType);
+                                                params.set("sync", "true");
+                                                const url = `${window.location.origin}/api/svg?${params}`;
+                                                const response = await fetch(url);
+
+                                                if (!response.ok) throw new Error(`Could not render ${outputType.toUpperCase()}. Please retry or use SVG.`);
+
+                                                const blob = await response.blob();
+                                                download(blob, `flip.${outputType}`, `image/${outputType}`);
+                                                showToast(`${outputType.toUpperCase()} downloaded`);
+                                            }
+                                            catch (error) {
+                                                showToast((error as Error).message);
+                                            }
+                                            finally {
+                                                setIsExporting(false);
+                                            }
+                                        }}
+                                        className="rounded-r-md border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white disabled:opacity-50"
+                                    >
+                                        {isExporting ? "Rendering..." : "Download"}
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Group 2: Live API (Legend: Live API | Copy URL | Copy Markdown URL) */}
                             <div className="inline-flex rounded-lg border border-[#202736] bg-[#080a0f] p-0.5 shadow-sm">
