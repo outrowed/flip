@@ -31,6 +31,7 @@ export interface LoadedResources {
     glyphs: GlyphsMap;
     palettes: PalettesMap;
     boardTemplate: string;
+    placeholderTemplate: string;
     variants: VariantMeta[];
     variantTemplates: Record<string, string>;
 }
@@ -81,6 +82,10 @@ export function getLoadedBoardTemplate(): string {
     return loaded().boardTemplate;
 }
 
+export function getLoadedPlaceholderTemplate(): string {
+    return loaded().placeholderTemplate;
+}
+
 export function getLoadedVariants(): VariantMeta[] {
     return loaded().variants;
 }
@@ -96,23 +101,26 @@ export async function loadResourcesAsync(base = "/static"): Promise<LoadedResour
         `${base}/data/glyphs.json`,
         `${base}/data/palettes.json`,
         `${base}/templates/board.svg`,
+        `${base}/templates/placeholder.svg`,
         `${base}/data/variants.json`,
     ];
-    const [glyphsResponse, palettesResponse, boardResponse, variantsResponse] = await Promise.all(urls.map(url => fetch(url)));
+    const [glyphsResponse, palettesResponse, boardResponse, placeholderResponse, variantsResponse] = await Promise.all(urls.map(url => fetch(url)));
 
     for (const [response, url] of [
         [glyphsResponse, urls[0]],
         [palettesResponse, urls[1]],
         [boardResponse, urls[2]],
-        [variantsResponse, urls[3]],
+        [placeholderResponse, urls[3]],
+        [variantsResponse, urls[4]],
     ] as const) {
         if (!response.ok) throw new Error(`Failed to fetch ${url}: HTTP ${response.status}`);
     }
 
-    const [glyphs, palettes, boardTemplate, variants] = await Promise.all([
+    const [glyphs, palettes, boardTemplate, placeholderTemplate, variants] = await Promise.all([
         glyphsResponse.json() as Promise<GlyphsMap>,
         palettesResponse.json() as Promise<PalettesMap>,
         boardResponse.text(),
+        placeholderResponse.text(),
         variantsResponse.json() as Promise<VariantMeta[]>,
     ]);
 
@@ -129,6 +137,7 @@ export async function loadResourcesAsync(base = "/static"): Promise<LoadedResour
         glyphs,
         palettes,
         boardTemplate,
+        placeholderTemplate,
         variants,
         variantTemplates,
     };

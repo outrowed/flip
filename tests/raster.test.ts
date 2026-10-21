@@ -3,6 +3,7 @@ import sharp from "sharp";
 import UPNG from "upng-js";
 import { generatePlaceholder, OutputCache, rasterize } from "../server/raster.ts";
 import { loadResourcesSync } from "../core/resources-node.ts";
+import { generateFlipDotSvg } from "../core/svg.ts";
 
 beforeAll(() => loadResourcesSync());
 
@@ -19,6 +20,33 @@ describe("raster output", () => {
         const metadata = await sharp(webp, { animated: true }).metadata();
         expect(metadata.pages).toBe(5);
         expect(metadata.delay).toEqual([42, 41, 42, 42, 41]);
+    }, 30_000);
+
+    it("skips static holds in flip-dot animations and enforces Camo size limits", async () => {
+        const multiTextSvg = generateFlipDotSvg({
+            texts: ["alpha", "beta"],
+            theme: "amber",
+            minCols: 40,
+            rows: 11,
+            cellPitch: 14,
+            dotSize: 12,
+        });
+
+        // 2 texts with durationPerText 3.8 = ~10.8s cycle. At 24 FPS that's ~260 frames linearly.
+        // With hold skipping, static hold periods collapse into single frames with extended delays.
+        const apng = await rasterize(multiTextSvg.svg, "apng");
+        expect(apng.length).toBeLessThan(5 * 1024 * 1024);
+
+        // Verify valid APNG structure ending with IEND
+        const tail = apng.subarray(-12);
+        expect(tail.subarray(4, 8).toString("ascii")).toBe("IEND");
+
+        const decoded = UPNG.decode(Uint8Array.from(apng).buffer);
+        expect(decoded.frames.length).toBeLessThan(100);
+
+        // Verify extended hold delays were retained
+        const maxDelay = Math.max(...decoded.frames.map(f => f.delay));
+        expect(maxDelay).toBeGreaterThan(1000);
     }, 30_000);
 
     it("deduplicates, evicts by bytes, and retries failed generation", async () => {

@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { chromium, type Browser } from "playwright";
 import sharp from "sharp";
 import UPNG from "upng-js";
-import { PALETTES, type PaletteDef } from "../core/resources.ts";
+import { PALETTES, type PaletteDef, getLoadedPlaceholderTemplate } from "../core/resources.ts";
 
 export type OutputType = "svg" | "apng" | "webp";
 
@@ -100,22 +100,32 @@ export async function generatePlaceholder(
     const subSize = Math.min(12, Math.max(9, Math.floor(Math.min(height / 17, width / 52))));
     const yCenter = height / 2;
 
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-  <defs>
-    <linearGradient id="casing-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#141923"/>
-      <stop offset="100%" stop-color="${palette.casingOuter}"/>
-    </linearGradient>
-  </defs>
-  <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="12" fill="url(#casing-grad)" stroke="${palette.casingStroke}" stroke-width="2"/>
-  <rect x="12" y="12" width="${Math.max(1, width - 24)}" height="${Math.max(1, height - 24)}" rx="6" fill="${palette.recessBg}" stroke="#1b2230" stroke-width="1.5"/>
-  <circle cx="20" cy="20" r="3" fill="${palette.screwFill}" stroke="${palette.screwSlot}" stroke-width="0.75"/>
-  <circle cx="${width - 20}" cy="20" r="3" fill="${palette.screwFill}" stroke="${palette.screwSlot}" stroke-width="0.75"/>
-  <circle cx="20" cy="${height - 20}" r="3" fill="${palette.screwFill}" stroke="${palette.screwSlot}" stroke-width="0.75"/>
-  <circle cx="${width - 20}" cy="${height - 20}" r="3" fill="${palette.screwFill}" stroke="${palette.screwSlot}" stroke-width="0.75"/>
-  <text x="${width / 2}" y="${yCenter - 9}" font-family="system-ui, -apple-system, sans-serif" font-size="${titleSize}" font-weight="700" fill="${palette.activeDotBright}" letter-spacing="1.2" text-anchor="middle" dominant-baseline="middle">GENERATING FLIP-DOT ANIMATION...</text>
-  <text x="${width / 2}" y="${yCenter + 14}" font-family="system-ui, -apple-system, sans-serif" font-size="${subSize}" fill="#94a3b8" letter-spacing="0.4" text-anchor="middle" dominant-baseline="middle">Please wait for a moment • Reload from time to time to view</text>
-</svg>`;
+    const template = getLoadedPlaceholderTemplate();
+    const replacements: Record<string, string> = {
+        width: String(width),
+        height: String(height),
+        frameWidth: String(width - 2),
+        frameHeight: String(height - 2),
+        recessWidth: String(Math.max(1, width - 24)),
+        recessHeight: String(Math.max(1, height - 24)),
+        screwRightX: String(width - 20),
+        screwBottomY: String(height - 20),
+        centerX: String(width / 2),
+        titleY: String(yCenter - 9),
+        subY: String(yCenter + 14),
+        titleSize: String(titleSize),
+        subSize: String(subSize),
+    };
+
+    for (const [key, value] of Object.entries(palette)) {
+        replacements[`palette.${key}`] = String(value);
+    }
+
+    const svg = template.replace(/\{\{([^}]+)\}\}/g, (_match, key: string) => {
+        if (!(key in replacements)) throw new Error(`Missing placeholder template value: ${key}`);
+
+        return replacements[key];
+    });
 
     const svgBuffer = Buffer.from(svg);
 
@@ -148,9 +158,87 @@ function extractDurationSeconds(svg: string, still: boolean): number {
     return 0;
 }
 
+interface ActiveWindow {
+    tStart: number;
+    tEnd: number;
+}
+
+/** Parses active flip-dot transition windows to skip static hold frames. */
+function extractActiveWindows(svg: string, duration: number, maxDelay: number): ActiveWindow[] | null {
+    const pMatches = [...svg.matchAll(/([\d.]+)%\s*\{/g)].map(m => Number(m[1]));
+    const uniqueP = [...new Set(pMatches)].filter(p => p > 0 && p < 100).sort((a, b) => a - b);
+
+    if (uniqueP.length === 0) return null;
+
+    const clusters: number[][] = [];
+    let cur = [uniqueP[0]];
+
+    for (let i = 1; i < uniqueP.length; i += 1) {
+        if (uniqueP[i] - uniqueP[i - 1] > 2.0) {
+            clusters.push(cur);
+            cur = [uniqueP[i]];
+        }
+        else {
+            cur.push(uniqueP[i]);
+        }
+    }
+
+    clusters.push(cur);
+
+    return clusters.map(c => ({
+        tStart: Math.max(0, (c[0] / 100) * duration - 0.05),
+        tEnd: Math.min(duration, (c[c.length - 1] / 100) * duration + maxDelay + 0.12),
+    }));
+}
+
+interface SamplePoint {
+    index: number;
+    timeMs: number;
+}
+
+/** Builds timeline sample points, sampling active transitions at 24 FPS and compressing static holds into 1 frame. */
+function buildSamplePoints(svg: string, duration: number, count: number, frameDurationMs: number): SamplePoint[] {
+    const delayMatches = [...svg.matchAll(/animation-delay:\s*([-\d.]+)s/g)].map(m => Number(m[1]));
+    const maxDelay = delayMatches.length > 0 ? Math.max(...delayMatches) : 0;
+    const windows = extractActiveWindows(svg, duration, maxDelay);
+
+    if (!windows || windows.length === 0) {
+        return Array.from({ length: count }, (_, index) => ({
+            index,
+            timeMs: Math.round(index * frameDurationMs),
+        }));
+    }
+
+    const points: SamplePoint[] = [];
+    let inHold = false;
+
+    for (let i = 0; i < count; i += 1) {
+        const tSec = (i * frameDurationMs) / 1000;
+        const isActive = windows.some(w => tSec >= w.tStart && tSec <= w.tEnd);
+
+        if (isActive) {
+            points.push({
+                index: i,
+                timeMs: Math.round(i * frameDurationMs),
+            });
+            inHold = false;
+        }
+        else if (!inHold) {
+            points.push({
+                index: i,
+                timeMs: Math.round(i * frameDurationMs),
+            });
+            inHold = true;
+        }
+    }
+
+    return points;
+}
+
 let renderQueue = Promise.resolve() as Promise<unknown>;
 let queuedJobs = 0;
 const MAX_CONCURRENT_QUEUE = 5;
+const MAX_RASTER_PAYLOAD_BYTES = 5 * 1024 * 1024; // GitHub Camo hard 5MB limit
 
 async function executeRasterize(
     svg: string,
@@ -159,6 +247,8 @@ async function executeRasterize(
     height: number,
     count: number,
     frameDurationMs: number,
+    duration: number,
+    still: boolean,
 ): Promise<Buffer> {
     let browser: Browser | undefined;
 
@@ -180,22 +270,33 @@ async function executeRasterize(
         let retainedBytes = 0;
 
         const deadline = Date.now() + 90_000;
+        const samplePoints = still
+            ? [{
+                    index: 0,
+                    timeMs: 0,
+                }]
+            : buildSamplePoints(svg, duration, count, frameDurationMs);
 
-        for (let index = 0; index < count; index += 1) {
+        for (let s = 0; s < samplePoints.length; s += 1) {
             if (Date.now() > deadline) throw new Error("Raster rendering timed out");
+
+            const pt = samplePoints[s];
+            const nextPt = samplePoints[s + 1];
+            const nextIndex = nextPt ? nextPt.index : count;
+            const delay = Math.round(nextIndex * frameDurationMs) - Math.round(pt.index * frameDurationMs);
 
             await page.evaluate((time) => {
                 for (const animation of document.getAnimations()) {
                     animation.pause();
                     animation.currentTime = time;
                 }
-            }, Math.round(index * frameDurationMs));
+            }, pt.timeMs);
+
             const shot = await page.screenshot({
                 omitBackground: true,
                 timeout: 10_000,
             });
             const frame = await sharp(shot).ensureAlpha().raw().toBuffer();
-            const delay = Math.round((index + 1) * frameDurationMs) - Math.round(index * frameDurationMs);
 
             if (previous?.equals(frame)) {
                 delays[delays.length - 1] += delay;
@@ -213,22 +314,38 @@ async function executeRasterize(
             }
         }
 
+        // Close headless browser eagerly before encoding to free memory
+        await browser.close();
+        browser = undefined;
+
+        let output: Buffer;
+
         if (format === "apng") {
-            return Buffer.from(UPNG.encode(frames.map(frame => Uint8Array.from(frame).buffer), width, height, 0, delays));
+            const rawBuffers: ArrayBuffer[] = frames.map(
+                f => f.buffer.slice(f.byteOffset, f.byteOffset + f.byteLength) as ArrayBuffer,
+            );
+            output = Buffer.from(UPNG.encode(rawBuffers, width, height, 0, delays));
+        }
+        else {
+            output = await sharp(Buffer.concat(frames), {
+                raw: {
+                    width,
+                    height: height * frames.length,
+                    channels: 4,
+                    pageHeight: height,
+                },
+            }).webp({
+                loop: 0,
+                delay: delays,
+                quality: 80,
+            }).toBuffer();
         }
 
-        return await sharp(Buffer.concat(frames), {
-            raw: {
-                width,
-                height: height * frames.length,
-                channels: 4,
-                pageHeight: height,
-            },
-        }).webp({
-            loop: 0,
-            delay: delays,
-            quality: 80,
-        }).toBuffer();
+        if (output.length > MAX_RASTER_PAYLOAD_BYTES) {
+            throw new RangeError(`Raster output (${(output.length / 1024 / 1024).toFixed(2)} MB) exceeds GitHub Camo 5 MB limit. Please use WebP or fewer phrases.`);
+        }
+
+        return output;
     }
     finally {
         await browser?.close();
@@ -250,7 +367,7 @@ export async function rasterize(svg: string, format: "apng" | "webp", still = fa
 
     // Still frames take < 200ms and execute directly without head-of-line blocking behind long animation queues
     if (still) {
-        return executeRasterize(svg, format, width, height, count, frameDurationMs);
+        return executeRasterize(svg, format, width, height, count, frameDurationMs, seconds, still);
     }
 
     if (queuedJobs >= MAX_CONCURRENT_QUEUE) {
@@ -259,7 +376,7 @@ export async function rasterize(svg: string, format: "apng" | "webp", still = fa
 
     queuedJobs += 1;
 
-    const run = () => executeRasterize(svg, format, width, height, count, frameDurationMs);
+    const run = () => executeRasterize(svg, format, width, height, count, frameDurationMs, seconds, still);
 
     const task = renderQueue.then(run, run);
 

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="{{width}}" height="{{height}}" viewBox="0 0 {{width}} {{height}}" role="img" aria-label="Generating flip-dot animation">
+  <title>Generating flip-dot animation</title>
+  <defs>
+    <linearGradient id="casing-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141923"/>
+      <stop offset="100%" stop-color="{{palette.casingOuter}}"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer casing -->
+  <rect x="1" y="1" width="{{frameWidth}}" height="{{frameHeight}}" rx="12" fill="url(#casing-grad)" stroke="{{palette.casingStroke}}" stroke-width="2"/>
+
+  <!-- Inner recessed area -->
+  <rect x="12" y="12" width="{{recessWidth}}" height="{{recessHeight}}" rx="6" fill="{{palette.recessBg}}" stroke="#1b2230" stroke-width="1.5"/>
+
+  <!-- Corner screws -->
+  <circle cx="20" cy="20" r="3" fill="{{palette.screwFill}}" stroke="{{palette.screwSlot}}" stroke-width="0.75"/>
+  <circle cx="{{screwRightX}}" cy="20" r="3" fill="{{palette.screwFill}}" stroke="{{palette.screwSlot}}" stroke-width="0.75"/>
+  <circle cx="20" cy="{{screwBottomY}}" r="3" fill="{{palette.screwFill}}" stroke="{{palette.screwSlot}}" stroke-width="0.75"/>
+  <circle cx="{{screwRightX}}" cy="{{screwBottomY}}" r="3" fill="{{palette.screwFill}}" stroke="{{palette.screwSlot}}" stroke-width="0.75"/>
+
+  <!-- Notice text -->
+  <text x="{{centerX}}" y="{{titleY}}" font-family="system-ui, -apple-system, sans-serif" font-size="{{titleSize}}" font-weight="700" fill="{{palette.activeDotBright}}" letter-spacing="1.2" text-anchor="middle" dominant-baseline="middle">GENERATING FLIP-DOT ANIMATION...</text>
+  <text x="{{centerX}}" y="{{subY}}" font-family="system-ui, -apple-system, sans-serif" font-size="{{subSize}}" fill="#94a3b8" letter-spacing="0.4" text-anchor="middle" dominant-baseline="middle">Please wait for a moment • Reload from time to time to view</text>
+</svg>

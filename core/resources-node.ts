@@ -28,6 +28,7 @@ function readResourceSet(staticDir: string): LoadedResources {
     const glyphs = JSON.parse(readFileSync(resolve(staticDir, "data/glyphs.json"), "utf8")) as GlyphsMap;
     const palettes = JSON.parse(readFileSync(resolve(staticDir, "data/palettes.json"), "utf8")) as PalettesMap;
     const boardTemplate = readFileSync(resolve(staticDir, "templates/board.svg"), "utf8");
+    const placeholderTemplate = readFileSync(resolve(staticDir, "templates/placeholder.svg"), "utf8");
     const variants = JSON.parse(readFileSync(resolve(staticDir, "data/variants.json"), "utf8")) as VariantMeta[];
     const variantTemplates = Object.fromEntries(variants.map(({ id, template }) => [
         id,
@@ -37,6 +38,7 @@ function readResourceSet(staticDir: string): LoadedResources {
         glyphs,
         palettes,
         boardTemplate,
+        placeholderTemplate,
         variants,
         variantTemplates,
     };
@@ -50,10 +52,11 @@ export function loadResourcesSync(): LoadedResources {
 /** Asynchronous loading for the server, with resources read from disk. */
 export async function loadResourcesAsync(): Promise<LoadedResources> {
     const staticDir = findStaticDir();
-    const [glyphsRaw, palettesRaw, boardTemplate, variantsRaw] = await Promise.all([
+    const [glyphsRaw, palettesRaw, boardTemplate, placeholderTemplate, variantsRaw] = await Promise.all([
         readFile(resolve(staticDir, "data/glyphs.json"), "utf8"),
         readFile(resolve(staticDir, "data/palettes.json"), "utf8"),
         readFile(resolve(staticDir, "templates/board.svg"), "utf8"),
+        readFile(resolve(staticDir, "templates/placeholder.svg"), "utf8"),
         readFile(resolve(staticDir, "data/variants.json"), "utf8"),
     ]);
     const glyphs = JSON.parse(glyphsRaw) as GlyphsMap;
@@ -67,6 +70,7 @@ export async function loadResourcesAsync(): Promise<LoadedResources> {
         glyphs,
         palettes,
         boardTemplate,
+        placeholderTemplate,
         variants,
         variantTemplates,
     });
