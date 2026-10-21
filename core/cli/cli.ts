@@ -10,7 +10,7 @@ import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { renderMatrixAscii } from "../matrix.ts";
-import { generateFlipDotSvg } from "../svg.ts";
+import { generateFlipDotSvg, splitFrameTexts } from "../svg.ts";
 import { loadResourcesSync } from "../resources-node.ts";
 
 export function runCli(argv = process.argv.slice(2)) {
@@ -75,13 +75,10 @@ export function runCli(argv = process.argv.slice(2)) {
     let texts: string[] | undefined;
 
     if (values.texts) {
-        texts = values.texts
-            .split(",")
-            .map(s => s.trim())
-            .filter(Boolean);
+        texts = splitFrameTexts(values.texts);
     }
     else if (values.text) {
-        texts = [values.text];
+        texts = values.text.includes("\n") ? splitFrameTexts(values.text) : [values.text];
     }
 
     const options = {
@@ -99,9 +96,8 @@ export function runCli(argv = process.argv.slice(2)) {
     const result = generateFlipDotSvg(options);
 
     if (values["preview-ascii"]) {
-        const textList = options.texts || ["hello world"];
         result.layouts.forEach((layout, idx) => {
-            const label = textList[idx] || `Frame ${idx + 1}`;
+            const label = result.frames?.[idx]?.text || `Frame ${idx + 1}`;
             console.log(`\n=== ASCII PREVIEW: "${label}" (${layout.cols}x${layout.rows}) ===\n`);
             console.log(renderMatrixAscii(layout.grid));
         });

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     DEFAULT_ROTATING_TEXTS,
+    type FrameOverrides,
     generateFlipDotSvg,
     generateStillFlipDotFrames,
     PALETTES,
@@ -12,7 +13,38 @@ const PRESETS: Record<string, string[]> = {
     single: ["hello world"],
     terminal: ["system online", "all checks green", "ready for input"],
     minimal: ["taruna", "outrowed"],
+    markup: [
+        "alert status $[theme=crimson, shape=square, duration=2.4]",
+        "calibrating $[theme=cyan, italic=false, letterSpacing=2]",
+        "nominal $[theme=emerald, shape=circle, duration=4.2]",
+    ],
 };
+
+function formatOverridesSummary(overrides?: FrameOverrides): string[] {
+    if (!overrides) return [];
+
+    const badges: string[] = [];
+
+    if (overrides.theme) badges.push(`theme=${overrides.theme}`);
+
+    if (overrides.dotShape) badges.push(`shape=${overrides.dotShape}`);
+
+    if (overrides.italic !== undefined) badges.push(overrides.italic ? "italic" : "upright");
+
+    if (overrides.durationPerText !== undefined) badges.push(`${overrides.durationPerText}s`);
+
+    if (overrides.cellPitch !== undefined) badges.push(`pitch=${overrides.cellPitch}px`);
+
+    if (overrides.dotSize !== undefined) badges.push(`size=${overrides.dotSize}px`);
+
+    if (overrides.dotRadius !== undefined) badges.push(`rx=${overrides.dotRadius}`);
+
+    if (overrides.letterSpacing !== undefined) badges.push(`ls=${overrides.letterSpacing}`);
+
+    if (overrides.wordSpacing !== undefined) badges.push(`ws=${overrides.wordSpacing}`);
+
+    return badges;
+}
 
 export function MainPage() {
     const [outputType, setOutputType] = useState<"svg" | "apng" | "webp">("svg");
@@ -202,7 +234,10 @@ export function MainPage() {
         };
     }, [outputType, queryUrl, showToast]);
 
-    const label = texts.join(" • ") || "FLIP Display";
+    const label = useMemo(() => {
+        const cleanTexts = generated.frames?.map(f => f.text).filter(Boolean) ?? texts;
+        return cleanTexts.join(" • ") || "FLIP Display";
+    }, [generated.frames, texts]);
     const liveMarkdownSnippet = `![${label}](${queryUrl})`;
 
     const snippetText = useMemo(() => {
@@ -312,8 +347,52 @@ export function MainPage() {
                                     {key === "single" && "Hello World"}
                                     {key === "terminal" && "Status Alert"}
                                     {key === "minimal" && "Personal"}
+                                    {key === "markup" && "Per-Frame Markup"}
                                 </button>
                             ))}
+                        </div>
+                        <div className="rounded-lg border border-[#202736] bg-[#080a0f]/80 px-3 py-2 text-[11px] leading-relaxed text-[#64748b]">
+                            <span className="font-semibold text-[#94a3b8]">Per-frame markup:</span>
+                            {" "}
+                            append
+                            {" "}
+                            <code className="rounded bg-[#161c26] px-1 py-0.5 font-mono text-[#f59e0b]">
+                                $[key=value, ...]
+                            </code>
+                            {" "}
+                            to any line (e.g.
+                            {" "}
+                            <code className="font-mono text-[#cbd5e1]">
+                                frame 2 $[theme=emerald, shape=square, italic=false, duration=2.5, pitch=16]
+                            </code>
+                            ). Supports
+                            {" "}
+                            <code className="font-mono text-[#94a3b8]">theme</code>
+                            ,
+                            {" "}
+                            <code className="font-mono text-[#94a3b8]">shape</code>
+                            ,
+                            {" "}
+                            <code className="font-mono text-[#94a3b8]">italic</code>
+                            ,
+                            {" "}
+                            <code className="font-mono text-[#94a3b8]">duration</code>
+                            ,
+                            {" "}
+                            <code className="font-mono text-[#94a3b8]">pitch</code>
+                            ,
+                            {" "}
+                            <code className="font-mono text-[#94a3b8]">dotSize</code>
+                            ,
+                            {" "}
+                            <code className="font-mono text-[#94a3b8]">dotRadius</code>
+                            ,
+                            {" "}
+                            <code className="font-mono text-[#94a3b8]">letterSpacing</code>
+                            ,
+                            {" "}
+                            <code className="font-mono text-[#94a3b8]">wordSpacing</code>
+                            .
                         </div>
                     </div>
 
@@ -770,7 +849,7 @@ export function MainPage() {
                                         />
                                     </div>
                                     <div className="flex items-center justify-between p-3 gap-2">
-                                        <div className="flex flex-col overflow-hidden">
+                                        <div className="flex flex-col overflow-hidden gap-1">
                                             <span className="truncate font-mono text-xs font-semibold text-[#f1f5f9]">
                                                 Frame
                                                 {" "}
@@ -779,11 +858,21 @@ export function MainPage() {
                                                 {frame.text}
                                                 &quot;
                                             </span>
-                                            <span className="font-mono text-[11px] text-[#64748b]">
-                                                {frame.activeCount}
-                                                {" "}
-                                                dots active
-                                            </span>
+                                            <div className="flex flex-wrap items-center gap-1">
+                                                <span className="font-mono text-[11px] text-[#64748b]">
+                                                    {frame.activeCount}
+                                                    {" "}
+                                                    dots active
+                                                </span>
+                                                {formatOverridesSummary(frame.overrides).map(badge => (
+                                                    <span
+                                                        key={badge}
+                                                        className="rounded border border-[#202736] bg-[#161c26] px-1.5 py-0.2 font-mono text-[10px] text-[#f59e0b]"
+                                                    >
+                                                        {badge}
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </div>
                                         <div className="flex items-center gap-1.5 shrink-0">
                                             <button

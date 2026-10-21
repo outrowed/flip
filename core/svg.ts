@@ -5,7 +5,8 @@
  * display boards compatible with GitHub README Markdown (`<img>` / `![]()`).
  *
  * Supports single-text or rotating multi-text sequences, circular or square
- * flip-dots, customizable color palettes, and realistic solenoid-flip animations.
+ * flip-dots, customizable color palettes, per-frame `$[key=value, ...]` markup
+ * overrides, and realistic solenoid-flip animations.
  */
 
 import { layoutFlipDotMatrix } from "./matrix.ts";
@@ -55,6 +56,384 @@ export type SvgOptions = Partial<Omit<typeof DEFAULT_SVG_OPTIONS, "palette">> & 
     renderTech?: RenderTech;
 };
 
+/**
+ * Per-frame configuration overrides parsed from `$[key=value, ...]` markup.
+ * Note: `renderTech` is intentionally excluded from per-frame customization.
+ */
+export interface FrameOverrides {
+    theme?: string;
+    dotShape?: "circle" | "square";
+    italic?: boolean;
+    durationPerText?: number;
+    cellPitch?: number;
+    dotSize?: number;
+    dotRadius?: number;
+    letterSpacing?: number;
+    wordSpacing?: number;
+    padX?: number;
+    padY?: number;
+    rows?: number;
+    minCols?: number;
+    flipDuration?: number;
+    sweepMax?: number;
+}
+
+export interface ParsedFrameSpec {
+    raw: string;
+    text: string;
+    overrides: FrameOverrides;
+}
+
+const VALID_THEMES = new Set(["amber", "emerald", "white", "cyan", "crimson"]);
+
+function parseNumericToken(rawVal: string, allowMilliseconds = false): number | undefined {
+    const lower = rawVal.trim().toLowerCase();
+
+    if (!lower) return undefined;
+
+    if (allowMilliseconds && lower.endsWith("ms")) {
+        const ms = Number.parseFloat(lower.slice(0, -2));
+        return Number.isFinite(ms) ? ms / 1000 : undefined;
+    }
+
+    const cleaned = lower.replace(/(px|s|deg)$/, "").trim();
+    const num = Number.parseFloat(cleaned);
+    return Number.isFinite(num) ? num : undefined;
+}
+
+/**
+ * Splits a comma- or newline-delimited `texts` string into individual frame lines
+ * while preserving commas inside `$[key=value, ...]` markup blocks.
+ */
+export function splitFrameTexts(input: string): string[] {
+    const result: string[] = [];
+    let current = "";
+    let depth = 0;
+
+    for (let i = 0; i < input.length; i += 1) {
+        const ch = input[i];
+
+        if (ch === "$" && input[i + 1] === "[") {
+            depth += 1;
+            current += "$[";
+            i += 1;
+            continue;
+        }
+
+        if (ch === "]" && depth > 0) {
+            depth -= 1;
+            current += ch;
+            continue;
+        }
+
+        if ((ch === "," || ch === "\n" || ch === "\r") && depth === 0) {
+            const trimmed = current.trim();
+
+            if (trimmed) result.push(trimmed);
+
+            current = "";
+            continue;
+        }
+
+        current += ch;
+    }
+
+    const tail = current.trim();
+
+    if (tail) result.push(tail);
+
+    return result;
+}
+
+/**
+ * Parses a single frame line containing optional `$[key=value, ...]` markup.
+ */
+export function parseFrameMarkup(rawLine: string): ParsedFrameSpec {
+    const raw = String(rawLine ?? "");
+    const overrides: FrameOverrides = {};
+    const matches = [...raw.matchAll(/\$\[([^\]]*)\]/g)];
+
+    if (matches.length === 0) {
+        return {
+            raw,
+            text: raw,
+            overrides,
+        };
+    }
+
+    for (const match of matches) {
+        const body = match[1] ?? "";
+        const pairs = body.split(",");
+
+        for (const pair of pairs) {
+            const eqIdx = pair.indexOf("=");
+
+            if (eqIdx < 0) continue;
+
+            const normKey = pair
+                .slice(0, eqIdx)
+                .trim()
+                .toLowerCase()
+                .replace(/[\s_-]+/g, "");
+            const rawVal = pair.slice(eqIdx + 1).trim();
+            const valLower = rawVal.toLowerCase();
+
+            if (!normKey || !rawVal) continue;
+
+            switch (normKey) {
+                case "theme":
+                case "colortheme":
+                case "palette":
+
+                case "color": {
+                    if (VALID_THEMES.has(valLower)) {
+                        overrides.theme = valLower;
+                    }
+
+                    break;
+                }
+
+                case "shape":
+
+                case "dotshape": {
+                    if (valLower === "circle" || valLower === "round") {
+                        overrides.dotShape = "circle";
+                    }
+                    else if (valLower === "square" || valLower === "rect") {
+                        overrides.dotShape = "square";
+                    }
+
+                    break;
+                }
+
+                case "italic":
+                case "typography":
+                case "fontstyle":
+                case "style":
+
+                case "slant": {
+                    if (["true", "1", "yes", "on", "italic", "slanted", "oblique"].includes(valLower)) {
+                        overrides.italic = true;
+                    }
+                    else if (["false", "0", "no", "off", "upright", "normal", "regular", "roman"].includes(valLower)) {
+                        overrides.italic = false;
+                    }
+
+                    break;
+                }
+
+                case "duration":
+                case "hold":
+                case "holdduration":
+                case "durationpertext":
+
+                case "time": {
+                    const sec = parseNumericToken(rawVal, true);
+
+                    if (sec !== undefined && sec >= 0.2 && sec <= 60) {
+                        overrides.durationPerText = sec;
+                    }
+
+                    break;
+                }
+
+                case "pitch":
+                case "dotpitch":
+
+                case "cellpitch": {
+                    const pitch = parseNumericToken(rawVal);
+
+                    if (pitch !== undefined && pitch >= 4 && pitch <= 64) {
+                        overrides.cellPitch = pitch;
+                    }
+
+                    break;
+                }
+
+                case "dotsize":
+
+                case "size": {
+                    const size = parseNumericToken(rawVal);
+
+                    if (size !== undefined && size >= 2 && size <= 64) {
+                        overrides.dotSize = size;
+                    }
+
+                    break;
+                }
+
+                case "dotradius":
+                case "radius":
+
+                case "rx": {
+                    const radius = parseNumericToken(rawVal);
+
+                    if (radius !== undefined && radius >= 0 && radius <= 32) {
+                        overrides.dotRadius = radius;
+                    }
+
+                    break;
+                }
+
+                case "letterspacing":
+
+                case "tracking": {
+                    const ls = parseNumericToken(rawVal);
+
+                    if (ls !== undefined && ls >= 0 && ls <= 20) {
+                        overrides.letterSpacing = Math.round(ls);
+                    }
+
+                    break;
+                }
+
+                case "wordspacing": {
+                    const ws = parseNumericToken(rawVal);
+
+                    if (ws !== undefined && ws >= 1 && ws <= 40) {
+                        overrides.wordSpacing = Math.round(ws);
+                    }
+
+                    break;
+                }
+
+                case "padx":
+
+                case "paddingx": {
+                    const px = parseNumericToken(rawVal);
+
+                    if (px !== undefined && px >= 0 && px <= 40) {
+                        overrides.padX = Math.round(px);
+                    }
+
+                    break;
+                }
+
+                case "pady":
+
+                case "paddingy": {
+                    const py = parseNumericToken(rawVal);
+
+                    if (py !== undefined && py >= 0 && py <= 40) {
+                        overrides.padY = Math.round(py);
+                    }
+
+                    break;
+                }
+
+                case "rows":
+
+                case "height": {
+                    const r = parseNumericToken(rawVal);
+
+                    if (r !== undefined && r >= 9 && r <= 64) {
+                        overrides.rows = Math.round(r);
+                    }
+
+                    break;
+                }
+
+                case "mincols":
+                case "cols":
+
+                case "columns": {
+                    const c = parseNumericToken(rawVal);
+
+                    if (c !== undefined && c >= 1 && c <= 300) {
+                        overrides.minCols = Math.round(c);
+                    }
+
+                    break;
+                }
+
+                case "flipduration": {
+                    const fd = parseNumericToken(rawVal, true);
+
+                    if (fd !== undefined && fd >= 0.05 && fd <= 5) {
+                        overrides.flipDuration = fd;
+                    }
+
+                    break;
+                }
+
+                case "sweepmax":
+
+                case "sweep": {
+                    const sm = parseNumericToken(rawVal, true);
+
+                    if (sm !== undefined && sm >= 0 && sm <= 5) {
+                        overrides.sweepMax = sm;
+                    }
+
+                    break;
+                }
+
+                default:
+                    // Explicitly ignore renderTech and unknown keys
+                    break;
+            }
+        }
+    }
+
+    const cleanedText = raw.replace(/\s*\$\[[^\]]*\]/g, "").trim();
+
+    return {
+        raw,
+        text: cleanedText,
+        overrides,
+    };
+}
+
+interface ResolvedFrameConfig {
+    theme: string;
+    palette: PaletteDef;
+    dotShape: "circle" | "square";
+    italic: boolean;
+    durationPerText: number;
+    cellPitch: number;
+    dotSize: number;
+    dotRadius: number;
+    letterSpacing?: number;
+    wordSpacing?: number;
+    padX?: number;
+    padY?: number;
+    rows: number;
+    minCols: number;
+    flipDuration: number;
+    sweepMax: number;
+}
+
+function resolveFrameConfig(
+    baseConfig: typeof DEFAULT_SVG_OPTIONS & SvgOptions & { palette: PaletteDef },
+    overrides: FrameOverrides,
+): ResolvedFrameConfig {
+    const theme = overrides.theme && PALETTES[overrides.theme] ? overrides.theme : baseConfig.theme;
+    const palette = overrides.theme && PALETTES[overrides.theme]
+        ? PALETTES[overrides.theme]
+        : baseConfig.palette;
+    const cellPitch = overrides.cellPitch ?? baseConfig.cellPitch;
+    const dotSize = overrides.dotSize ?? (overrides.cellPitch !== undefined ? Math.max(2, cellPitch - 2) : baseConfig.dotSize);
+
+    return {
+        theme,
+        palette,
+        dotShape: (overrides.dotShape ?? baseConfig.dotShape) === "square" ? "square" : "circle",
+        italic: overrides.italic ?? baseConfig.italic,
+        durationPerText: overrides.durationPerText ?? baseConfig.durationPerText ?? 3.8,
+        cellPitch,
+        dotSize,
+        dotRadius: overrides.dotRadius ?? baseConfig.dotRadius ?? 2.2,
+        letterSpacing: overrides.letterSpacing ?? baseConfig.letterSpacing,
+        wordSpacing: overrides.wordSpacing ?? baseConfig.wordSpacing,
+        padX: overrides.padX ?? baseConfig.padX,
+        padY: overrides.padY ?? baseConfig.padY,
+        rows: overrides.rows ?? baseConfig.rows,
+        minCols: overrides.minCols ?? baseConfig.minCols,
+        flipDuration: overrides.flipDuration ?? baseConfig.flipDuration ?? 0.35,
+        sweepMax: overrides.sweepMax ?? baseConfig.sweepMax ?? 0.85,
+    };
+}
+
 function escapeXml(value: string) {
     return String(value)
         .replace(/&/g, "&amp;")
@@ -96,9 +475,8 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const config = {
         ...DEFAULT_SVG_OPTIONS,
         ...Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined && value !== null)),
-    } as typeof DEFAULT_SVG_OPTIONS & SvgOptions;
+    } as typeof DEFAULT_SVG_OPTIONS & SvgOptions & { palette: PaletteDef };
 
-    // Resolve palette preset or custom overrides
     const basePalette = PALETTES[config.theme];
 
     if (!basePalette) {
@@ -110,31 +488,55 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         ...(options.palette || {}),
     };
 
-    const textList = Array.isArray(config.texts) && config.texts.length > 0
+    const rawTextList = Array.isArray(config.texts) && config.texts.length > 0
         ? config.texts
         : [config.text || "hello world"];
 
-    const numTexts = textList.length;
+    const parsedFrames = rawTextList.map(parseFrameMarkup);
+    const numTexts = parsedFrames.length;
+    const frameConfigs = parsedFrames.map(f => resolveFrameConfig(config, f.overrides));
 
-    // Lay out each message to determine common board dimensions
-    const layouts = textList.map(txt =>
+    // Initial pass to find common board dimensions across all frames
+    const initialLayouts = parsedFrames.map((f, idx) =>
         layoutFlipDotMatrix({
-            text: txt,
-            italic: config.italic,
-            rows: config.rows,
-            minCols: config.minCols,
-            letterSpacing: config.letterSpacing,
-            wordSpacing: config.wordSpacing,
-            padX: config.padX,
-            padY: config.padY,
+            text: f.text,
+            italic: frameConfigs[idx].italic,
+            rows: frameConfigs[idx].rows,
+            minCols: frameConfigs[idx].minCols,
+            letterSpacing: frameConfigs[idx].letterSpacing,
+            wordSpacing: frameConfigs[idx].wordSpacing,
+            padX: frameConfigs[idx].padX,
+            padY: frameConfigs[idx].padY,
         }),
     );
 
-    const totalRows = Math.max(...layouts.map(l => l.rows));
-    const totalCols = Math.max(...layouts.map(l => l.cols));
+    const totalRows = Math.max(...initialLayouts.map(l => l.rows));
+    const totalCols = Math.max(...initialLayouts.map(l => l.cols));
 
-    const gridWidth = totalCols * config.cellPitch;
-    const gridHeight = totalRows * config.cellPitch;
+    // Re-center any frame layout whose dimensions were smaller than the shared board matrix
+    const layouts = initialLayouts.map((layout, idx) => {
+        if (layout.rows === totalRows && layout.cols === totalCols) {
+            return layout;
+        }
+
+        return layoutFlipDotMatrix({
+            text: parsedFrames[idx].text,
+            italic: frameConfigs[idx].italic,
+            rows: totalRows,
+            minCols: totalCols,
+            letterSpacing: frameConfigs[idx].letterSpacing,
+            wordSpacing: frameConfigs[idx].wordSpacing,
+            padX: frameConfigs[idx].padX,
+            padY: frameConfigs[idx].padY,
+        });
+    });
+
+    // Resolve board-level pitch and dot size (if all frames share an override, adopt it; otherwise use max pitch so larger dots fit)
+    const boardCellPitch = Math.max(...frameConfigs.map(fc => fc.cellPitch));
+    const boardDotSize = Math.max(...frameConfigs.map(fc => fc.dotSize));
+
+    const gridWidth = totalCols * boardCellPitch;
+    const gridHeight = totalRows * boardCellPitch;
 
     const width = gridWidth + config.boardPaddingX * 2;
     const height = gridHeight + config.boardPaddingY * 2;
@@ -142,33 +544,61 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const gridOriginX = config.boardPaddingX;
     const gridOriginY = config.boardPaddingY;
 
-    const { palette } = config;
-    const dotRadius = config.dotSize / 2;
-    const dotCenterOffset = config.cellPitch / 2;
-    const dotSquareOffset = (config.cellPitch - config.dotSize) / 2;
-    const isCircle = config.dotShape !== "square";
+    // If all frames use the same overridden theme, use it for the board casing as well
+    const allSameTheme = frameConfigs.every(fc => fc.theme === frameConfigs[0].theme);
+    const boardTheme = allSameTheme ? frameConfigs[0].theme : config.theme;
+    const palette = allSameTheme ? frameConfigs[0].palette : config.palette;
 
-    // Total cycle duration and transition timeline
-    const durationPerText = config.durationPerText ?? 3.8;
+    const dotRadius = boardDotSize / 2;
+    const dotCenterOffset = boardCellPitch / 2;
+    const dotSquareOffset = (boardCellPitch - boardDotSize) / 2;
+
+    const allCircle = frameConfigs.every(fc => fc.dotShape !== "square");
+    const allSquare = frameConfigs.every(fc => fc.dotShape === "square");
+    const hasMixedShapes = !allCircle && !allSquare;
+    const isCircle = allCircle;
+
+    // Build extra SVG defs for any frame themes that differ from the base board theme
+    const extraThemes = new Map<string, PaletteDef>();
+
+    for (const fc of frameConfigs) {
+        if (fc.theme !== boardTheme && !extraThemes.has(fc.theme)) {
+            extraThemes.set(fc.theme, fc.palette);
+        }
+    }
+
+    const defsExtra = [...extraThemes.entries()]
+        .map(
+            ([tKey, pal]) => `    <linearGradient id="active-dot-grad-${tKey}" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="${pal.flipFlash}"/>
+      <stop offset="28%" stop-color="${pal.activeDotBright}"/>
+      <stop offset="100%" stop-color="${pal.activeDot}"/>
+    </linearGradient>
+    <filter id="dot-glow-${tKey}" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="1.35" flood-color="${pal.activeDotBright}" flood-opacity="0.45"/>
+    </filter>`,
+        )
+        .join("\n");
+
     const initialHold = config.initialHold ?? 0.8;
-    const flipDuration = config.flipDuration ?? 0.35;
-    const sweepMax = config.sweepMax ?? 0.85;
+    const sweepMax = Math.max(...frameConfigs.map(fc => fc.sweepMax));
 
-    // Single text vs multi-text rotation:
-    // For 1 text: 2 transitions (0 -> Text, Text -> 0 reset)
-    // For N texts: N + 1 transitions (0 -> T0, T0 -> T1, ..., TN-1 -> 0 reset)
+    // Transition timeline using each frame's individual durationPerText
     const numTransitions = numTexts + 1;
-    const cycleSeconds = config.cycleSeconds ?? (initialHold + numTexts * durationPerText + 3.2);
-
-    const tTrans = [];
+    const tTrans: number[] = [];
     let currT = initialHold;
 
     for (let i = 0; i < numTexts; i += 1) {
         tTrans.push(+currT.toFixed(2));
-        currT += durationPerText;
+        currT += frameConfigs[i].durationPerText;
     }
 
     tTrans.push(+currT.toFixed(2));
+
+    const hasCustomDuration = options.durationPerText !== undefined
+        || parsedFrames.some(f => f.overrides.durationPerText !== undefined);
+    const cycleSeconds = options.cycleSeconds
+        ?? (!hasCustomDuration && numTexts === 5 ? config.cycleSeconds : +(currT + 3.2).toFixed(2));
 
     // Compute boolean state sequence for every (row, col)
     const patternMap = new Map<string, {
@@ -195,6 +625,32 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         }
     }
 
+    const gradIdForFrame = (idx: number) => {
+        const fc = frameConfigs[idx];
+        return fc && fc.theme !== boardTheme ? `active-dot-grad-${fc.theme}` : "active-dot-grad";
+    };
+
+    const glowIdForFrame = (idx: number) => {
+        const fc = frameConfigs[idx];
+        return fc && fc.theme !== boardTheme ? `dot-glow-${fc.theme}` : "dot-glow";
+    };
+
+    const scaleForFrame = (idx: number) => {
+        const fc = frameConfigs[idx];
+        return fc ? +(fc.dotSize / boardDotSize).toFixed(3) : 1;
+    };
+
+    const rxCssForFrame = (idx: number) => {
+        const fc = frameConfigs[idx];
+
+        if (!hasMixedShapes || !fc) return "";
+
+        const rxVal = fc.dotShape === "square"
+            ? Math.min(fc.dotRadius, boardDotSize / 2)
+            : dotRadius;
+        return ` rx: ${+rxVal.toFixed(2)}px;`;
+    };
+
     // Build keyframes for all unique non-zero patterns
     const keyframes = [];
 
@@ -207,31 +663,47 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         const kfSteps = [];
 
         kfSteps.push(
-            `  0% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none; }`,
+            `  0% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${rxCssForFrame(0)} }`,
         );
 
         for (let i = 0; i < numTransitions; i += 1) {
             const t0 = tTrans[i];
             const prev = S[i];
             const next = S[i + 1];
+            const prevIdx = Math.max(0, i - 1);
+            const nextIdx = Math.min(numTexts - 1, i);
+            const flipDuration = frameConfigs[nextIdx]?.flipDuration ?? config.flipDuration ?? 0.35;
+
+            const prevPal = frameConfigs[prevIdx]?.palette ?? palette;
+            const nextPal = frameConfigs[nextIdx]?.palette ?? palette;
+            const prevGrad = gradIdForFrame(prevIdx);
+            const nextGrad = gradIdForFrame(nextIdx);
+            const prevGlow = glowIdForFrame(prevIdx);
+            const nextGlow = glowIdForFrame(nextIdx);
+            const prevScale = scaleForFrame(prevIdx);
+            const nextScale = scaleForFrame(nextIdx);
+            const prevRx = rxCssForFrame(prevIdx);
+            const nextRx = rxCssForFrame(nextIdx);
 
             if (prev === 0 && next === 1) {
                 const p0 = +(t0 / cycleSeconds * 100).toFixed(2);
                 const p1 = +((t0 + flipDuration * 0.45) / cycleSeconds * 100).toFixed(2);
                 const p2 = +((t0 + flipDuration * 0.75) / cycleSeconds * 100).toFixed(2);
                 const p3 = +((t0 + flipDuration) / cycleSeconds * 100).toFixed(2);
+                const flashScaleY = +(1.08 * nextScale).toFixed(3);
+                const flashScaleX = +(1.04 * nextScale).toFixed(3);
 
                 kfSteps.push(
-                    `  ${p0}% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none; }`,
+                    `  ${p0}% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${prevRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p1}% { fill: ${palette.zeroHighlight}; stroke: ${palette.activeDotStroke}; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none; }`,
+                    `  ${p1}% { fill: ${nextPal.zeroHighlight}; stroke: ${nextPal.activeDotStroke}; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none;${nextRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p2}% { fill: ${palette.flipFlash}; stroke: #ffffff; transform: scaleY(1.08) scaleX(1.04); filter: url(#dot-glow); }`,
+                    `  ${p2}% { fill: ${nextPal.flipFlash}; stroke: #ffffff; transform: scaleY(${flashScaleY}) scaleX(${flashScaleX}); filter: url(#${nextGlow});${nextRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p3}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#dot-glow); }`,
+                    `  ${p3}% { fill: url(#${nextGrad}); stroke: ${nextPal.activeDotStroke}; transform: scaleY(${nextScale}) scaleX(${nextScale}); filter: url(#${nextGlow});${nextRx} }`,
                 );
             }
             else if (prev === 1 && next === 0) {
@@ -240,34 +712,47 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                 const p2 = +((t0 + flipDuration) / cycleSeconds * 100).toFixed(2);
 
                 kfSteps.push(
-                    `  ${p0}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#dot-glow); }`,
+                    `  ${p0}% { fill: url(#${prevGrad}); stroke: ${prevPal.activeDotStroke}; transform: scaleY(${prevScale}) scaleX(${prevScale}); filter: url(#${prevGlow});${prevRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p1}% { fill: ${palette.zeroHighlight}; stroke: ${palette.zeroDotStroke}; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none; }`,
+                    `  ${p1}% { fill: ${prevPal.zeroHighlight}; stroke: ${palette.zeroDotStroke}; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none;${nextRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p2}% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none; }`,
+                    `  ${p2}% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${nextRx} }`,
                 );
             }
             else if (prev === 1 && next === 1) {
                 const p0 = +(t0 / cycleSeconds * 100).toFixed(2);
                 const p1 = +((t0 + flipDuration * 0.5) / cycleSeconds * 100).toFixed(2);
                 const p2 = +((t0 + flipDuration) / cycleSeconds * 100).toFixed(2);
+                const dipScaleY = +(0.72 * nextScale).toFixed(3);
+                const dipScaleX = +(0.96 * nextScale).toFixed(3);
 
                 kfSteps.push(
-                    `  ${p0}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#dot-glow); }`,
+                    `  ${p0}% { fill: url(#${prevGrad}); stroke: ${prevPal.activeDotStroke}; transform: scaleY(${prevScale}) scaleX(${prevScale}); filter: url(#${prevGlow});${prevRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p1}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(0.72) scaleX(0.96); filter: url(#dot-glow); }`,
+                    `  ${p1}% { fill: url(#${nextGrad}); stroke: ${nextPal.activeDotStroke}; transform: scaleY(${dipScaleY}) scaleX(${dipScaleX}); filter: url(#${nextGlow});${nextRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p2}% { fill: url(#active-dot-grad); stroke: ${palette.activeDotStroke}; transform: scaleY(1) scaleX(1); filter: url(#dot-glow); }`,
+                    `  ${p2}% { fill: url(#${nextGrad}); stroke: ${nextPal.activeDotStroke}; transform: scaleY(${nextScale}) scaleX(${nextScale}); filter: url(#${nextGlow});${nextRx} }`,
+                );
+            }
+            else if (hasMixedShapes && prevRx !== nextRx) {
+                const p0 = +(t0 / cycleSeconds * 100).toFixed(2);
+                const p2 = +((t0 + flipDuration) / cycleSeconds * 100).toFixed(2);
+
+                kfSteps.push(
+                    `  ${p0}% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${prevRx} }`,
+                );
+                kfSteps.push(
+                    `  ${p2}% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${nextRx} }`,
                 );
             }
         }
 
         kfSteps.push(
-            `  100% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none; }`,
+            `  100% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${rxCssForFrame(0)} }`,
         );
 
         keyframes.push(
@@ -278,6 +763,11 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     // Render flip-dots (circles or rounded square rects)
     const dotElements = [];
     const compoundDots: string[] = [];
+    const baseRx = allSquare
+        ? frameConfigs[0]?.dotRadius ?? config.dotRadius ?? 2
+        : frameConfigs[0]?.dotShape === "square"
+            ? Math.min(frameConfigs[0]?.dotRadius ?? 2, boardDotSize / 2)
+            : dotRadius;
 
     for (let r = 0; r < totalRows; r += 1) {
         for (let c = 0; c < totalCols; c += 1) {
@@ -287,9 +777,9 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
             const jitter = (dotJitter(r, c) - 0.5) * 0.08;
             const delay = +(normalizedSweep * sweepMax + jitter).toFixed(3);
 
-            if (isCircle) {
-                const cx = +(gridOriginX + c * config.cellPitch + dotCenterOffset).toFixed(2);
-                const cy = +(gridOriginY + r * config.cellPitch + dotCenterOffset).toFixed(2);
+            if (isCircle && !hasMixedShapes) {
+                const cx = +(gridOriginX + c * boardCellPitch + dotCenterOffset).toFixed(2);
+                const cy = +(gridOriginY + r * boardCellPitch + dotCenterOffset).toFixed(2);
 
                 if (isZeroAll && config.renderTech === "compound-path") {
                     compoundDots.push(`M${(cx - dotRadius).toFixed(2)} ${cy}a${dotRadius} ${dotRadius} 0 1 0 ${dotRadius * 2} 0a${dotRadius} ${dotRadius} 0 1 0 ${-dotRadius * 2} 0`);
@@ -301,18 +791,18 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                 }
             }
             else {
-                const x = +(gridOriginX + c * config.cellPitch + dotSquareOffset).toFixed(2);
-                const y = +(gridOriginY + r * config.cellPitch + dotSquareOffset).toFixed(2);
-                const rx = config.dotRadius ?? 2;
+                const x = +(gridOriginX + c * boardCellPitch + dotSquareOffset).toFixed(2);
+                const y = +(gridOriginY + r * boardCellPitch + dotSquareOffset).toFixed(2);
+                const rx = +baseRx.toFixed(2);
 
                 if (isZeroAll && config.renderTech === "compound-path") {
-                    const radius = Math.min(rx, config.dotSize / 2);
-                    compoundDots.push(`M${(x + radius).toFixed(2)} ${y}h${config.dotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${radius}v${config.dotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${radius}h${-config.dotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${-radius}v${-config.dotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${-radius}z`);
+                    const radius = Math.min(rx, boardDotSize / 2);
+                    compoundDots.push(`M${(x + radius).toFixed(2)} ${y}h${boardDotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${radius}v${boardDotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${radius}h${-boardDotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${-radius}v${-boardDotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${-radius}z`);
                 }
                 else {
                     const cls = isZeroAll ? "d z" : `d z p-${seq}`;
                     const style = isZeroAll ? "" : ` style="animation-delay:${delay}s"`;
-                    dotElements.push(`    <rect class="${cls}" x="${x}" y="${y}" width="${config.dotSize}" height="${config.dotSize}" rx="${rx}"${style}/>`);
+                    dotElements.push(`    <rect class="${cls}" x="${x}" y="${y}" width="${boardDotSize}" height="${boardDotSize}" rx="${rx}"${style}/>`);
                 }
             }
         }
@@ -337,14 +827,14 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         )
         .join("\n");
 
-    const safeLabel = escapeXml(textList.join(" &#8226; "));
+    const safeLabel = escapeXml(parsedFrames.map(f => f.text).join(" • "));
 
     const svg = renderBoardTemplate({
         width,
         height,
         safeLabel,
         palette,
-        defsExtra: "",
+        defsExtra,
         styles: `    .d {
       transform-box: fill-box;
       transform-origin: center;
@@ -379,6 +869,7 @@ ${keyframes.join("\n")}
         height,
         matrix: layouts[0],
         layouts,
+        frames: parsedFrames,
         cols: totalCols,
         rows: totalRows,
     };
@@ -392,9 +883,8 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
     const config = {
         ...DEFAULT_SVG_OPTIONS,
         ...Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined && value !== null)),
-    } as typeof DEFAULT_SVG_OPTIONS & SvgOptions;
+    } as typeof DEFAULT_SVG_OPTIONS & SvgOptions & { palette: PaletteDef };
 
-    // Resolve palette preset or custom overrides
     const basePalette = PALETTES[config.theme];
 
     if (!basePalette) {
@@ -406,38 +896,55 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
         ...(options.palette || {}),
     };
 
-    const textList = Array.isArray(config.texts) && config.texts.length > 0
+    const rawTextList = Array.isArray(config.texts) && config.texts.length > 0
         ? config.texts
         : [config.text || "hello world"];
+
+    const parsedFrames = rawTextList.map(parseFrameMarkup);
+    const frameConfigs = parsedFrames.map(f => resolveFrameConfig(config, f.overrides));
 
     const frameIndex = Math.max(
         0,
         Math.min(
             typeof options.frameIndex === "number" ? options.frameIndex : 0,
-            textList.length - 1,
+            parsedFrames.length - 1,
         ),
     );
-    const currentText = textList[frameIndex];
+    const currentFrame = parsedFrames[frameIndex];
+    const targetConfig = frameConfigs[frameIndex];
 
     // Lay out each message to determine common board dimensions
-    const layouts = textList.map(txt =>
+    const initialLayouts = parsedFrames.map((f, idx) =>
         layoutFlipDotMatrix({
-            text: txt,
-            italic: config.italic,
-            rows: config.rows,
-            minCols: config.minCols,
-            letterSpacing: config.letterSpacing,
-            wordSpacing: config.wordSpacing,
-            padX: config.padX,
-            padY: config.padY,
+            text: f.text,
+            italic: frameConfigs[idx].italic,
+            rows: frameConfigs[idx].rows,
+            minCols: frameConfigs[idx].minCols,
+            letterSpacing: frameConfigs[idx].letterSpacing,
+            wordSpacing: frameConfigs[idx].wordSpacing,
+            padX: frameConfigs[idx].padX,
+            padY: frameConfigs[idx].padY,
         }),
     );
 
-    const totalRows = Math.max(...layouts.map(l => l.rows));
-    const totalCols = Math.max(...layouts.map(l => l.cols));
+    const totalRows = Math.max(...initialLayouts.map(l => l.rows));
+    const totalCols = Math.max(...initialLayouts.map(l => l.cols));
 
-    const gridWidth = totalCols * config.cellPitch;
-    const gridHeight = totalRows * config.cellPitch;
+    const targetLayout = initialLayouts[frameIndex].rows === totalRows && initialLayouts[frameIndex].cols === totalCols
+        ? initialLayouts[frameIndex]
+        : layoutFlipDotMatrix({
+                text: currentFrame.text,
+                italic: targetConfig.italic,
+                rows: totalRows,
+                minCols: totalCols,
+                letterSpacing: targetConfig.letterSpacing,
+                wordSpacing: targetConfig.wordSpacing,
+                padX: targetConfig.padX,
+                padY: targetConfig.padY,
+            });
+
+    const gridWidth = totalCols * targetConfig.cellPitch;
+    const gridHeight = totalRows * targetConfig.cellPitch;
 
     const width = gridWidth + config.boardPaddingX * 2;
     const height = gridHeight + config.boardPaddingY * 2;
@@ -445,13 +952,12 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
     const gridOriginX = config.boardPaddingX;
     const gridOriginY = config.boardPaddingY;
 
-    const { palette } = config;
-    const dotRadius = config.dotSize / 2;
-    const dotCenterOffset = config.cellPitch / 2;
-    const dotSquareOffset = (config.cellPitch - config.dotSize) / 2;
-    const isCircle = config.dotShape !== "square";
+    const { palette } = targetConfig;
+    const dotRadius = targetConfig.dotSize / 2;
+    const dotCenterOffset = targetConfig.cellPitch / 2;
+    const dotSquareOffset = (targetConfig.cellPitch - targetConfig.dotSize) / 2;
+    const isCircle = targetConfig.dotShape !== "square";
 
-    const targetLayout = layouts[frameIndex];
     const dotElements = [];
     let activeCount = 0;
 
@@ -466,8 +972,8 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
             const cls = isLit ? "d a" : "d z";
 
             if (isCircle) {
-                const cx = +(gridOriginX + c * config.cellPitch + dotCenterOffset).toFixed(2);
-                const cy = +(gridOriginY + r * config.cellPitch + dotCenterOffset).toFixed(2);
+                const cx = +(gridOriginX + c * targetConfig.cellPitch + dotCenterOffset).toFixed(2);
+                const cy = +(gridOriginY + r * targetConfig.cellPitch + dotCenterOffset).toFixed(2);
 
                 if (!isLit && config.renderTech === "compound-path") {
                     compoundDots.push(`M${(cx - dotRadius).toFixed(2)} ${cy}a${dotRadius} ${dotRadius} 0 1 0 ${dotRadius * 2} 0a${dotRadius} ${dotRadius} 0 1 0 ${-dotRadius * 2} 0`);
@@ -477,16 +983,16 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
                 }
             }
             else {
-                const x = +(gridOriginX + c * config.cellPitch + dotSquareOffset).toFixed(2);
-                const y = +(gridOriginY + r * config.cellPitch + dotSquareOffset).toFixed(2);
-                const rx = config.dotRadius ?? 2;
+                const x = +(gridOriginX + c * targetConfig.cellPitch + dotSquareOffset).toFixed(2);
+                const y = +(gridOriginY + r * targetConfig.cellPitch + dotSquareOffset).toFixed(2);
+                const rx = targetConfig.dotRadius ?? 2;
 
                 if (!isLit && config.renderTech === "compound-path") {
-                    const radius = Math.min(rx, config.dotSize / 2);
-                    compoundDots.push(`M${(x + radius).toFixed(2)} ${y}h${config.dotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${radius}v${config.dotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${radius}h${-config.dotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${-radius}v${-config.dotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${-radius}z`);
+                    const radius = Math.min(rx, targetConfig.dotSize / 2);
+                    compoundDots.push(`M${(x + radius).toFixed(2)} ${y}h${targetConfig.dotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${radius}v${targetConfig.dotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${radius}h${-targetConfig.dotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${-radius}v${-targetConfig.dotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${-radius}z`);
                 }
                 else {
-                    dotElements.push(`    <rect class="${cls}" x="${x}" y="${y}" width="${config.dotSize}" height="${config.dotSize}" rx="${rx}"/>`);
+                    dotElements.push(`    <rect class="${cls}" x="${x}" y="${y}" width="${targetConfig.dotSize}" height="${targetConfig.dotSize}" rx="${rx}"/>`);
                 }
             }
         }
@@ -511,7 +1017,7 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
         )
         .join("\n");
 
-    const safeLabel = escapeXml(currentText);
+    const safeLabel = escapeXml(currentFrame.text);
 
     const svg = renderBoardTemplate({
         width,
@@ -547,7 +1053,9 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
         svg,
         width,
         height,
-        text: currentText,
+        text: currentFrame.text,
+        rawText: currentFrame.raw,
+        overrides: currentFrame.overrides,
         frameIndex,
         cols: totalCols,
         rows: totalRows,

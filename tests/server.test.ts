@@ -78,4 +78,45 @@ describe("render tech API", () => {
             await app.close();
         }
     });
+
+    it("parses comma-separated per-frame $[...] markup in GET /api/svg, GET /api/frame, and POST /api/generate", async () => {
+        const app = await createFlipApp();
+
+        try {
+            const query = encodeURIComponent("frame 1, frame 2 $[theme=emerald, shape=square, italic=false, duration=2.0], frame 3");
+            const animRes = await app.inject(`/api/svg?texts=${query}`);
+            expect(animRes.statusCode).toBe(200);
+            expect(animRes.body).toContain("<title>frame 1 • frame 2 • frame 3</title>");
+            expect(animRes.body).toContain("id=\"active-dot-grad-emerald\"");
+            expect(animRes.body).not.toContain("$[");
+
+            const frameRes = await app.inject(`/api/frame?texts=${query}&frame=1`);
+            expect(frameRes.statusCode).toBe(200);
+            expect(frameRes.body).toContain("<title>frame 2</title>");
+            expect(frameRes.body).toContain("<rect ");
+
+            const genRes = await app.inject({
+                method: "POST",
+                url: "/api/generate",
+                payload: {
+                    texts: [
+                        "frame 1",
+                        "frame 2 $[theme=emerald, shape=square, italic=false]",
+                    ],
+                },
+            });
+            expect(genRes.statusCode).toBe(200);
+            const json = genRes.json();
+            expect(json.textCount).toBe(2);
+            expect(json.frames[1].text).toBe("frame 2");
+            expect(json.frames[1].overrides).toEqual({
+                theme: "emerald",
+                dotShape: "square",
+                italic: false,
+            });
+        }
+        finally {
+            await app.close();
+        }
+    });
 });

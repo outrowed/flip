@@ -10,6 +10,8 @@ import {
     generateFlipDotSvg,
     generateStillFlipDotFrames,
     generateStillFlipDotSvg,
+    parseFrameMarkup,
+    splitFrameTexts,
 } from "../core/svg.ts";
 import { loadResourcesAsync } from "../core/resources-node.ts";
 import { generatePlaceholder, OutputCache, rasterize } from "./raster.ts";
@@ -80,20 +82,23 @@ export async function createFlipApp(options: {
             return reply.code(400).send({ error: "format must be svg, apng, or webp" });
         }
 
-        if ((params.text?.length ?? params.texts?.length ?? 0) > 500) {
-            return reply.code(400).send({ error: "Text is limited to 500 characters" });
-        }
-
         let texts: string[] | undefined;
 
         if (params.texts) {
-            texts = params.texts
-                .split(",")
-                .map(s => s.trim())
-                .filter(Boolean);
+            texts = splitFrameTexts(params.texts);
         }
         else if (params.text) {
-            texts = [params.text];
+            texts = params.text.includes("\n")
+                ? splitFrameTexts(params.text)
+                : [params.text];
+        }
+
+        const totalDisplayTextLength = (texts ?? [])
+            .map(line => parseFrameMarkup(line).text.length)
+            .reduce((sum, len) => sum + len, 0);
+
+        if (totalDisplayTextLength > 500 || (params.text?.length ?? params.texts?.length ?? 0) > 2000) {
+            return reply.code(400).send({ error: "Text is limited to 500 characters" });
         }
 
         const dotShape = params.shape === "square" ? "square" : "circle";
@@ -273,9 +278,9 @@ export async function createFlipApp(options: {
     app.post<{ Body: GenerateBody }>("/api/generate", async (request, reply) => {
         const payload = request.body || {};
         const texts = Array.isArray(payload.texts) && payload.texts.length > 0
-            ? payload.texts
+            ? payload.texts.flatMap(entry => (entry.includes("\n") ? splitFrameTexts(entry) : [entry.trim()]).filter(Boolean))
             : payload.text
-                ? [payload.text]
+                ? splitFrameTexts(payload.text)
                 : DEFAULT_ROTATING_TEXTS;
 
         const commonOptions = {
@@ -305,6 +310,8 @@ export async function createFlipApp(options: {
             frames: stillFrames.map(f => ({
                 index: f.frameIndex,
                 text: f.text,
+                rawText: f.rawText,
+                overrides: f.overrides,
                 svg: f.svg,
                 width: f.width,
                 height: f.height,
