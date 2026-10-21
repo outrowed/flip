@@ -94,11 +94,34 @@ export async function generatePlaceholder(
     height: number,
     format: "apng" | "webp" | "svg" | "png" = "webp",
     theme = "amber",
+    apiUrl?: string,
 ): Promise<Buffer> {
     const palette: PaletteDef = PALETTES[theme] || PALETTES.amber;
     const titleSize = Math.min(18, Math.max(11, Math.floor(Math.min(height / 11, width / 34))));
     const subSize = Math.min(12, Math.max(9, Math.floor(Math.min(height / 17, width / 52))));
     const yCenter = height / 2;
+
+    const hasUrl = Boolean(apiUrl && apiUrl.trim().length > 0);
+    const lineGap = Math.min(24, Math.max(16, Math.floor(height * 0.11)));
+    const titleY = hasUrl ? yCenter - lineGap : yCenter - 9;
+    const subY = hasUrl ? yCenter - 2 : yCenter + 14;
+    const urlY = yCenter + lineGap;
+
+    let urlElement = "";
+
+    if (apiUrl && apiUrl.trim().length > 0) {
+        const cleanUrl = apiUrl.trim();
+        const fitSize = Math.floor((width - 48) / (cleanUrl.length * 0.58));
+        const urlSize = Math.min(16, Math.max(10, Math.min(Math.floor(height / 14), fitSize)));
+        const escapedUrl = cleanUrl
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&apos;");
+
+        urlElement = `  <text x="${width / 2}" y="${urlY}" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="${urlSize}" font-weight="600" fill="#94a3b8" letter-spacing="0.2" text-anchor="middle" dominant-baseline="middle">${escapedUrl}</text>`;
+    }
 
     const template = getLoadedPlaceholderTemplate();
     const replacements: Record<string, string> = {
@@ -111,10 +134,11 @@ export async function generatePlaceholder(
         screwRightX: String(width - 20),
         screwBottomY: String(height - 20),
         centerX: String(width / 2),
-        titleY: String(yCenter - 9),
-        subY: String(yCenter + 14),
+        titleY: String(titleY),
+        subY: String(subY),
         titleSize: String(titleSize),
         subSize: String(subSize),
+        urlElement,
     };
 
     for (const [key, value] of Object.entries(palette)) {

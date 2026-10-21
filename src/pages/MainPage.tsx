@@ -18,6 +18,8 @@ export function MainPage() {
     const [outputType, setOutputType] = useState<"svg" | "apng" | "webp">("svg");
     const [rasterPreviewUrl, setRasterPreviewUrl] = useState<string | null>(null);
     const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+    const [rasterProgress, setRasterProgress] = useState(0);
+    const [rasterElapsed, setRasterElapsed] = useState(0);
     const [isExporting, setIsExporting] = useState(false);
     const [rawText, setRawText] = useState(PRESETS.rotation.join("\n"));
     const [dotShape, setDotShape] = useState<"circle" | "square">("circle");
@@ -129,6 +131,33 @@ export function MainPage() {
         return `${origin}/api/svg?${params.toString()}`;
     }, [texts, dotShape, renderTech, theme, italic, durationPerText, cellPitch, outputType]);
 
+    const isRasterLoading = (outputType !== "svg" && isPreviewLoading) || isExporting;
+
+    useEffect(() => {
+        if (!isRasterLoading) {
+            setRasterProgress(0);
+            setRasterElapsed(0);
+            return;
+        }
+
+        const startTime = Date.now();
+        const estimatedMs = Math.max(3000, texts.length * 3600);
+
+        const interval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            setRasterElapsed(elapsed);
+
+            const ratio = elapsed / estimatedMs;
+            const pct = Math.min(
+                95,
+                Math.round(88 * (1 - Math.exp(-2 * ratio)) + (ratio > 1 ? (1 - Math.exp(-0.4 * (ratio - 1))) * 7 : 0)),
+            );
+            setRasterProgress(pct);
+        }, 100);
+
+        return () => clearInterval(interval);
+    }, [isRasterLoading, texts.length]);
+
     useEffect(() => {
         if (outputType === "svg") {
             setRasterPreviewUrl(null);
@@ -150,14 +179,20 @@ export function MainPage() {
             .then((blob) => {
                 if (controller.signal.aborted) return;
 
+                setRasterProgress(100);
                 objectUrl = URL.createObjectURL(blob);
-                setRasterPreviewUrl(objectUrl);
+                setTimeout(() => {
+                    if (!controller.signal.aborted) {
+                        setRasterPreviewUrl(objectUrl);
+                        setIsPreviewLoading(false);
+                    }
+                }, 150);
             })
             .catch((error) => {
-                if (!controller.signal.aborted) showToast((error as Error).message);
-            })
-            .finally(() => {
-                if (!controller.signal.aborted) setIsPreviewLoading(false);
+                if (!controller.signal.aborted) {
+                    showToast((error as Error).message);
+                    setIsPreviewLoading(false);
+                }
             });
 
         return () => {
@@ -533,18 +568,49 @@ export function MainPage() {
                         }`}
                     >
                         <img
-                            hidden={outputType !== "svg" && isPreviewLoading}
                             src={previewUrl}
                             alt={label}
-                            className={`w-full max-w-5xl rounded-lg shadow-2xl ${outputType !== "svg" && isPreviewLoading ? "hidden" : "block"}`}
+                            className={`w-full max-w-5xl rounded-lg shadow-2xl transition-opacity duration-300 ${outputType !== "svg" && isPreviewLoading ? "opacity-20 blur-[1px]" : "opacity-100"}`}
                         />
                         {outputType !== "svg" && isPreviewLoading && (
-                            <div className="absolute rounded bg-[#080a0f]/80 px-3 py-2 text-xs text-[#cbd5e1]">
-                                Rendering
-                                {" "}
-                                {outputType.toUpperCase()}
-                                {" "}
-                                preview...
+                            <div className="absolute flex flex-col items-center gap-3 rounded-xl border border-[#202736] bg-[#080a0f]/90 p-6 shadow-2xl backdrop-blur-md max-w-sm w-full mx-4 text-center">
+                                <div className="flex items-center gap-2.5">
+                                    <svg className="h-4 w-4 animate-spin text-[#f59e0b]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                    </svg>
+                                    <span className="text-sm font-semibold text-[#f1f5f9]">
+                                        Rendering
+                                        {" "}
+                                        {outputType.toUpperCase()}
+                                        {" "}
+                                        Preview
+                                    </span>
+                                </div>
+                                <p className="text-xs text-[#94a3b8]">
+                                    Sampling 24 FPS animation across
+                                    {" "}
+                                    {texts.length}
+                                    {" "}
+                                    {texts.length === 1 ? "phrase" : "phrases"}
+                                    ...
+                                </p>
+                                <div className="w-full h-2 rounded-full bg-[#161c26] overflow-hidden border border-[#202736]">
+                                    <div
+                                        className="h-full bg-gradient-to-r from-[#d97706] to-[#fbbf24] transition-all duration-150 ease-out rounded-full"
+                                        style={{ width: `${rasterProgress}%` }}
+                                    />
+                                </div>
+                                <div className="flex w-full justify-between text-[11px] font-mono text-[#64748b]">
+                                    <span>
+                                        {rasterProgress}
+                                        %
+                                    </span>
+                                    <span>
+                                        {(rasterElapsed / 1000).toFixed(1)}
+                                        s
+                                    </span>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -614,7 +680,7 @@ export function MainPage() {
                                         }}
                                         className="rounded-r-md border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white disabled:opacity-50"
                                     >
-                                        {isExporting ? "Rendering..." : "Download"}
+                                        {isExporting ? `Rendering ${rasterProgress}%...` : "Download"}
                                     </button>
                                 </div>
                             )}

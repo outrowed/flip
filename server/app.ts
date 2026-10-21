@@ -201,7 +201,10 @@ export async function createFlipApp(options: {
             });
 
             // Return a 1-frame placeholder immediately matching exact board dimensions
-            const placeholder = await generatePlaceholder(boardWidth, boardHeight, rasterFormat, theme);
+            const proto = (request.headers["x-forwarded-proto"] as string) || "https";
+            const host = (request.headers["x-forwarded-host"] as string) || request.headers.host || "flip.taruna.me";
+            const fullUrl = `${proto}://${host}${request.raw.url || request.url}`;
+            const placeholder = await generatePlaceholder(boardWidth, boardHeight, rasterFormat, theme, fullUrl);
             const placeholderEtag = `W/"placeholder-${key.slice(0, 16)}"`;
 
             reply.header("Content-Type", `image/${rasterFormat}`);
@@ -243,11 +246,16 @@ export async function createFlipApp(options: {
             return reply.code(400).send({ error: "Invalid width or height dimensions" });
         }
 
+        const proto = (request.headers["x-forwarded-proto"] as string) || "https";
+        const host = (request.headers["x-forwarded-host"] as string) || request.headers.host || "flip.taruna.me";
+        const fullUrl = `${proto}://${host}${request.raw.url || request.url}`;
+
         const placeholder = await generatePlaceholder(
             width,
             height,
             format === "svg" ? "svg" : format === "apng" ? "apng" : format === "png" ? "png" : "webp",
             theme,
+            fullUrl,
         );
 
         const contentType = format === "svg"

@@ -22,4 +22,5 @@
   <!-- Notice text -->
   <text x="{{centerX}}" y="{{titleY}}" font-family="system-ui, -apple-system, sans-serif" font-size="{{titleSize}}" font-weight="700" fill="{{palette.activeDotBright}}" letter-spacing="1.2" text-anchor="middle" dominant-baseline="middle">GENERATING FLIP-DOT ANIMATION...</text>
   <text x="{{centerX}}" y="{{subY}}" font-family="system-ui, -apple-system, sans-serif" font-size="{{subSize}}" fill="#94a3b8" letter-spacing="0.4" text-anchor="middle" dominant-baseline="middle">Please wait for a moment • Reload from time to time to view</text>
+{{urlElement}}
 </svg>

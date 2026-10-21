@@ -73,8 +73,12 @@ describe("raster output", () => {
     });
 
     it("generates placeholders with exact dimensions and proper format encoding", async () => {
-        const pWebp = await generatePlaceholder(640, 180, "webp", "amber");
+        const testUrl = "https://flip.taruna.me/api/svg?texts=hello+world&format=webp";
+        const pWebp = await generatePlaceholder(640, 180, "webp", "amber", testUrl);
         const pPng = await generatePlaceholder(640, 180, "apng", "emerald");
+        const pSvg = await generatePlaceholder(640, 180, "svg", "amber", testUrl);
+
+        expect(pSvg.toString("utf8")).toContain("https://flip.taruna.me/api/svg?texts=hello+world&amp;format=webp");
 
         const metaWebp = await sharp(pWebp).metadata();
         expect(metaWebp.width).toBe(640);
