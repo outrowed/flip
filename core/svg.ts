@@ -48,6 +48,8 @@ export const DEFAULT_SVG_OPTIONS = {
 export type Palette = PaletteDef;
 export type SvgOptions = Partial<Omit<typeof DEFAULT_SVG_OPTIONS, "palette">> & {
     palette?: Partial<Palette>;
+    color?: string;
+    background?: string;
     frameIndex?: number;
     letterSpacing?: number;
     wordSpacing?: number;
@@ -61,6 +63,8 @@ export type SvgOptions = Partial<Omit<typeof DEFAULT_SVG_OPTIONS, "palette">> & 
  * Note: `renderTech` is intentionally excluded from per-frame customization.
  */
 export interface FrameOverrides {
+    color?: string;
+    background?: string;
     theme?: string;
     dotShape?: "circle" | "square";
     italic?: boolean;
@@ -99,6 +103,10 @@ function parseNumericToken(rawVal: string, allowMilliseconds = false): number | 
     const cleaned = lower.replace(/(px|s|deg)$/, "").trim();
     const num = Number.parseFloat(cleaned);
     return Number.isFinite(num) ? num : undefined;
+}
+
+function isValidColorToken(val: string): boolean {
+    return VALID_THEMES.has(val) || /^#[0-9a-f]{3,8}$/i.test(val);
 }
 
 /**
@@ -181,13 +189,39 @@ export function parseFrameMarkup(rawLine: string): ParsedFrameSpec {
             if (!normKey || !rawVal) continue;
 
             switch (normKey) {
+                case "color":
+                case "dotcolor":
+                case "textcolor":
+                case "fg":
+
+                case "foreground": {
+                    if (isValidColorToken(valLower)) {
+                        overrides.color = valLower;
+                    }
+
+                    break;
+                }
+
+                case "background":
+                case "bg":
+                case "bgcolor":
+
+                case "boardbg": {
+                    if (isValidColorToken(valLower)) {
+                        overrides.background = valLower;
+                    }
+
+                    break;
+                }
+
                 case "theme":
                 case "colortheme":
-                case "palette":
 
-                case "color": {
+                case "palette": {
                     if (VALID_THEMES.has(valLower)) {
                         overrides.theme = valLower;
+                        overrides.color = valLower;
+                        overrides.background = valLower;
                     }
 
                     break;
@@ -384,8 +418,80 @@ export function parseFrameMarkup(rawLine: string): ParsedFrameSpec {
     };
 }
 
+function resolveColorPalette(token: string | undefined, defaultTheme: string): {
+    key: string;
+    palette: PaletteDef;
+} {
+    const key = token?.trim() ? token.trim().toLowerCase() : defaultTheme;
+
+    if (PALETTES[key]) {
+        return {
+            key,
+            palette: PALETTES[key],
+        };
+    }
+
+    if (/^#[0-9a-f]{3,8}$/i.test(key)) {
+        const base = PALETTES[defaultTheme] ?? PALETTES.amber;
+        return {
+            key,
+            palette: {
+                ...base,
+                activeDot: key,
+                activeDotBright: key,
+                activeDotStroke: key,
+                flipFlash: "#ffffff",
+                zeroHighlight: key,
+            },
+        };
+    }
+
+    const fallbackKey = VALID_THEMES.has(defaultTheme) ? defaultTheme : "amber";
+    return {
+        key: fallbackKey,
+        palette: PALETTES[fallbackKey] ?? PALETTES.amber,
+    };
+}
+
+function resolveBgPalette(token: string | undefined, defaultTheme: string): {
+    key: string;
+    palette: PaletteDef;
+} {
+    const key = token?.trim() ? token.trim().toLowerCase() : defaultTheme;
+
+    if (PALETTES[key]) {
+        return {
+            key,
+            palette: PALETTES[key],
+        };
+    }
+
+    if (/^#[0-9a-f]{3,8}$/i.test(key)) {
+        const base = PALETTES[defaultTheme] ?? PALETTES.amber;
+        return {
+            key,
+            palette: {
+                ...base,
+                recessBg: key,
+                zeroDot: key,
+                zeroDotStroke: key,
+                casingOuter: key,
+            },
+        };
+    }
+
+    const fallbackKey = VALID_THEMES.has(defaultTheme) ? defaultTheme : "amber";
+    return {
+        key: fallbackKey,
+        palette: PALETTES[fallbackKey] ?? PALETTES.amber,
+    };
+}
+
 interface ResolvedFrameConfig {
-    theme: string;
+    colorKey: string;
+    bgKey: string;
+    colorPalette: PaletteDef;
+    bgPalette: PaletteDef;
     palette: PaletteDef;
     dotShape: "circle" | "square";
     italic: boolean;
@@ -407,16 +513,34 @@ function resolveFrameConfig(
     baseConfig: typeof DEFAULT_SVG_OPTIONS & SvgOptions & { palette: PaletteDef },
     overrides: FrameOverrides,
 ): ResolvedFrameConfig {
-    const theme = overrides.theme && PALETTES[overrides.theme] ? overrides.theme : baseConfig.theme;
-    const palette = overrides.theme && PALETTES[overrides.theme]
-        ? PALETTES[overrides.theme]
-        : baseConfig.palette;
+    const defaultTheme = baseConfig.theme || "amber";
+    const baseColorKey = baseConfig.color || defaultTheme;
+    const baseBgKey = baseConfig.background || defaultTheme;
+
+    const frameColorToken = overrides.color ?? overrides.theme ?? baseColorKey;
+    const frameBgToken = overrides.background ?? overrides.theme ?? baseBgKey;
+
+    const { key: colorKey, palette: colorPalette } = resolveColorPalette(frameColorToken, baseColorKey);
+    const { key: bgKey, palette: bgPalette } = resolveBgPalette(frameBgToken, baseBgKey);
+
+    const mergedPalette: PaletteDef = {
+        ...bgPalette,
+        activeDot: colorPalette.activeDot,
+        activeDotBright: colorPalette.activeDotBright,
+        activeDotStroke: colorPalette.activeDotStroke,
+        flipFlash: colorPalette.flipFlash,
+        zeroHighlight: colorPalette.zeroHighlight,
+    };
+
     const cellPitch = overrides.cellPitch ?? baseConfig.cellPitch;
     const dotSize = overrides.dotSize ?? (overrides.cellPitch !== undefined ? Math.max(2, cellPitch - 2) : baseConfig.dotSize);
 
     return {
-        theme,
-        palette,
+        colorKey,
+        bgKey,
+        colorPalette,
+        bgPalette,
+        palette: mergedPalette,
         dotShape: (overrides.dotShape ?? baseConfig.dotShape) === "square" ? "square" : "circle",
         italic: overrides.italic ?? baseConfig.italic,
         durationPerText: overrides.durationPerText ?? baseConfig.durationPerText ?? 3.8,
@@ -448,6 +572,10 @@ function dotJitter(row: number, col: number) {
     return seed - Math.floor(seed);
 }
 
+function sanitizeId(val: string): string {
+    return val.replace(/[^a-z0-9_-]+/gi, "-");
+}
+
 function renderBoardTemplate(values: Record<string, string | number | PaletteDef | Partial<PaletteDef>>): string {
     const template = getLoadedBoardTemplate();
     const palette = values.palette as PaletteDef;
@@ -477,7 +605,8 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         ...Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined && value !== null)),
     } as typeof DEFAULT_SVG_OPTIONS & SvgOptions & { palette: PaletteDef };
 
-    const basePalette = PALETTES[config.theme];
+    const baseTheme = config.theme || "amber";
+    const basePalette = PALETTES[baseTheme] ?? PALETTES.amber;
 
     if (!basePalette) {
         throw new Error(`Unknown palette: ${config.theme}`);
@@ -531,7 +660,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         });
     });
 
-    // Resolve board-level pitch and dot size (if all frames share an override, adopt it; otherwise use max pitch so larger dots fit)
+    // Resolve board-level pitch and dot size
     const boardCellPitch = Math.max(...frameConfigs.map(fc => fc.cellPitch));
     const boardDotSize = Math.max(...frameConfigs.map(fc => fc.dotSize));
 
@@ -544,10 +673,18 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const gridOriginX = config.boardPaddingX;
     const gridOriginY = config.boardPaddingY;
 
-    // If all frames use the same overridden theme, use it for the board casing as well
-    const allSameTheme = frameConfigs.every(fc => fc.theme === frameConfigs[0].theme);
-    const boardTheme = allSameTheme ? frameConfigs[0].theme : config.theme;
-    const palette = allSameTheme ? frameConfigs[0].palette : config.palette;
+    // Board background palette (from frame 0 or common background)
+    const allSameBg = frameConfigs.every(fc => fc.bgKey === frameConfigs[0].bgKey);
+    const boardBgPalette = allSameBg ? frameConfigs[0].bgPalette : config.palette;
+    const boardColorPalette = frameConfigs[0].colorPalette;
+    const boardPalette: PaletteDef = {
+        ...boardBgPalette,
+        activeDot: boardColorPalette.activeDot,
+        activeDotBright: boardColorPalette.activeDotBright,
+        activeDotStroke: boardColorPalette.activeDotStroke,
+        flipFlash: boardColorPalette.flipFlash,
+        zeroHighlight: boardColorPalette.zeroHighlight,
+    };
 
     const dotRadius = boardDotSize / 2;
     const dotCenterOffset = boardCellPitch / 2;
@@ -558,26 +695,27 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const hasMixedShapes = !allCircle && !allSquare;
     const isCircle = allCircle;
 
-    // Build extra SVG defs for any frame themes that differ from the base board theme
-    const extraThemes = new Map<string, PaletteDef>();
+    // Build extra SVG defs for any active dot color gradients used across frames
+    const colorDefsMap = new Map<string, PaletteDef>();
 
     for (const fc of frameConfigs) {
-        if (fc.theme !== boardTheme && !extraThemes.has(fc.theme)) {
-            extraThemes.set(fc.theme, fc.palette);
+        if (!colorDefsMap.has(fc.colorKey)) {
+            colorDefsMap.set(fc.colorKey, fc.colorPalette);
         }
     }
 
-    const defsExtra = [...extraThemes.entries()]
-        .map(
-            ([tKey, pal]) => `    <linearGradient id="active-dot-grad-${tKey}" x1="0%" y1="0%" x2="100%" y2="100%">
+    const defsExtra = [...colorDefsMap.entries()]
+        .map(([cKey, pal]) => {
+            const safeKey = sanitizeId(cKey);
+            return `    <linearGradient id="active-dot-grad-${safeKey}" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="${pal.flipFlash}"/>
       <stop offset="28%" stop-color="${pal.activeDotBright}"/>
       <stop offset="100%" stop-color="${pal.activeDot}"/>
     </linearGradient>
-    <filter id="dot-glow-${tKey}" x="-20%" y="-20%" width="140%" height="140%">
+    <filter id="dot-glow-${safeKey}" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="0" stdDeviation="1.35" flood-color="${pal.activeDotBright}" flood-opacity="0.45"/>
-    </filter>`,
-        )
+    </filter>`;
+        })
         .join("\n");
 
     const initialHold = config.initialHold ?? 0.8;
@@ -627,12 +765,12 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
 
     const gradIdForFrame = (idx: number) => {
         const fc = frameConfigs[idx];
-        return fc && fc.theme !== boardTheme ? `active-dot-grad-${fc.theme}` : "active-dot-grad";
+        return fc ? `active-dot-grad-${sanitizeId(fc.colorKey)}` : "active-dot-grad";
     };
 
     const glowIdForFrame = (idx: number) => {
         const fc = frameConfigs[idx];
-        return fc && fc.theme !== boardTheme ? `dot-glow-${fc.theme}` : "dot-glow";
+        return fc ? `dot-glow-${sanitizeId(fc.colorKey)}` : "dot-glow";
     };
 
     const scaleForFrame = (idx: number) => {
@@ -663,7 +801,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         const kfSteps = [];
 
         kfSteps.push(
-            `  0% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${rxCssForFrame(0)} }`,
+            `  0% { fill: ${frameConfigs[0].bgPalette.zeroDot}; stroke: ${frameConfigs[0].bgPalette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${rxCssForFrame(0)} }`,
         );
 
         for (let i = 0; i < numTransitions; i += 1) {
@@ -674,8 +812,11 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
             const nextIdx = Math.min(numTexts - 1, i);
             const flipDuration = frameConfigs[nextIdx]?.flipDuration ?? config.flipDuration ?? 0.35;
 
-            const prevPal = frameConfigs[prevIdx]?.palette ?? palette;
-            const nextPal = frameConfigs[nextIdx]?.palette ?? palette;
+            const prevColorPal = frameConfigs[prevIdx]?.colorPalette ?? boardPalette;
+            const nextColorPal = frameConfigs[nextIdx]?.colorPalette ?? boardPalette;
+            const prevBgPal = frameConfigs[prevIdx]?.bgPalette ?? boardPalette;
+            const nextBgPal = frameConfigs[nextIdx]?.bgPalette ?? boardPalette;
+
             const prevGrad = gradIdForFrame(prevIdx);
             const nextGrad = gradIdForFrame(nextIdx);
             const prevGlow = glowIdForFrame(prevIdx);
@@ -694,16 +835,16 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                 const flashScaleX = +(1.04 * nextScale).toFixed(3);
 
                 kfSteps.push(
-                    `  ${p0}% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${prevRx} }`,
+                    `  ${p0}% { fill: ${prevBgPal.zeroDot}; stroke: ${prevBgPal.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${prevRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p1}% { fill: ${nextPal.zeroHighlight}; stroke: ${nextPal.activeDotStroke}; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none;${nextRx} }`,
+                    `  ${p1}% { fill: ${nextColorPal.zeroHighlight}; stroke: ${nextColorPal.activeDotStroke}; transform: scaleY(0.08) scaleX(0.92) skewX(-8deg); filter: none;${nextRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p2}% { fill: ${nextPal.flipFlash}; stroke: #ffffff; transform: scaleY(${flashScaleY}) scaleX(${flashScaleX}); filter: url(#${nextGlow});${nextRx} }`,
+                    `  ${p2}% { fill: ${nextColorPal.flipFlash}; stroke: #ffffff; transform: scaleY(${flashScaleY}) scaleX(${flashScaleX}); filter: url(#${nextGlow});${nextRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p3}% { fill: url(#${nextGrad}); stroke: ${nextPal.activeDotStroke}; transform: scaleY(${nextScale}) scaleX(${nextScale}); filter: url(#${nextGlow});${nextRx} }`,
+                    `  ${p3}% { fill: url(#${nextGrad}); stroke: ${nextColorPal.activeDotStroke}; transform: scaleY(${nextScale}) scaleX(${nextScale}); filter: url(#${nextGlow});${nextRx} }`,
                 );
             }
             else if (prev === 1 && next === 0) {
@@ -712,13 +853,13 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                 const p2 = +((t0 + flipDuration) / cycleSeconds * 100).toFixed(2);
 
                 kfSteps.push(
-                    `  ${p0}% { fill: url(#${prevGrad}); stroke: ${prevPal.activeDotStroke}; transform: scaleY(${prevScale}) scaleX(${prevScale}); filter: url(#${prevGlow});${prevRx} }`,
+                    `  ${p0}% { fill: url(#${prevGrad}); stroke: ${prevColorPal.activeDotStroke}; transform: scaleY(${prevScale}) scaleX(${prevScale}); filter: url(#${prevGlow});${prevRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p1}% { fill: ${prevPal.zeroHighlight}; stroke: ${palette.zeroDotStroke}; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none;${nextRx} }`,
+                    `  ${p1}% { fill: ${prevColorPal.zeroHighlight}; stroke: ${nextBgPal.zeroDotStroke}; transform: scaleY(0.08) scaleX(0.92) skewX(8deg); filter: none;${nextRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p2}% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${nextRx} }`,
+                    `  ${p2}% { fill: ${nextBgPal.zeroDot}; stroke: ${nextBgPal.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${nextRx} }`,
                 );
             }
             else if (prev === 1 && next === 1) {
@@ -729,35 +870,70 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                 const dipScaleX = +(0.96 * nextScale).toFixed(3);
 
                 kfSteps.push(
-                    `  ${p0}% { fill: url(#${prevGrad}); stroke: ${prevPal.activeDotStroke}; transform: scaleY(${prevScale}) scaleX(${prevScale}); filter: url(#${prevGlow});${prevRx} }`,
+                    `  ${p0}% { fill: url(#${prevGrad}); stroke: ${prevColorPal.activeDotStroke}; transform: scaleY(${prevScale}) scaleX(${prevScale}); filter: url(#${prevGlow});${prevRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p1}% { fill: url(#${nextGrad}); stroke: ${nextPal.activeDotStroke}; transform: scaleY(${dipScaleY}) scaleX(${dipScaleX}); filter: url(#${nextGlow});${nextRx} }`,
+                    `  ${p1}% { fill: url(#${nextGrad}); stroke: ${nextColorPal.activeDotStroke}; transform: scaleY(${dipScaleY}) scaleX(${dipScaleX}); filter: url(#${nextGlow});${nextRx} }`,
                 );
                 kfSteps.push(
-                    `  ${p2}% { fill: url(#${nextGrad}); stroke: ${nextPal.activeDotStroke}; transform: scaleY(${nextScale}) scaleX(${nextScale}); filter: url(#${nextGlow});${nextRx} }`,
+                    `  ${p2}% { fill: url(#${nextGrad}); stroke: ${nextColorPal.activeDotStroke}; transform: scaleY(${nextScale}) scaleX(${nextScale}); filter: url(#${nextGlow});${nextRx} }`,
                 );
             }
-            else if (hasMixedShapes && prevRx !== nextRx) {
+            else {
+                // prev === 0 && next === 0
                 const p0 = +(t0 / cycleSeconds * 100).toFixed(2);
                 const p2 = +((t0 + flipDuration) / cycleSeconds * 100).toFixed(2);
 
-                kfSteps.push(
-                    `  ${p0}% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${prevRx} }`,
-                );
-                kfSteps.push(
-                    `  ${p2}% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${nextRx} }`,
-                );
+                if (prevBgPal.zeroDot !== nextBgPal.zeroDot || prevRx !== nextRx) {
+                    kfSteps.push(
+                        `  ${p0}% { fill: ${prevBgPal.zeroDot}; stroke: ${prevBgPal.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${prevRx} }`,
+                    );
+                    kfSteps.push(
+                        `  ${p2}% { fill: ${nextBgPal.zeroDot}; stroke: ${nextBgPal.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${nextRx} }`,
+                    );
+                }
             }
         }
 
         kfSteps.push(
-            `  100% { fill: ${palette.zeroDot}; stroke: ${palette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${rxCssForFrame(0)} }`,
+            `  100% { fill: ${frameConfigs[0].bgPalette.zeroDot}; stroke: ${frameConfigs[0].bgPalette.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${rxCssForFrame(0)} }`,
         );
 
         keyframes.push(
             `    @keyframes k-${seq} {\n${kfSteps.join("\n")}\n    }\n    .p-${seq} {\n      animation: k-${seq} ${cycleSeconds}s cubic-bezier(0.22, 1, 0.36, 1) infinite;\n    }`,
         );
+    }
+
+    // Build background animation for recess bezel and zero-dots if backgrounds vary across frames
+    let bgAnimationStyles = "";
+    const hasVaryingBg = frameConfigs.some(fc => fc.bgKey !== frameConfigs[0].bgKey);
+
+    if (hasVaryingBg) {
+        const recessSteps = [];
+        const zeroSteps = [];
+
+        recessSteps.push(`  0% { fill: ${frameConfigs[0].bgPalette.recessBg}; }`);
+        zeroSteps.push(`  0% { fill: ${frameConfigs[0].bgPalette.zeroDot}; stroke: ${frameConfigs[0].bgPalette.zeroDotStroke}; }`);
+
+        for (let i = 0; i < numTransitions; i += 1) {
+            const t0 = tTrans[i];
+            const nextIdx = Math.min(numTexts - 1, i);
+            const flipDuration = frameConfigs[nextIdx]?.flipDuration ?? config.flipDuration ?? 0.35;
+            const p0 = +(t0 / cycleSeconds * 100).toFixed(2);
+            const p2 = +((t0 + flipDuration) / cycleSeconds * 100).toFixed(2);
+            const pal = frameConfigs[nextIdx].bgPalette;
+
+            recessSteps.push(`  ${p0}% { fill: ${pal.recessBg}; }`);
+            recessSteps.push(`  ${p2}% { fill: ${pal.recessBg}; }`);
+
+            zeroSteps.push(`  ${p0}% { fill: ${pal.zeroDot}; stroke: ${pal.zeroDotStroke}; }`);
+            zeroSteps.push(`  ${p2}% { fill: ${pal.zeroDot}; stroke: ${pal.zeroDotStroke}; }`);
+        }
+
+        recessSteps.push(`  100% { fill: ${frameConfigs[0].bgPalette.recessBg}; }`);
+        zeroSteps.push(`  100% { fill: ${frameConfigs[0].bgPalette.zeroDot}; stroke: ${frameConfigs[0].bgPalette.zeroDotStroke}; }`);
+
+        bgAnimationStyles = `\n    @keyframes k-recess-bg {\n${recessSteps.join("\n")}\n    }\n    .recess-bezel {\n      animation: k-recess-bg ${cycleSeconds}s cubic-bezier(0.22, 1, 0.36, 1) infinite;\n    }\n    @keyframes k-zero-bg {\n${zeroSteps.join("\n")}\n    }\n    .z-bg {\n      animation: k-zero-bg ${cycleSeconds}s cubic-bezier(0.22, 1, 0.36, 1) infinite;\n    }`;
     }
 
     // Render flip-dots (circles or rounded square rects)
@@ -768,6 +944,8 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         : frameConfigs[0]?.dotShape === "square"
             ? Math.min(frameConfigs[0]?.dotRadius ?? 2, boardDotSize / 2)
             : dotRadius;
+
+    const zeroStaticClass = hasVaryingBg ? "d z z-bg" : "d z";
 
     for (let r = 0; r < totalRows; r += 1) {
         for (let c = 0; c < totalCols; c += 1) {
@@ -785,7 +963,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                     compoundDots.push(`M${(cx - dotRadius).toFixed(2)} ${cy}a${dotRadius} ${dotRadius} 0 1 0 ${dotRadius * 2} 0a${dotRadius} ${dotRadius} 0 1 0 ${-dotRadius * 2} 0`);
                 }
                 else {
-                    const cls = isZeroAll ? "d z" : `d z p-${seq}`;
+                    const cls = isZeroAll ? zeroStaticClass : `d z p-${seq}`;
                     const style = isZeroAll ? "" : ` style="animation-delay:${delay}s"`;
                     dotElements.push(`    <circle class="${cls}" cx="${cx}" cy="${cy}" r="${dotRadius}"${style}/>`);
                 }
@@ -800,7 +978,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                     compoundDots.push(`M${(x + radius).toFixed(2)} ${y}h${boardDotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${radius}v${boardDotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${radius}h${-boardDotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${-radius}v${-boardDotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${-radius}z`);
                 }
                 else {
-                    const cls = isZeroAll ? "d z" : `d z p-${seq}`;
+                    const cls = isZeroAll ? zeroStaticClass : `d z p-${seq}`;
                     const style = isZeroAll ? "" : ` style="animation-delay:${delay}s"`;
                     dotElements.push(`    <rect class="${cls}" x="${x}" y="${y}" width="${boardDotSize}" height="${boardDotSize}" rx="${rx}"${style}/>`);
                 }
@@ -815,14 +993,14 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         [width - 14, height - 14],
     ];
 
-    if (compoundDots.length > 0) dotElements.unshift(`    <path class="d z" d="${compoundDots.join("")}"/>`);
+    if (compoundDots.length > 0) dotElements.unshift(`    <path class="${zeroStaticClass}" d="${compoundDots.join("")}"/>`);
 
     const screwsSvg = screwPositions
         .map(
             ([sx, sy]) =>
                 `    <g transform="translate(${sx},${sy})">
-      <circle r="4.5" fill="${palette.screwFill}" stroke="${palette.casingStroke}" stroke-width="1"/>
-      <line x1="-2.6" y1="-1.5" x2="2.6" y2="1.5" stroke="${palette.screwSlot}" stroke-width="1.2" stroke-linecap="round"/>
+      <circle r="4.5" fill="${boardPalette.screwFill}" stroke="${boardPalette.casingStroke}" stroke-width="1"/>
+      <line x1="-2.6" y1="-1.5" x2="2.6" y2="1.5" stroke="${boardPalette.screwSlot}" stroke-width="1.2" stroke-linecap="round"/>
     </g>`,
         )
         .join("\n");
@@ -833,7 +1011,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         width,
         height,
         safeLabel,
-        palette,
+        palette: boardPalette,
         defsExtra,
         styles: `    .d {
       transform-box: fill-box;
@@ -841,16 +1019,16 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
       stroke-width: 0.75px;
     }
     .z {
-      fill: ${palette.zeroDot};
-      stroke: ${palette.zeroDotStroke};
+      fill: ${boardPalette.zeroDot};
+      stroke: ${boardPalette.zeroDotStroke};
     }
-${keyframes.join("\n")}
+${keyframes.join("\n")}${bgAnimationStyles}
     @media (prefers-reduced-motion: reduce) {
       .d[class*="p-"] {
         animation: none;
-        fill: url(#active-dot-grad);
-        stroke: ${palette.activeDotStroke};
-        filter: url(#dot-glow);
+        fill: url(#active-dot-grad-${sanitizeId(frameConfigs[0].colorKey)});
+        stroke: ${boardPalette.activeDotStroke};
+        filter: url(#dot-glow-${sanitizeId(frameConfigs[0].colorKey)});
       }
     }`,
         frameWidth: width - 2,
@@ -885,7 +1063,8 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
         ...Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined && value !== null)),
     } as typeof DEFAULT_SVG_OPTIONS & SvgOptions & { palette: PaletteDef };
 
-    const basePalette = PALETTES[config.theme];
+    const baseTheme = config.theme || "amber";
+    const basePalette = PALETTES[baseTheme] ?? PALETTES.amber;
 
     if (!basePalette) {
         throw new Error(`Unknown palette: ${config.theme}`);

@@ -23,7 +23,7 @@
   <rect x="1" y="1" width="{{frameWidth}}" height="{{frameHeight}}" rx="12" fill="url(#casing-grad)" stroke="{{palette.casingStroke}}" stroke-width="2"/>
 
   <!-- Inner recessed bezel -->
-  <rect x="{{recessX}}" y="{{recessY}}" width="{{recessWidth}}" height="{{recessHeight}}" rx="6" fill="{{palette.recessBg}}" stroke="#1b2230" stroke-width="1.5"/>
+  <rect class="recess-bezel" x="{{recessX}}" y="{{recessY}}" width="{{recessWidth}}" height="{{recessHeight}}" rx="6" fill="{{palette.recessBg}}" stroke="#1b2230" stroke-width="1.5"/>
 
   <!-- Corner mounting screws -->
 {{screwsSvg}}

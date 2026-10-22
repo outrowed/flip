@@ -111,6 +111,8 @@ describe("render tech API", () => {
             expect(json.frames[1].text).toBe("frame 2");
             expect(json.frames[1].overrides).toEqual({
                 theme: "emerald",
+                color: "emerald",
+                background: "emerald",
                 dotShape: "square",
                 italic: false,
             });

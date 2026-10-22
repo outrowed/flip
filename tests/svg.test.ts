@@ -123,6 +123,8 @@ describe("frame-by-frame markup ($[key=value, ...])", () => {
         expect(parsed.text).toBe("frame 2");
         expect(parsed.overrides).toEqual({
             theme: "emerald",
+            color: "emerald",
+            background: "emerald",
             dotShape: "square",
             italic: false,
             durationPerText: 2.4,
@@ -135,11 +137,11 @@ describe("frame-by-frame markup ($[key=value, ...])", () => {
         expect("renderTech" in parsed.overrides).toBe(false);
     });
 
-    it("applies per-frame theme, shape, typography, hold duration, and pitch overrides in animated and still SVGs", () => {
+    it("applies per-frame color, background, shape, typography, hold duration, and pitch overrides", () => {
         const texts = [
             "frame 1",
-            "frame 2 $[theme=emerald, shape=square, italic=false, duration=2.0, pitch=16]",
-            "frame 3 $[theme=crimson, duration=1.5]",
+            "frame 2 $[color=emerald, background=crimson, shape=square, italic=false, duration=2.0, pitch=16]",
+            "frame 3 $[color=crimson, background=cyan, duration=1.5]",
         ];
 
         const anim = generateFlipDotSvg({
@@ -155,12 +157,16 @@ describe("frame-by-frame markup ($[key=value, ...])", () => {
         expect(anim.svg).toContain("<title>frame 1 • frame 2 • frame 3</title>");
         expect(anim.svg).not.toContain("$[");
 
-        // Extra theme gradients and glow filters injected for emerald and crimson
+        // Color gradients and glow filters are independent from the board background.
         expect(anim.svg).toContain("id=\"active-dot-grad-emerald\"");
         expect(anim.svg).toContain("id=\"dot-glow-emerald\"");
         expect(anim.svg).toContain("id=\"active-dot-grad-crimson\"");
         expect(anim.svg).toContain("url(#active-dot-grad-emerald)");
         expect(anim.svg).toContain("url(#active-dot-grad-crimson)");
+        expect(anim.svg).toContain("class=\"recess-bezel\"");
+        expect(anim.svg).toContain("@keyframes k-recess-bg");
+        expect(anim.svg).toContain(PALETTES.crimson.recessBg);
+        expect(anim.svg).toContain(PALETTES.cyan.recessBg);
 
         // Mixed circle + square shapes morph rx in keyframes
         expect(anim.svg).toContain("rx: 2.2px;");
@@ -200,12 +206,15 @@ describe("frame-by-frame markup ($[key=value, ...])", () => {
 
         expect(stills[1].text).toBe("frame 2");
         expect(stills[1].svg).toContain(PALETTES.emerald.activeDot);
+        expect(stills[1].svg).toContain(PALETTES.crimson.recessBg);
         expect(stills[1].svg).toContain("<rect ");
-        expect(stills[1].overrides.theme).toBe("emerald");
+        expect(stills[1].overrides.color).toBe("emerald");
+        expect(stills[1].overrides.background).toBe("crimson");
         expect(stills[1].overrides.dotShape).toBe("square");
         expect(stills[1].overrides.italic).toBe(false);
 
         expect(stills[2].text).toBe("frame 3");
         expect(stills[2].svg).toContain(PALETTES.crimson.activeDot);
+        expect(stills[2].svg).toContain(PALETTES.cyan.recessBg);
     });
 });

@@ -14,9 +14,9 @@ const PRESETS: Record<string, string[]> = {
     terminal: ["system online", "all checks green", "ready for input"],
     minimal: ["taruna", "outrowed"],
     markup: [
-        "alert status $[theme=crimson, shape=square, duration=2.4]",
-        "calibrating $[theme=cyan, italic=false, letterSpacing=2]",
-        "nominal $[theme=emerald, shape=circle, duration=4.2]",
+        "alert status $[color=crimson, background=amber, shape=square, duration=2.4]",
+        "calibrating $[color=cyan, background=emerald, italic=false, letterSpacing=2]",
+        "nominal $[color=emerald, background=crimson, shape=circle, duration=4.2]",
     ],
 };
 
@@ -24,6 +24,10 @@ function formatOverridesSummary(overrides?: FrameOverrides): string[] {
     if (!overrides) return [];
 
     const badges: string[] = [];
+
+    if (overrides.color) badges.push(`color=${overrides.color}`);
+
+    if (overrides.background) badges.push(`background=${overrides.background}`);
 
     if (overrides.theme) badges.push(`theme=${overrides.theme}`);
 
@@ -64,6 +68,7 @@ export function MainPage() {
     const [activeTab, setActiveTab] = useState<"markdown" | "html" | "api" | "embed">("markdown");
     const [toast, setToast] = useState<string | null>(null);
     const [isZipping, setIsZipping] = useState(false);
+    const [showMarkupGuide, setShowMarkupGuide] = useState(false);
     const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const showToast = useCallback((msg: string) => {
@@ -351,48 +356,90 @@ export function MainPage() {
                                 </button>
                             ))}
                         </div>
-                        <div className="rounded-lg border border-[#202736] bg-[#080a0f]/80 px-3 py-2 text-[11px] leading-relaxed text-[#64748b]">
-                            <span className="font-semibold text-[#94a3b8]">Per-frame markup:</span>
-                            {" "}
-                            append
-                            {" "}
-                            <code className="rounded bg-[#161c26] px-1 py-0.5 font-mono text-[#f59e0b]">
-                                $[key=value, ...]
-                            </code>
-                            {" "}
-                            to any line (e.g.
-                            {" "}
-                            <code className="font-mono text-[#cbd5e1]">
-                                frame 2 $[theme=emerald, shape=square, italic=false, duration=2.5, pitch=16]
-                            </code>
-                            ). Supports
-                            {" "}
-                            <code className="font-mono text-[#94a3b8]">theme</code>
-                            ,
-                            {" "}
-                            <code className="font-mono text-[#94a3b8]">shape</code>
-                            ,
-                            {" "}
-                            <code className="font-mono text-[#94a3b8]">italic</code>
-                            ,
-                            {" "}
-                            <code className="font-mono text-[#94a3b8]">duration</code>
-                            ,
-                            {" "}
-                            <code className="font-mono text-[#94a3b8]">pitch</code>
-                            ,
-                            {" "}
-                            <code className="font-mono text-[#94a3b8]">dotSize</code>
-                            ,
-                            {" "}
-                            <code className="font-mono text-[#94a3b8]">dotRadius</code>
-                            ,
-                            {" "}
-                            <code className="font-mono text-[#94a3b8]">letterSpacing</code>
-                            ,
-                            {" "}
-                            <code className="font-mono text-[#94a3b8]">wordSpacing</code>
-                            .
+                        <div className="relative">
+                            <button
+                                type="button"
+                                aria-expanded={showMarkupGuide}
+                                aria-controls="frame-markup-guide"
+                                onClick={() => setShowMarkupGuide(value => !value)}
+                                className="rounded border border-[#202736] bg-[#161c26] px-2 py-1 text-[11px] font-medium text-[#94a3b8] transition hover:border-[#f59e0b] hover:text-[#f1f5f9]"
+                            >
+                                {showMarkupGuide ? "Hide markup guide" : "Per-frame markup guide"}
+                            </button>
+                            {showMarkupGuide && (
+                                <div
+                                    id="frame-markup-guide"
+                                    role="dialog"
+                                    aria-label="Per-frame markup guide"
+                                    className="absolute left-0 top-full z-20 mt-2 w-full rounded-lg border border-[#38455d] bg-[#0a0d14] p-4 text-[11px] leading-relaxed text-[#94a3b8] shadow-2xl"
+                                >
+                                    <div className="mb-2 flex items-center justify-between">
+                                        <span className="font-semibold text-[#f1f5f9]">Per-frame display options</span>
+                                        <button type="button" aria-label="Close markup guide" onClick={() => setShowMarkupGuide(false)} className="rounded px-2 py-0.5 text-[#94a3b8] hover:bg-[#202736] hover:text-white">×</button>
+                                    </div>
+                                    Append
+                                    {" "}
+                                    <code className="rounded bg-[#161c26] px-1 py-0.5 font-mono text-[#f59e0b]">$[key=value, ...]</code>
+                                    {" "}
+                                    to a frame line. For example:
+                                    <pre className="my-2 overflow-x-auto rounded bg-[#080a0f] p-2 font-mono text-[#cbd5e1]">frame 2 $[color=emerald, background=#10141d, shape=square, italic=false, duration=2.5, pitch=16]</pre>
+                                    <p>
+                                        <code>color</code>
+                                        {" "}
+                                        changes active dot/text color;
+                                        {" "}
+                                        <code>background</code>
+                                        {" "}
+                                        changes board background. Either accepts a palette name or hex color. Other keys include
+                                        {" "}
+                                        <code>shape</code>
+                                        ,
+                                        {" "}
+                                        <code>italic</code>
+                                        ,
+                                        {" "}
+                                        <code>duration</code>
+                                        ,
+                                        {" "}
+                                        <code>pitch</code>
+                                        ,
+                                        {" "}
+                                        <code>dotSize</code>
+                                        ,
+                                        {" "}
+                                        <code>dotRadius</code>
+                                        ,
+                                        {" "}
+                                        <code>letterSpacing</code>
+                                        ,
+                                        {" "}
+                                        <code>wordSpacing</code>
+                                        ,
+                                        {" "}
+                                        <code>padX</code>
+                                        ,
+                                        {" "}
+                                        <code>padY</code>
+                                        ,
+                                        {" "}
+                                        <code>rows</code>
+                                        ,
+                                        {" "}
+                                        <code>minCols</code>
+                                        ,
+                                        {" "}
+                                        <code>flipDuration</code>
+                                        , and
+                                        {" "}
+                                        <code>sweepMax</code>
+                                        .
+                                        {" "}
+                                        <code>renderTech</code>
+                                        {" "}
+                                        is board-wide and cannot be overridden.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -697,72 +744,63 @@ export function MainPage() {
                     {/* Export Bar with Grouped Action Buttons */}
                     <div className="flex flex-wrap items-center justify-between border-t border-[#202736] bg-[#0f131a] px-5 py-3 gap-3">
                         <div className="flex flex-wrap items-center gap-3">
-                            {/* SVG output actions */}
-                            {outputType === "svg" && (
-                                <div className="inline-flex rounded-lg border border-[#202736] bg-[#080a0f] p-0.5 shadow-sm">
-                                    <span className="inline-flex items-center rounded-l-md bg-[#f59e0b] px-3 py-1.5 text-xs font-bold text-[#080a0f] tracking-wide select-none">
-                                        SVG
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() => download(generated.svg, "flip.svg", "image/svg+xml")}
-                                        className="border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
-                                        title="Download standalone animated SVG"
-                                    >
-                                        Download Animated
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleCopy(generated.svg, "Raw SVG markup copied!")}
-                                        className="rounded-r-md border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
-                                        title="Copy raw SVG markup to clipboard"
-                                    >
-                                        Copy Raw
-                                    </button>
-                                </div>
-                            )}
+                            <div className="inline-flex rounded-lg border border-[#202736] bg-[#080a0f] p-0.5 shadow-sm">
+                                <span className="inline-flex items-center rounded-l-md bg-[#f59e0b] px-3 py-1.5 text-xs font-bold text-[#080a0f] tracking-wide select-none">
+                                    {outputType.toUpperCase()}
+                                </span>
+                                {outputType === "svg"
+                                    ? (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => download(generated.svg, "flip.svg", "image/svg+xml")}
+                                                    className="border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
+                                                    title="Download standalone animated SVG"
+                                                >
+                                                    Download Animated
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleCopy(generated.svg, "Raw SVG markup copied!")}
+                                                    className="rounded-r-md border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white"
+                                                    title="Copy raw SVG markup to clipboard"
+                                                >
+                                                    Copy Raw
+                                                </button>
+                                            </>
+                                        )
+                                    : (
+                                            <button
+                                                type="button"
+                                                disabled={isExporting}
+                                                onClick={async () => {
+                                                    setIsExporting(true);
 
-                            {outputType !== "svg" && (
-                                <div key={outputType} className="inline-flex rounded-lg border border-[#202736] bg-[#080a0f] p-0.5 shadow-sm">
-                                    <button
-                                        type="button"
-                                        onClick={() => setOutputType(outputType)}
-                                        className="inline-flex items-center rounded-l-md bg-[#f59e0b] px-3 py-1.5 text-xs font-bold text-[#080a0f] tracking-wide"
-                                    >
-                                        {outputType.toUpperCase()}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        disabled={isExporting}
-                                        onClick={async () => {
-                                            setIsExporting(true);
+                                                    try {
+                                                        const params = new URLSearchParams(queryUrl.split("?")[1] ?? "");
+                                                        params.set("format", outputType);
+                                                        params.set("sync", "true");
+                                                        const response = await fetch(`${window.location.origin}/api/svg?${params}`);
 
-                                            try {
-                                                const params = new URLSearchParams(queryUrl.split("?")[1] ?? "");
-                                                params.set("format", outputType);
-                                                params.set("sync", "true");
-                                                const url = `${window.location.origin}/api/svg?${params}`;
-                                                const response = await fetch(url);
+                                                        if (!response.ok) throw new Error(`Could not render ${outputType.toUpperCase()}. Please retry or use SVG.`);
 
-                                                if (!response.ok) throw new Error(`Could not render ${outputType.toUpperCase()}. Please retry or use SVG.`);
-
-                                                const blob = await response.blob();
-                                                download(blob, `flip.${outputType}`, `image/${outputType}`);
-                                                showToast(`${outputType.toUpperCase()} downloaded`);
-                                            }
-                                            catch (error) {
-                                                showToast((error as Error).message);
-                                            }
-                                            finally {
-                                                setIsExporting(false);
-                                            }
-                                        }}
-                                        className="rounded-r-md border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white disabled:opacity-50"
-                                    >
-                                        {isExporting ? `Rendering ${rasterProgress}%...` : "Download"}
-                                    </button>
-                                </div>
-                            )}
+                                                        const blob = await response.blob();
+                                                        download(blob, `flip.${outputType}`, `image/${outputType}`);
+                                                        showToast(`${outputType.toUpperCase()} downloaded`);
+                                                    }
+                                                    catch (error) {
+                                                        showToast((error as Error).message);
+                                                    }
+                                                    finally {
+                                                        setIsExporting(false);
+                                                    }
+                                                }}
+                                                className="rounded-r-md border-l border-[#202736] bg-[#161c26] px-3 py-1.5 text-xs font-medium text-[#cbd5e1] transition hover:bg-[#202736] hover:text-white disabled:opacity-50"
+                                            >
+                                                Download
+                                            </button>
+                                        )}
+                            </div>
 
                             {/* Group 2: Live API (Legend: Live API | Copy URL | Copy Markdown URL) */}
                             <div className="inline-flex rounded-lg border border-[#202736] bg-[#080a0f] p-0.5 shadow-sm">
