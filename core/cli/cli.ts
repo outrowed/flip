@@ -10,8 +10,8 @@ import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { renderMatrixAscii } from "../matrix.ts";
-import { generateFlipDotSvg, splitFrameTexts } from "../svg.ts";
 import { loadResourcesSync } from "../resources-node.ts";
+import { generateFlipDotSvg, parseDisplayParams, splitFrameTexts } from "../svg.ts";
 
 export function runCli(argv = process.argv.slice(2)) {
     loadResourcesSync();
@@ -40,6 +40,18 @@ export function runCli(argv = process.argv.slice(2)) {
             "theme": {
                 type: "string",
                 default: "amber",
+            },
+            "color": {
+                type: "string",
+                default: "",
+            },
+            "background": {
+                type: "string",
+                default: "",
+            },
+            "align": {
+                type: "string",
+                default: "center",
             },
             "duration": {
                 type: "string",
@@ -81,16 +93,23 @@ export function runCli(argv = process.argv.slice(2)) {
         texts = values.text.includes("\n") ? splitFrameTexts(values.text) : [values.text];
     }
 
-    const options = {
-        texts,
-        dotShape: (values.shape === "square" ? "square" : "circle") as "square" | "circle",
-        theme: values.theme as "amber" | "emerald" | "white" | "cyan" | "crimson",
+    const displayParams = parseDisplayParams({
+        shape: values.shape,
+        theme: values.theme,
+        color: values.color || undefined,
+        background: values.background || undefined,
+        align: values.align,
         italic: !values["no-italic"],
-        durationPerText: Number.parseFloat(values.duration || "3.8"),
-        cellPitch: Number.parseFloat(values.pitch || "14"),
-        dotSize: Number.parseFloat(values["dot-size"] || "12"),
-        minCols: Number.parseInt(values["min-cols"] || "86", 10),
-        rows: Number.parseInt(values.rows || "13", 10),
+        duration: values.duration,
+        pitch: values.pitch,
+        dotSize: values["dot-size"],
+        minCols: values["min-cols"],
+        rows: values.rows,
+    });
+
+    const options = {
+        ...displayParams,
+        texts,
     };
 
     const result = generateFlipDotSvg(options);

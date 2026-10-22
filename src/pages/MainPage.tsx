@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+    appendDisplaySearchParams,
     DEFAULT_ROTATING_TEXTS,
+    type DisplayParams,
+    type DotShape,
     type FrameOverrides,
     generateFlipDotSvg,
     generateStillFlipDotFrames,
     PALETTES,
+    type TextAlign,
 } from "../../core/svg.ts";
 import { download, downloadFrames, png } from "../export.ts";
 
@@ -14,9 +18,9 @@ const PRESETS: Record<string, string[]> = {
     terminal: ["system online", "all checks green", "ready for input"],
     minimal: ["taruna", "outrowed"],
     markup: [
-        "alert status $[color=crimson, background=amber, shape=square, duration=2.4]",
-        "calibrating $[color=cyan, background=emerald, italic=false, letterSpacing=2]",
-        "nominal $[color=emerald, background=crimson, shape=circle, duration=4.2]",
+        "alert status $[color=crimson, background=amber, shape=square, align=left, duration=2.4]",
+        "calibrating $[color=cyan, background=emerald, italic=false, align=center, letterSpacing=2]",
+        "nominal $[color=emerald, background=crimson, shape=circle, align=right, duration=4.2]",
     ],
 };
 
@@ -31,21 +35,23 @@ function formatOverridesSummary(overrides?: FrameOverrides): string[] {
 
     if (overrides.theme) badges.push(`theme=${overrides.theme}`);
 
-    if (overrides.dotShape) badges.push(`shape=${overrides.dotShape}`);
+    if (overrides.shape) badges.push(`shape=${overrides.shape}`);
 
-    if (overrides.italic !== undefined) badges.push(overrides.italic ? "italic" : "upright");
+    if (overrides.italic !== undefined) badges.push(`italic=${overrides.italic}`);
 
-    if (overrides.durationPerText !== undefined) badges.push(`${overrides.durationPerText}s`);
+    if (overrides.align) badges.push(`align=${overrides.align}`);
 
-    if (overrides.cellPitch !== undefined) badges.push(`pitch=${overrides.cellPitch}px`);
+    if (overrides.duration !== undefined) badges.push(`duration=${overrides.duration}s`);
 
-    if (overrides.dotSize !== undefined) badges.push(`size=${overrides.dotSize}px`);
+    if (overrides.pitch !== undefined) badges.push(`pitch=${overrides.pitch}px`);
 
-    if (overrides.dotRadius !== undefined) badges.push(`rx=${overrides.dotRadius}`);
+    if (overrides.dotSize !== undefined) badges.push(`dotSize=${overrides.dotSize}px`);
 
-    if (overrides.letterSpacing !== undefined) badges.push(`ls=${overrides.letterSpacing}`);
+    if (overrides.dotRadius !== undefined) badges.push(`dotRadius=${overrides.dotRadius}`);
 
-    if (overrides.wordSpacing !== undefined) badges.push(`ws=${overrides.wordSpacing}`);
+    if (overrides.letterSpacing !== undefined) badges.push(`letterSpacing=${overrides.letterSpacing}`);
+
+    if (overrides.wordSpacing !== undefined) badges.push(`wordSpacing=${overrides.wordSpacing}`);
 
     return badges;
 }
@@ -58,12 +64,13 @@ export function MainPage() {
     const [rasterElapsed, setRasterElapsed] = useState(0);
     const [isExporting, setIsExporting] = useState(false);
     const [rawText, setRawText] = useState(PRESETS.rotation.join("\n"));
-    const [dotShape, setDotShape] = useState<"circle" | "square">("circle");
+    const [shape, setShape] = useState<DotShape>("circle");
     const [renderTech, setRenderTech] = useState<"compound-path" | "original">("compound-path");
     const [italic, setItalic] = useState(true);
+    const [align, setAlign] = useState<TextAlign>("center");
     const [theme, setTheme] = useState<keyof typeof PALETTES>("amber");
-    const [durationPerText, setDurationPerText] = useState(3.8);
-    const [cellPitch, setCellPitch] = useState(14);
+    const [duration, setDuration] = useState(3.8);
+    const [pitch, setPitch] = useState(14);
     const [bgTheme, setBgTheme] = useState<"dark" | "light" | "grid">("dark");
     const [activeTab, setActiveTab] = useState<"markdown" | "html" | "api" | "embed">("markdown");
     const [toast, setToast] = useState<string | null>(null);
@@ -91,21 +98,24 @@ export function MainPage() {
         return lines.length > 0 ? lines : ["hello world"];
     }, [rawText]);
 
-    const dotSize = cellPitch - 2;
+    const displayParams = useMemo<DisplayParams>(() => ({
+        shape,
+        italic,
+        align,
+        theme,
+        duration,
+        pitch,
+        dotSize: pitch - 2,
+    }), [shape, italic, align, theme, duration, pitch]);
 
     // Generated live animated SVG and telemetry
     const generated = useMemo(() => {
         return generateFlipDotSvg({
+            ...displayParams,
             texts,
-            dotShape,
             renderTech,
-            italic,
-            theme,
-            durationPerText,
-            cellPitch,
-            dotSize,
         });
-    }, [texts, dotShape, renderTech, italic, theme, durationPerText, cellPitch, dotSize]);
+    }, [displayParams, texts, renderTech]);
 
     // Data URI for the live preview to guarantee CSS isolation
     const generatedDataUri = useMemo(() => {
@@ -117,15 +127,11 @@ export function MainPage() {
     // Generated settled still frames (no CSS keyframe transitions)
     const stillFrames = useMemo(() => {
         return generateStillFlipDotFrames({
+            ...displayParams,
             texts,
-            dotShape,
             renderTech,
-            italic,
-            theme,
-            cellPitch,
-            dotSize,
         });
-    }, [texts, dotShape, renderTech, italic, theme, cellPitch, dotSize]);
+    }, [displayParams, texts, renderTech]);
 
     // Data URIs for still frames to prevent CSS class leakage
     const stillFrameDataUris = useMemo(() => {
@@ -153,20 +159,12 @@ export function MainPage() {
             params.set("text", texts[0]);
         }
 
-        if (dotShape !== "circle") params.set("shape", dotShape);
+        appendDisplaySearchParams(params, displayParams);
 
         if (renderTech !== "compound-path") params.set("renderTech", renderTech);
 
-        if (theme !== "amber") params.set("theme", theme);
-
-        if (!italic) params.set("italic", "false");
-
-        if (durationPerText !== 3.8) params.set("duration", String(durationPerText));
-
-        if (cellPitch !== 14) params.set("pitch", String(cellPitch));
-
         return `${origin}/api/svg?${params.toString()}`;
-    }, [texts, dotShape, renderTech, theme, italic, durationPerText, cellPitch, outputType]);
+    }, [texts, displayParams, renderTech, outputType]);
 
     const isRasterLoading = (outputType !== "svg" && isPreviewLoading) || isExporting;
 
@@ -297,12 +295,13 @@ export function MainPage() {
 
     const handleReset = useCallback(() => {
         setRawText(PRESETS.rotation.join("\n"));
-        setDotShape("circle");
+        setShape("circle");
         setRenderTech("compound-path");
         setItalic(true);
+        setAlign("center");
         setTheme("amber");
-        setDurationPerText(3.8);
-        setCellPitch(14);
+        setDuration(3.8);
+        setPitch(14);
         showToast("Reset to default rotation");
     }, [showToast]);
 
@@ -382,7 +381,7 @@ export function MainPage() {
                                     <code className="rounded bg-[#161c26] px-1 py-0.5 font-mono text-[#f59e0b]">$[key=value, ...]</code>
                                     {" "}
                                     to a frame line. For example:
-                                    <pre className="my-2 overflow-x-auto rounded bg-[#080a0f] p-2 font-mono text-[#cbd5e1]">frame 2 $[color=emerald, background=#10141d, shape=square, italic=false, duration=2.5, pitch=16]</pre>
+                                    <pre className="my-2 overflow-x-auto rounded bg-[#080a0f] p-2 font-mono text-[#cbd5e1]">frame 2 $[color=emerald, background=#10141d, shape=square, italic=false, align=left, duration=2.5, pitch=16]</pre>
                                     <p>
                                         <code>color</code>
                                         {" "}
@@ -390,13 +389,25 @@ export function MainPage() {
                                         {" "}
                                         <code>background</code>
                                         {" "}
-                                        changes board background. Either accepts a palette name or hex color. Other keys include
+                                        changes board background. Either accepts a palette name or hex color. Other keys match URL parameters:
                                         {" "}
                                         <code>shape</code>
                                         ,
                                         {" "}
                                         <code>italic</code>
                                         ,
+                                        {" "}
+                                        <code>align</code>
+                                        {" "}
+                                        (
+                                        <code>left</code>
+                                        ,
+                                        {" "}
+                                        <code>center</code>
+                                        ,
+                                        {" "}
+                                        <code>right</code>
+                                        ),
                                         {" "}
                                         <code>duration</code>
                                         ,
@@ -462,15 +473,15 @@ export function MainPage() {
                             <div className="grid grid-cols-2 rounded-lg border border-[#202736] bg-[#080a0f] p-1 gap-1">
                                 <button
                                     type="button"
-                                    onClick={() => setDotShape("circle")}
-                                    className={`rounded py-1.5 text-xs font-semibold transition ${dotShape === "circle" ? "bg-[#f59e0b] text-[#080a0f]" : "text-[#94a3b8] hover:text-[#f1f5f9]"}`}
+                                    onClick={() => setShape("circle")}
+                                    className={`rounded py-1.5 text-xs font-semibold transition ${shape === "circle" ? "bg-[#f59e0b] text-[#080a0f]" : "text-[#94a3b8] hover:text-[#f1f5f9]"}`}
                                 >
                                     Round
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => setDotShape("square")}
-                                    className={`rounded py-1.5 text-xs font-semibold transition ${dotShape === "square" ? "bg-[#f59e0b] text-[#080a0f]" : "text-[#94a3b8] hover:text-[#f1f5f9]"}`}
+                                    onClick={() => setShape("square")}
+                                    className={`rounded py-1.5 text-xs font-semibold transition ${shape === "square" ? "bg-[#f59e0b] text-[#080a0f]" : "text-[#94a3b8] hover:text-[#f1f5f9]"}`}
                                 >
                                     Square
                                 </button>
@@ -499,6 +510,25 @@ export function MainPage() {
                                     Upright
                                 </button>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Text Alignment Control */}
+                    <div className="flex flex-col gap-1.5">
+                        <span className="text-xs font-medium text-[#94a3b8]">
+                            Text Align
+                        </span>
+                        <div className="grid grid-cols-3 rounded-lg border border-[#202736] bg-[#080a0f] p-1 gap-1">
+                            {(["left", "center", "right"] as const).map(mode => (
+                                <button
+                                    key={mode}
+                                    type="button"
+                                    onClick={() => setAlign(mode)}
+                                    className={`rounded py-1.5 text-xs font-semibold capitalize transition ${align === mode ? "bg-[#f59e0b] text-[#080a0f]" : "text-[#94a3b8] hover:text-[#f1f5f9]"}`}
+                                >
+                                    {mode}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
@@ -572,7 +602,7 @@ export function MainPage() {
                                     Hold Duration
                                 </label>
                                 <span className="font-mono text-xs text-[#f59e0b]">
-                                    {durationPerText}
+                                    {duration}
                                     s
                                 </span>
                             </div>
@@ -582,8 +612,8 @@ export function MainPage() {
                                 min="1.0"
                                 max="10.0"
                                 step="0.2"
-                                value={durationPerText}
-                                onChange={e => setDurationPerText(Number.parseFloat(e.target.value))}
+                                value={duration}
+                                onChange={e => setDuration(Number.parseFloat(e.target.value))}
                                 className="accent-[#f59e0b]"
                             />
                         </div>
@@ -594,7 +624,7 @@ export function MainPage() {
                                     Dot Pitch
                                 </label>
                                 <span className="font-mono text-xs text-[#f59e0b]">
-                                    {cellPitch}
+                                    {pitch}
                                     px
                                 </span>
                             </div>
@@ -604,8 +634,8 @@ export function MainPage() {
                                 min="10"
                                 max="22"
                                 step="1"
-                                value={cellPitch}
-                                onChange={e => setCellPitch(Number.parseInt(e.target.value, 10))}
+                                value={pitch}
+                                onChange={e => setPitch(Number.parseInt(e.target.value, 10))}
                                 className="accent-[#f59e0b]"
                             />
                         </div>

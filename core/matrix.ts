@@ -1,13 +1,17 @@
 /**
  * Assembles text strings onto a 2D boolean flip-dot matrix with optional
- * italic forward-shear, customizable padding, and character spacing.
+ * italic forward-shear, customizable padding, horizontal alignment, and character spacing.
  */
 
 import { FONT_HEIGHT, getGlyph, getItalicShift } from "./font.ts";
+import type { TextAlign } from "./params.ts";
+
+export type { TextAlign } from "./params.ts";
 
 export const DEFAULT_MATRIX_OPTIONS = {
     text: "hello world",
     italic: true,
+    align: "center" as TextAlign,
     letterSpacing: 2,
     wordSpacing: 5,
     padX: 3,
@@ -16,11 +20,15 @@ export const DEFAULT_MATRIX_OPTIONS = {
     rows: 13,
 };
 
+export type MatrixOptions = Partial<typeof DEFAULT_MATRIX_OPTIONS> & {
+    textAlign?: TextAlign;
+};
+
 /**
  * Renders the requested text into an upright 2D array of booleans
  * of height `FONT_HEIGHT` before italic shearing or board framing.
  */
-export function buildUprightTextBitmap(text: string, options: Partial<typeof DEFAULT_MATRIX_OPTIONS> = {}) {
+export function buildUprightTextBitmap(text: string, options: MatrixOptions = {}) {
     const letterSpacing = options.letterSpacing ?? DEFAULT_MATRIX_OPTIONS.letterSpacing;
     const wordSpacing = options.wordSpacing ?? DEFAULT_MATRIX_OPTIONS.wordSpacing;
     const chars = Array.from(text || "");
@@ -53,13 +61,15 @@ export function buildUprightTextBitmap(text: string, options: Partial<typeof DEF
 
 /**
  * Applies the italic horizontal shear across the 9-row upright text bitmap
- * and centers it inside a full flip-dot matrix of `[totalRows][totalCols]`.
+ * and positions it (`left`, `center`, or `right`) inside a full flip-dot matrix
+ * of `[totalRows][totalCols]`.
  */
-export function layoutFlipDotMatrix(options: Partial<typeof DEFAULT_MATRIX_OPTIONS> = {}) {
+export function layoutFlipDotMatrix(options: MatrixOptions = {}) {
     const merged = {
         ...DEFAULT_MATRIX_OPTIONS,
         ...Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined)),
     };
+    const align: TextAlign = options.align ?? options.textAlign ?? DEFAULT_MATRIX_OPTIONS.align;
     const upright = buildUprightTextBitmap(merged.text, merged);
     const uprightWidth = upright[0]?.length ?? 0;
     const maxShear = getItalicShift(0, FONT_HEIGHT, merged.italic);
@@ -69,7 +79,17 @@ export function layoutFlipDotMatrix(options: Partial<typeof DEFAULT_MATRIX_OPTIO
     const totalCols = Math.max(merged.minCols, shearedWidth + merged.padX * 2);
 
     const startRow = Math.floor((totalRows - FONT_HEIGHT) / 2);
-    const startCol = Math.floor((totalCols - shearedWidth) / 2);
+    let startCol: number;
+
+    if (align === "left") {
+        startCol = merged.padX;
+    }
+    else if (align === "right") {
+        startCol = Math.max(merged.padX, totalCols - merged.padX - shearedWidth);
+    }
+    else {
+        startCol = Math.floor((totalCols - shearedWidth) / 2);
+    }
 
     const grid = Array.from({ length: totalRows }, () =>
         Array.from({ length: totalCols }, () => false),
@@ -103,6 +123,7 @@ export function layoutFlipDotMatrix(options: Partial<typeof DEFAULT_MATRIX_OPTIO
         rows: totalRows,
         cols: totalCols,
         activeCount,
+        align,
         textBounds: {
             startRow,
             endRow: startRow + FONT_HEIGHT - 1,

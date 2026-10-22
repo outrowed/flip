@@ -22,8 +22,9 @@ SVGs produced by the engine are completely standalone with pure inline CSS keyfr
 - Serves exact-dimension responsive placeholders with short cache headers during cold raster generation to prevent GitHub Camo timeouts.
 - Bundles complete frame sequences into downloadable ZIP archives directly within the browser using JSZip.
 - Includes five color presets: Amber Solenoid, Emerald Transit, Monochrome White, Cyber Cyan, and Crimson Hazard.
-- Supports both forward 24-degree italic shear and upright typography with round or square dot geometries.
-- Features real-time stage telemetry, configurable dot pitch, duration controls, and multiple stage backdrop themes (Dark, Light, Grid).
+- Supports forward 24-degree italic shear and upright typography, round or square dot geometries, and left, center, or right text alignment on a wider board.
+- Supports per-frame `$[key=value, ...]` display overrides, including independent text color and board background settings.
+- Features real-time stage telemetry, configurable dot pitch, duration controls, text alignment, and multiple stage backdrop themes (Dark, Light, Grid).
 - Provides a standalone CLI utility for headless SVG generation and ASCII terminal matrix rendering.
 - Exposes a Fastify HTTP service for dynamic on-demand SVG, WebP, and APNG generation via query parameters.
 
@@ -50,6 +51,28 @@ To render static non-animated frames, use the `/api/frame` endpoint:
 Which results in:
 
 > ![Still Frame](https://flip.taruna.me/api/frame?texts=hello+world&frame=0)
+
+### Per-Frame Display Customization
+
+Append `$[key=value, ...]` to a phrase to change its display settings for that frame. Commas inside the brackets separate settings; commas outside them separate frames.
+
+For example:
+
+```text
+hello $[color=amber, background=#10141d, align=left]
+world $[color=cyan, background=emerald, shape=square, italic=false, duration=2.5, pitch=16]
+bye $[theme=crimson, align=right]
+```
+
+The lines play in order, and each frame's settings apply only while that frame is displayed. Read the example like this:
+
+1. **First, `hello` appears** with amber dots on a custom dark background, aligned to the left.
+2. **Next, `world` appears** with cyan dots on an emerald board. Its dots are square, its text is upright, it stays up for 2.5 seconds, and its pitch is 16 pixels.
+3. **Finally, `bye` appears** with the crimson palette for both dots and background, aligned to the right.
+
+Any setting omitted from a frame keeps the board's default value.
+
+You can set these options inside `$[...]`, the option keys match the HTTP API query parameters (see [API reference](#developer-api-reference)). While most options are customizable per-frame, `renderTech` is not, and can only be applied to board-wide rendering.
 
 ### Animated Raster Formats (WebP & APNG)
 
@@ -89,11 +112,23 @@ The Fastify HTTP service exposes `/api/svg` and `/api/frame` with these query pa
 | `text` | `string` | | Single text phrase (alternative to `texts`). |
 | `format` | `string` | `svg` | Target output format: `svg`, `webp`, or `apng`. |
 | `shape` | `string` | `circle` | Dot geometry: `circle` (round) or `square`. |
-| `theme` | `string` | `amber` | Color theme: `amber`, `emerald`, `white`, `cyan`, or `crimson`. |
+| `theme` | `string` | `amber` | Combined text-color and board-background palette: `amber`, `emerald`, `white`, `cyan`, or `crimson`. |
+| `color` | `string` | `theme` | Active dot/text color. Accepts a palette name or hex color. |
+| `background` | `string` | `theme` | Board background palette or hex color. |
+| `shape` | `string` | `circle` | Dot geometry: `circle` (round) or `square`. |
 | `italic` | `boolean` | `true` | Forward slant typography (`true` for 24-degree slant, `false` for upright). |
+| `align` | `string` | `center` | Horizontal text alignment on the board: `left`, `center`, or `right`. |
 | `duration` | `number` | `3.8` | Display dwell time per message in seconds. |
 | `pitch` | `number` | `14` | Dot center-to-center pitch in pixels. |
-| `renderTech` | `string` | `compound-path` | SVG rendering method: `compound-path` (compact) or `original` (individual elements). |
+| `dotSize` | `number` | `pitch - 2` | Flip-dot diameter or square width in pixels. |
+| `dotRadius` | `number` | `2.2` | Corner radius for square dots. |
+| `letterSpacing` | `number` | `2` | Horizontal spacing between adjacent glyphs, in matrix columns. |
+| `wordSpacing` | `number` | `5` | Width of spaces between words, in matrix columns. |
+| `padX` / `padY` | `number` | `3` / `2` | Horizontal and vertical matrix padding. |
+| `rows` / `minCols` | `number` | `13` / `86` | Minimum matrix dimensions in rows and columns. |
+| `flipDuration` | `number` | `0.35` | Flip transition duration in seconds. |
+| `sweepMax` | `number` | `0.85` | Maximum sweep delay in seconds. |
+| `renderTech` | `string` | `compound-path` | Board-wide SVG rendering method: `compound-path` (compact) or `original` (individual elements). |
 | `sync` | `boolean` | `false` | When `true`, synchronously waits for rasterization to finish instead of returning a placeholder. |
 | `frame` | `number` | `0` | Zero-based frame index for static exports via `/api/frame`. |
 
@@ -104,6 +139,9 @@ Generate an animated SVG banner or preview matrix layouts directly in your termi
 ```bash
 # Generate a banner from rotating text phrases
 pnpm generate -t "hello world" -o assets/banner.svg
+
+# Choose text alignment, color, and background
+node dist/cli.js --texts="short $[align=right],a much longer phrase" --align=center --color=cyan --background=amber
 
 # Output ASCII preview of dot matrix layouts in the console
 node dist/cli.js --texts="hello,world" --preview-ascii

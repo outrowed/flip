@@ -5,14 +5,46 @@
  * display boards compatible with GitHub README Markdown (`<img>` / `![]()`).
  *
  * Supports single-text or rotating multi-text sequences, circular or square
- * flip-dots, customizable color palettes, per-frame `$[key=value, ...]` markup
- * overrides, and realistic solenoid-flip animations.
+ * flip-dots, customizable color palettes, horizontal text alignment,
+ * per-frame `$[key=value, ...]` markup overrides, and realistic solenoid-flip animations.
  */
 
 import { layoutFlipDotMatrix } from "./matrix.ts";
+import {
+    appendDisplaySearchParams,
+    applyDisplayParam,
+    DEFAULT_DISPLAY_PARAMS,
+    type DisplayParams,
+    type DotShape,
+    isValidColorToken,
+    parseDisplayParams,
+    parseNumericToken,
+    type ResolvedDisplayParams,
+    resolveDisplayParams,
+    serializeDisplayParams,
+    type TextAlign,
+    VALID_ALIGNMENTS,
+    VALID_THEMES,
+} from "./params.ts";
+import { getLoadedBoardTemplate, PALETTES, type PaletteDef } from "./resources.ts";
 
+export {
+    appendDisplaySearchParams,
+    applyDisplayParam,
+    DEFAULT_DISPLAY_PARAMS,
+    type DisplayParams,
+    type DotShape,
+    isValidColorToken,
+    parseDisplayParams,
+    parseNumericToken,
+    type ResolvedDisplayParams,
+    resolveDisplayParams,
+    serializeDisplayParams,
+    type TextAlign,
+    VALID_ALIGNMENTS,
+    VALID_THEMES,
+};
 export { PALETTES } from "./resources.ts";
-import { PALETTES, type PaletteDef, getLoadedBoardTemplate } from "./resources.ts";
 
 export type RenderTech = "compound-path" | "original";
 
@@ -27,86 +59,42 @@ export const DEFAULT_ROTATING_TEXTS = [
 export const DEFAULT_SVG_OPTIONS = {
     text: DEFAULT_ROTATING_TEXTS[0],
     texts: DEFAULT_ROTATING_TEXTS,
-    dotShape: "circle", // "circle" | "square"
+    ...DEFAULT_DISPLAY_PARAMS,
+    // Legacy property aliases preserved for compatibility
+    dotShape: DEFAULT_DISPLAY_PARAMS.shape,
+    durationPerText: DEFAULT_DISPLAY_PARAMS.duration,
+    cellPitch: DEFAULT_DISPLAY_PARAMS.pitch,
+    textAlign: DEFAULT_DISPLAY_PARAMS.align,
     renderTech: "compound-path" as RenderTech,
-    italic: true,
-    rows: 13,
-    minCols: 86,
-    cellPitch: 14,
-    dotSize: 12,
-    dotRadius: 2.2,
     boardPaddingX: 28,
     boardPaddingY: 26,
     cycleSeconds: 24,
-    durationPerText: 3.8,
     initialHold: 0.8,
-    flipDuration: 0.35,
-    sweepMax: 0.85,
-    theme: "amber",
 };
 
 export type Palette = PaletteDef;
-export type SvgOptions = Partial<Omit<typeof DEFAULT_SVG_OPTIONS, "palette">> & {
-    palette?: Partial<Palette>;
-    color?: string;
-    background?: string;
-    frameIndex?: number;
-    letterSpacing?: number;
-    wordSpacing?: number;
-    padX?: number;
-    padY?: number;
-    renderTech?: RenderTech;
-};
+export type SvgOptions = Partial<Omit<typeof DEFAULT_SVG_OPTIONS, "palette" | "shape" | "dotShape" | "align" | "textAlign">>
+    & Omit<DisplayParams, "shape" | "align">
+    & {
+        palette?: Partial<Palette>;
+        shape?: DotShape | string;
+        dotShape?: DotShape | string;
+        align?: TextAlign | string;
+        textAlign?: TextAlign | string;
+        frameIndex?: number;
+        renderTech?: RenderTech;
+    };
 
 /**
  * Per-frame configuration overrides parsed from `$[key=value, ...]` markup.
- * Note: `renderTech` is intentionally excluded from per-frame customization.
+ * Uses the exact same canonical keys as URL parameters (`DisplayParams`).
  */
-export interface FrameOverrides {
-    color?: string;
-    background?: string;
-    theme?: string;
-    dotShape?: "circle" | "square";
-    italic?: boolean;
-    durationPerText?: number;
-    cellPitch?: number;
-    dotSize?: number;
-    dotRadius?: number;
-    letterSpacing?: number;
-    wordSpacing?: number;
-    padX?: number;
-    padY?: number;
-    rows?: number;
-    minCols?: number;
-    flipDuration?: number;
-    sweepMax?: number;
-}
+export type FrameOverrides = DisplayParams;
 
 export interface ParsedFrameSpec {
     raw: string;
     text: string;
     overrides: FrameOverrides;
-}
-
-const VALID_THEMES = new Set(["amber", "emerald", "white", "cyan", "crimson"]);
-
-function parseNumericToken(rawVal: string, allowMilliseconds = false): number | undefined {
-    const lower = rawVal.trim().toLowerCase();
-
-    if (!lower) return undefined;
-
-    if (allowMilliseconds && lower.endsWith("ms")) {
-        const ms = Number.parseFloat(lower.slice(0, -2));
-        return Number.isFinite(ms) ? ms / 1000 : undefined;
-    }
-
-    const cleaned = lower.replace(/(px|s|deg)$/, "").trim();
-    const num = Number.parseFloat(cleaned);
-    return Number.isFinite(num) ? num : undefined;
-}
-
-function isValidColorToken(val: string): boolean {
-    return VALID_THEMES.has(val) || /^#[0-9a-f]{3,8}$/i.test(val);
 }
 
 /**
@@ -154,7 +142,8 @@ export function splitFrameTexts(input: string): string[] {
 }
 
 /**
- * Parses a single frame line containing optional `$[key=value, ...]` markup.
+ * Parses a single frame line containing optional `$[key=value, ...]` markup
+ * using the shared `applyDisplayParam` store helper.
  */
 export function parseFrameMarkup(rawLine: string): ParsedFrameSpec {
     const raw = String(rawLine ?? "");
@@ -178,234 +167,10 @@ export function parseFrameMarkup(rawLine: string): ParsedFrameSpec {
 
             if (eqIdx < 0) continue;
 
-            const normKey = pair
-                .slice(0, eqIdx)
-                .trim()
-                .toLowerCase()
-                .replace(/[\s_-]+/g, "");
+            const rawKey = pair.slice(0, eqIdx).trim();
             const rawVal = pair.slice(eqIdx + 1).trim();
-            const valLower = rawVal.toLowerCase();
 
-            if (!normKey || !rawVal) continue;
-
-            switch (normKey) {
-                case "color":
-                case "dotcolor":
-                case "textcolor":
-                case "fg":
-
-                case "foreground": {
-                    if (isValidColorToken(valLower)) {
-                        overrides.color = valLower;
-                    }
-
-                    break;
-                }
-
-                case "background":
-                case "bg":
-                case "bgcolor":
-
-                case "boardbg": {
-                    if (isValidColorToken(valLower)) {
-                        overrides.background = valLower;
-                    }
-
-                    break;
-                }
-
-                case "theme":
-                case "colortheme":
-
-                case "palette": {
-                    if (VALID_THEMES.has(valLower)) {
-                        overrides.theme = valLower;
-                        overrides.color = valLower;
-                        overrides.background = valLower;
-                    }
-
-                    break;
-                }
-
-                case "shape":
-
-                case "dotshape": {
-                    if (valLower === "circle" || valLower === "round") {
-                        overrides.dotShape = "circle";
-                    }
-                    else if (valLower === "square" || valLower === "rect") {
-                        overrides.dotShape = "square";
-                    }
-
-                    break;
-                }
-
-                case "italic":
-                case "typography":
-                case "fontstyle":
-                case "style":
-
-                case "slant": {
-                    if (["true", "1", "yes", "on", "italic", "slanted", "oblique"].includes(valLower)) {
-                        overrides.italic = true;
-                    }
-                    else if (["false", "0", "no", "off", "upright", "normal", "regular", "roman"].includes(valLower)) {
-                        overrides.italic = false;
-                    }
-
-                    break;
-                }
-
-                case "duration":
-                case "hold":
-                case "holdduration":
-                case "durationpertext":
-
-                case "time": {
-                    const sec = parseNumericToken(rawVal, true);
-
-                    if (sec !== undefined && sec >= 0.2 && sec <= 60) {
-                        overrides.durationPerText = sec;
-                    }
-
-                    break;
-                }
-
-                case "pitch":
-                case "dotpitch":
-
-                case "cellpitch": {
-                    const pitch = parseNumericToken(rawVal);
-
-                    if (pitch !== undefined && pitch >= 4 && pitch <= 64) {
-                        overrides.cellPitch = pitch;
-                    }
-
-                    break;
-                }
-
-                case "dotsize":
-
-                case "size": {
-                    const size = parseNumericToken(rawVal);
-
-                    if (size !== undefined && size >= 2 && size <= 64) {
-                        overrides.dotSize = size;
-                    }
-
-                    break;
-                }
-
-                case "dotradius":
-                case "radius":
-
-                case "rx": {
-                    const radius = parseNumericToken(rawVal);
-
-                    if (radius !== undefined && radius >= 0 && radius <= 32) {
-                        overrides.dotRadius = radius;
-                    }
-
-                    break;
-                }
-
-                case "letterspacing":
-
-                case "tracking": {
-                    const ls = parseNumericToken(rawVal);
-
-                    if (ls !== undefined && ls >= 0 && ls <= 20) {
-                        overrides.letterSpacing = Math.round(ls);
-                    }
-
-                    break;
-                }
-
-                case "wordspacing": {
-                    const ws = parseNumericToken(rawVal);
-
-                    if (ws !== undefined && ws >= 1 && ws <= 40) {
-                        overrides.wordSpacing = Math.round(ws);
-                    }
-
-                    break;
-                }
-
-                case "padx":
-
-                case "paddingx": {
-                    const px = parseNumericToken(rawVal);
-
-                    if (px !== undefined && px >= 0 && px <= 40) {
-                        overrides.padX = Math.round(px);
-                    }
-
-                    break;
-                }
-
-                case "pady":
-
-                case "paddingy": {
-                    const py = parseNumericToken(rawVal);
-
-                    if (py !== undefined && py >= 0 && py <= 40) {
-                        overrides.padY = Math.round(py);
-                    }
-
-                    break;
-                }
-
-                case "rows":
-
-                case "height": {
-                    const r = parseNumericToken(rawVal);
-
-                    if (r !== undefined && r >= 9 && r <= 64) {
-                        overrides.rows = Math.round(r);
-                    }
-
-                    break;
-                }
-
-                case "mincols":
-                case "cols":
-
-                case "columns": {
-                    const c = parseNumericToken(rawVal);
-
-                    if (c !== undefined && c >= 1 && c <= 300) {
-                        overrides.minCols = Math.round(c);
-                    }
-
-                    break;
-                }
-
-                case "flipduration": {
-                    const fd = parseNumericToken(rawVal, true);
-
-                    if (fd !== undefined && fd >= 0.05 && fd <= 5) {
-                        overrides.flipDuration = fd;
-                    }
-
-                    break;
-                }
-
-                case "sweepmax":
-
-                case "sweep": {
-                    const sm = parseNumericToken(rawVal, true);
-
-                    if (sm !== undefined && sm >= 0 && sm <= 5) {
-                        overrides.sweepMax = sm;
-                    }
-
-                    break;
-                }
-
-                default:
-                    // Explicitly ignore renderTech and unknown keys
-                    break;
-            }
+            applyDisplayParam(overrides, rawKey, rawVal);
         }
     }
 
@@ -487,41 +252,35 @@ function resolveBgPalette(token: string | undefined, defaultTheme: string): {
     };
 }
 
-interface ResolvedFrameConfig {
+interface ResolvedFrameConfig extends ResolvedDisplayParams {
     colorKey: string;
     bgKey: string;
     colorPalette: PaletteDef;
     bgPalette: PaletteDef;
     palette: PaletteDef;
-    dotShape: "circle" | "square";
-    italic: boolean;
-    durationPerText: number;
-    cellPitch: number;
-    dotSize: number;
-    dotRadius: number;
-    letterSpacing?: number;
-    wordSpacing?: number;
-    padX?: number;
-    padY?: number;
-    rows: number;
-    minCols: number;
-    flipDuration: number;
-    sweepMax: number;
 }
 
 function resolveFrameConfig(
-    baseConfig: typeof DEFAULT_SVG_OPTIONS & SvgOptions & { palette: PaletteDef },
+    baseParams: DisplayParams,
     overrides: FrameOverrides,
+    customPalette?: Partial<PaletteDef>,
 ): ResolvedFrameConfig {
-    const defaultTheme = baseConfig.theme || "amber";
-    const baseColorKey = baseConfig.color || defaultTheme;
-    const baseBgKey = baseConfig.background || defaultTheme;
+    const resolved = resolveDisplayParams(baseParams, overrides);
+    const { key: colorKey, palette: rawColorPalette } = resolveColorPalette(resolved.color, resolved.theme);
+    const { key: bgKey, palette: rawBgPalette } = resolveBgPalette(resolved.background, resolved.theme);
 
-    const frameColorToken = overrides.color ?? overrides.theme ?? baseColorKey;
-    const frameBgToken = overrides.background ?? overrides.theme ?? baseBgKey;
-
-    const { key: colorKey, palette: colorPalette } = resolveColorPalette(frameColorToken, baseColorKey);
-    const { key: bgKey, palette: bgPalette } = resolveBgPalette(frameBgToken, baseBgKey);
+    const colorPalette: PaletteDef = customPalette
+        ? {
+                ...rawColorPalette,
+                ...customPalette,
+            }
+        : rawColorPalette;
+    const bgPalette: PaletteDef = customPalette
+        ? {
+                ...rawBgPalette,
+                ...customPalette,
+            }
+        : rawBgPalette;
 
     const mergedPalette: PaletteDef = {
         ...bgPalette,
@@ -532,29 +291,13 @@ function resolveFrameConfig(
         zeroHighlight: colorPalette.zeroHighlight,
     };
 
-    const cellPitch = overrides.cellPitch ?? baseConfig.cellPitch;
-    const dotSize = overrides.dotSize ?? (overrides.cellPitch !== undefined ? Math.max(2, cellPitch - 2) : baseConfig.dotSize);
-
     return {
+        ...resolved,
         colorKey,
         bgKey,
         colorPalette,
         bgPalette,
         palette: mergedPalette,
-        dotShape: (overrides.dotShape ?? baseConfig.dotShape) === "square" ? "square" : "circle",
-        italic: overrides.italic ?? baseConfig.italic,
-        durationPerText: overrides.durationPerText ?? baseConfig.durationPerText ?? 3.8,
-        cellPitch,
-        dotSize,
-        dotRadius: overrides.dotRadius ?? baseConfig.dotRadius ?? 2.2,
-        letterSpacing: overrides.letterSpacing ?? baseConfig.letterSpacing,
-        wordSpacing: overrides.wordSpacing ?? baseConfig.wordSpacing,
-        padX: overrides.padX ?? baseConfig.padX,
-        padY: overrides.padY ?? baseConfig.padY,
-        rows: overrides.rows ?? baseConfig.rows,
-        minCols: overrides.minCols ?? baseConfig.minCols,
-        flipDuration: overrides.flipDuration ?? baseConfig.flipDuration ?? 0.35,
-        sweepMax: overrides.sweepMax ?? baseConfig.sweepMax ?? 0.85,
     };
 }
 
@@ -603,33 +346,29 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const config = {
         ...DEFAULT_SVG_OPTIONS,
         ...Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined && value !== null)),
-    } as typeof DEFAULT_SVG_OPTIONS & SvgOptions & { palette: PaletteDef };
-
-    const baseTheme = config.theme || "amber";
-    const basePalette = PALETTES[baseTheme] ?? PALETTES.amber;
-
-    if (!basePalette) {
-        throw new Error(`Unknown palette: ${config.theme}`);
-    }
-
-    config.palette = {
-        ...basePalette,
-        ...(options.palette || {}),
     };
 
+    const requestedTheme = options.theme ?? config.theme ?? "amber";
+
+    if (!PALETTES[requestedTheme] && !isValidColorToken(requestedTheme)) {
+        throw new Error(`Unknown palette: ${requestedTheme}`);
+    }
+
+    const baseDisplayParams = parseDisplayParams(options as Record<string, unknown>);
     const rawTextList = Array.isArray(config.texts) && config.texts.length > 0
         ? config.texts
         : [config.text || "hello world"];
 
     const parsedFrames = rawTextList.map(parseFrameMarkup);
     const numTexts = parsedFrames.length;
-    const frameConfigs = parsedFrames.map(f => resolveFrameConfig(config, f.overrides));
+    const frameConfigs = parsedFrames.map(f => resolveFrameConfig(baseDisplayParams, f.overrides, options.palette));
 
     // Initial pass to find common board dimensions across all frames
     const initialLayouts = parsedFrames.map((f, idx) =>
         layoutFlipDotMatrix({
             text: f.text,
             italic: frameConfigs[idx].italic,
+            align: frameConfigs[idx].align,
             rows: frameConfigs[idx].rows,
             minCols: frameConfigs[idx].minCols,
             letterSpacing: frameConfigs[idx].letterSpacing,
@@ -642,7 +381,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const totalRows = Math.max(...initialLayouts.map(l => l.rows));
     const totalCols = Math.max(...initialLayouts.map(l => l.cols));
 
-    // Re-center any frame layout whose dimensions were smaller than the shared board matrix
+    // Re-layout any frame whose natural dimensions were smaller than the shared board matrix
     const layouts = initialLayouts.map((layout, idx) => {
         if (layout.rows === totalRows && layout.cols === totalCols) {
             return layout;
@@ -651,6 +390,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
         return layoutFlipDotMatrix({
             text: parsedFrames[idx].text,
             italic: frameConfigs[idx].italic,
+            align: frameConfigs[idx].align,
             rows: totalRows,
             minCols: totalCols,
             letterSpacing: frameConfigs[idx].letterSpacing,
@@ -661,7 +401,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     });
 
     // Resolve board-level pitch and dot size
-    const boardCellPitch = Math.max(...frameConfigs.map(fc => fc.cellPitch));
+    const boardCellPitch = Math.max(...frameConfigs.map(fc => fc.pitch));
     const boardDotSize = Math.max(...frameConfigs.map(fc => fc.dotSize));
 
     const gridWidth = totalCols * boardCellPitch;
@@ -673,9 +413,8 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const gridOriginX = config.boardPaddingX;
     const gridOriginY = config.boardPaddingY;
 
-    // Board background palette (from frame 0 or common background)
-    const allSameBg = frameConfigs.every(fc => fc.bgKey === frameConfigs[0].bgKey);
-    const boardBgPalette = allSameBg ? frameConfigs[0].bgPalette : config.palette;
+    // Board background & primary active dot palette
+    const boardBgPalette = frameConfigs[0].bgPalette;
     const boardColorPalette = frameConfigs[0].colorPalette;
     const boardPalette: PaletteDef = {
         ...boardBgPalette,
@@ -690,21 +429,22 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const dotCenterOffset = boardCellPitch / 2;
     const dotSquareOffset = (boardCellPitch - boardDotSize) / 2;
 
-    const allCircle = frameConfigs.every(fc => fc.dotShape !== "square");
-    const allSquare = frameConfigs.every(fc => fc.dotShape === "square");
+    const allCircle = frameConfigs.every(fc => fc.shape !== "square");
+    const allSquare = frameConfigs.every(fc => fc.shape === "square");
     const hasMixedShapes = !allCircle && !allSquare;
     const isCircle = allCircle;
 
-    // Build extra SVG defs for any active dot color gradients used across frames
-    const colorDefsMap = new Map<string, PaletteDef>();
+    // Build extra SVG defs for any frame active-dot colors that differ from frame 0's color
+    const baseColorKey = frameConfigs[0].colorKey;
+    const extraColorsMap = new Map<string, PaletteDef>();
 
     for (const fc of frameConfigs) {
-        if (!colorDefsMap.has(fc.colorKey)) {
-            colorDefsMap.set(fc.colorKey, fc.colorPalette);
+        if (fc.colorKey !== baseColorKey && !extraColorsMap.has(fc.colorKey)) {
+            extraColorsMap.set(fc.colorKey, fc.colorPalette);
         }
     }
 
-    const defsExtra = [...colorDefsMap.entries()]
+    const defsExtra = [...extraColorsMap.entries()]
         .map(([cKey, pal]) => {
             const safeKey = sanitizeId(cKey);
             return `    <linearGradient id="active-dot-grad-${safeKey}" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -721,20 +461,20 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const initialHold = config.initialHold ?? 0.8;
     const sweepMax = Math.max(...frameConfigs.map(fc => fc.sweepMax));
 
-    // Transition timeline using each frame's individual durationPerText
+    // Transition timeline using each frame's individual hold duration
     const numTransitions = numTexts + 1;
     const tTrans: number[] = [];
     let currT = initialHold;
 
     for (let i = 0; i < numTexts; i += 1) {
         tTrans.push(+currT.toFixed(2));
-        currT += frameConfigs[i].durationPerText;
+        currT += frameConfigs[i].duration;
     }
 
     tTrans.push(+currT.toFixed(2));
 
-    const hasCustomDuration = options.durationPerText !== undefined
-        || parsedFrames.some(f => f.overrides.durationPerText !== undefined);
+    const hasCustomDuration = baseDisplayParams.duration !== undefined
+        || parsedFrames.some(f => f.overrides.duration !== undefined);
     const cycleSeconds = options.cycleSeconds
         ?? (!hasCustomDuration && numTexts === 5 ? config.cycleSeconds : +(currT + 3.2).toFixed(2));
 
@@ -765,12 +505,12 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
 
     const gradIdForFrame = (idx: number) => {
         const fc = frameConfigs[idx];
-        return fc ? `active-dot-grad-${sanitizeId(fc.colorKey)}` : "active-dot-grad";
+        return fc && fc.colorKey !== baseColorKey ? `active-dot-grad-${sanitizeId(fc.colorKey)}` : "active-dot-grad";
     };
 
     const glowIdForFrame = (idx: number) => {
         const fc = frameConfigs[idx];
-        return fc ? `dot-glow-${sanitizeId(fc.colorKey)}` : "dot-glow";
+        return fc && fc.colorKey !== baseColorKey ? `dot-glow-${sanitizeId(fc.colorKey)}` : "dot-glow";
     };
 
     const scaleForFrame = (idx: number) => {
@@ -783,7 +523,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
 
         if (!hasMixedShapes || !fc) return "";
 
-        const rxVal = fc.dotShape === "square"
+        const rxVal = fc.shape === "square"
             ? Math.min(fc.dotRadius, boardDotSize / 2)
             : dotRadius;
         return ` rx: ${+rxVal.toFixed(2)}px;`;
@@ -941,7 +681,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const compoundDots: string[] = [];
     const baseRx = allSquare
         ? frameConfigs[0]?.dotRadius ?? config.dotRadius ?? 2
-        : frameConfigs[0]?.dotShape === "square"
+        : frameConfigs[0]?.shape === "square"
             ? Math.min(frameConfigs[0]?.dotRadius ?? 2, boardDotSize / 2)
             : dotRadius;
 
@@ -1026,9 +766,9 @@ ${keyframes.join("\n")}${bgAnimationStyles}
     @media (prefers-reduced-motion: reduce) {
       .d[class*="p-"] {
         animation: none;
-        fill: url(#active-dot-grad-${sanitizeId(frameConfigs[0].colorKey)});
+        fill: url(#active-dot-grad);
         stroke: ${boardPalette.activeDotStroke};
-        filter: url(#dot-glow-${sanitizeId(frameConfigs[0].colorKey)});
+        filter: url(#dot-glow);
       }
     }`,
         frameWidth: width - 2,
@@ -1061,26 +801,21 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
     const config = {
         ...DEFAULT_SVG_OPTIONS,
         ...Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined && value !== null)),
-    } as typeof DEFAULT_SVG_OPTIONS & SvgOptions & { palette: PaletteDef };
-
-    const baseTheme = config.theme || "amber";
-    const basePalette = PALETTES[baseTheme] ?? PALETTES.amber;
-
-    if (!basePalette) {
-        throw new Error(`Unknown palette: ${config.theme}`);
-    }
-
-    config.palette = {
-        ...basePalette,
-        ...(options.palette || {}),
     };
 
+    const requestedTheme = options.theme ?? config.theme ?? "amber";
+
+    if (!PALETTES[requestedTheme] && !isValidColorToken(requestedTheme)) {
+        throw new Error(`Unknown palette: ${requestedTheme}`);
+    }
+
+    const baseDisplayParams = parseDisplayParams(options as Record<string, unknown>);
     const rawTextList = Array.isArray(config.texts) && config.texts.length > 0
         ? config.texts
         : [config.text || "hello world"];
 
     const parsedFrames = rawTextList.map(parseFrameMarkup);
-    const frameConfigs = parsedFrames.map(f => resolveFrameConfig(config, f.overrides));
+    const frameConfigs = parsedFrames.map(f => resolveFrameConfig(baseDisplayParams, f.overrides, options.palette));
 
     const frameIndex = Math.max(
         0,
@@ -1097,6 +832,7 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
         layoutFlipDotMatrix({
             text: f.text,
             italic: frameConfigs[idx].italic,
+            align: frameConfigs[idx].align,
             rows: frameConfigs[idx].rows,
             minCols: frameConfigs[idx].minCols,
             letterSpacing: frameConfigs[idx].letterSpacing,
@@ -1114,6 +850,7 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
         : layoutFlipDotMatrix({
                 text: currentFrame.text,
                 italic: targetConfig.italic,
+                align: targetConfig.align,
                 rows: totalRows,
                 minCols: totalCols,
                 letterSpacing: targetConfig.letterSpacing,
@@ -1122,8 +859,8 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
                 padY: targetConfig.padY,
             });
 
-    const gridWidth = totalCols * targetConfig.cellPitch;
-    const gridHeight = totalRows * targetConfig.cellPitch;
+    const gridWidth = totalCols * targetConfig.pitch;
+    const gridHeight = totalRows * targetConfig.pitch;
 
     const width = gridWidth + config.boardPaddingX * 2;
     const height = gridHeight + config.boardPaddingY * 2;
@@ -1133,9 +870,9 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
 
     const { palette } = targetConfig;
     const dotRadius = targetConfig.dotSize / 2;
-    const dotCenterOffset = targetConfig.cellPitch / 2;
-    const dotSquareOffset = (targetConfig.cellPitch - targetConfig.dotSize) / 2;
-    const isCircle = targetConfig.dotShape !== "square";
+    const dotCenterOffset = targetConfig.pitch / 2;
+    const dotSquareOffset = (targetConfig.pitch - targetConfig.dotSize) / 2;
+    const isCircle = targetConfig.shape !== "square";
 
     const dotElements = [];
     let activeCount = 0;
@@ -1151,8 +888,8 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
             const cls = isLit ? "d a" : "d z";
 
             if (isCircle) {
-                const cx = +(gridOriginX + c * targetConfig.cellPitch + dotCenterOffset).toFixed(2);
-                const cy = +(gridOriginY + r * targetConfig.cellPitch + dotCenterOffset).toFixed(2);
+                const cx = +(gridOriginX + c * targetConfig.pitch + dotCenterOffset).toFixed(2);
+                const cy = +(gridOriginY + r * targetConfig.pitch + dotCenterOffset).toFixed(2);
 
                 if (!isLit && config.renderTech === "compound-path") {
                     compoundDots.push(`M${(cx - dotRadius).toFixed(2)} ${cy}a${dotRadius} ${dotRadius} 0 1 0 ${dotRadius * 2} 0a${dotRadius} ${dotRadius} 0 1 0 ${-dotRadius * 2} 0`);
@@ -1162,8 +899,8 @@ export function generateStillFlipDotSvg(options: SvgOptions = {}) {
                 }
             }
             else {
-                const x = +(gridOriginX + c * targetConfig.cellPitch + dotSquareOffset).toFixed(2);
-                const y = +(gridOriginY + r * targetConfig.cellPitch + dotSquareOffset).toFixed(2);
+                const x = +(gridOriginX + c * targetConfig.pitch + dotSquareOffset).toFixed(2);
+                const y = +(gridOriginY + r * targetConfig.pitch + dotSquareOffset).toFixed(2);
                 const rx = targetConfig.dotRadius ?? 2;
 
                 if (!isLit && config.renderTech === "compound-path") {

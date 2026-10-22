@@ -5,7 +5,9 @@ import {
     generateStillFlipDotFrames,
     generateStillFlipDotSvg,
     PALETTES,
+    parseDisplayParams,
     parseFrameMarkup,
+    serializeDisplayParams,
     splitFrameTexts,
 } from "../core/svg.ts";
 import { loadResourcesSync } from "../core/resources-node.ts";
@@ -117,18 +119,17 @@ describe("frame-by-frame markup ($[key=value, ...])", () => {
 
     it("parses display configuration keys and strips markup from frame text while excluding renderTech", () => {
         const parsed = parseFrameMarkup(
-            "frame 2 $[theme=emerald, shape=square, typography=upright, hold=2.4s, pitch=16px, dotSize=14, dotRadius=3, letterSpacing=2, wordSpacing=5, renderTech=original]",
+            "frame 2 $[theme=emerald, shape=square, typography=upright, align=right, hold=2.4s, pitch=16px, dotSize=14, dotRadius=3, letterSpacing=2, wordSpacing=5, renderTech=original]",
         );
 
         expect(parsed.text).toBe("frame 2");
         expect(parsed.overrides).toEqual({
             theme: "emerald",
-            color: "emerald",
-            background: "emerald",
-            dotShape: "square",
+            shape: "square",
             italic: false,
-            durationPerText: 2.4,
-            cellPitch: 16,
+            align: "right",
+            duration: 2.4,
+            pitch: 16,
             dotSize: 14,
             dotRadius: 3,
             letterSpacing: 2,
@@ -137,24 +138,47 @@ describe("frame-by-frame markup ($[key=value, ...])", () => {
         expect("renderTech" in parsed.overrides).toBe(false);
     });
 
-    it("applies per-frame color, background, shape, typography, hold duration, and pitch overrides", () => {
+    it("maintains identical canonical key-value stores across URLSearchParams, objects, and frame markup", () => {
+        const searchParams = new URLSearchParams(
+            "theme=cyan&color=crimson&background=emerald&shape=square&italic=false&align=left&duration=2.5&pitch=16&dotRadius=3",
+        );
+        const fromUrl = parseDisplayParams(searchParams);
+        const fromMarkup = parseFrameMarkup(
+            "banner $[theme=cyan, color=crimson, background=emerald, shape=square, italic=false, align=left, duration=2.5, pitch=16, dotRadius=3]",
+        ).overrides;
+
+        expect(fromUrl).toEqual(fromMarkup);
+        expect(serializeDisplayParams(fromUrl)).toEqual({
+            theme: "cyan",
+            color: "crimson",
+            background: "emerald",
+            shape: "square",
+            italic: "false",
+            align: "left",
+            duration: "2.5",
+            pitch: "16",
+            dotRadius: "3",
+        });
+    });
+
+    it("applies per-frame color, background, shape, align, typography, hold duration, and pitch overrides", () => {
         const texts = [
-            "frame 1",
-            "frame 2 $[color=emerald, background=crimson, shape=square, italic=false, duration=2.0, pitch=16]",
-            "frame 3 $[color=crimson, background=cyan, duration=1.5]",
+            "frame 1 $[align=left]",
+            "frame 2 $[color=emerald, background=crimson, shape=square, italic=false, align=right, duration=2.0, pitch=16]",
+            "frame 3 with longer background $[color=crimson, background=cyan, duration=1.5]",
         ];
 
         const anim = generateFlipDotSvg({
             texts,
             theme: "amber",
-            dotShape: "circle",
+            shape: "circle",
             italic: true,
-            durationPerText: 3.8,
-            cellPitch: 14,
+            duration: 3.8,
+            pitch: 14,
         });
 
         // Clean label without $[...] markup
-        expect(anim.svg).toContain("<title>frame 1 • frame 2 • frame 3</title>");
+        expect(anim.svg).toContain("<title>frame 1 • frame 2 • frame 3 with longer background</title>");
         expect(anim.svg).not.toContain("$[");
 
         // Color gradients and glow filters are independent from the board background.
@@ -172,16 +196,22 @@ describe("frame-by-frame markup ($[key=value, ...])", () => {
         expect(anim.svg).toContain("rx: 2.2px;");
         expect(anim.svg).toContain("rx: 7px;");
 
+        // Frame 1 is left-aligned (startCol === padX = 3), Frame 2 is right-aligned against the wider board
+        expect(anim.layouts[0].textBounds.startCol).toBe(3);
+        expect(anim.layouts[1].textBounds.endCol).toBe(anim.cols - 3 - 1);
+
         // Frame 1 is italic, Frame 2 is upright (shearedWidth of upright is smaller than italic for "frame 2")
         const uprightRef = layoutFlipDotMatrix({
             text: "frame 2",
             italic: false,
+            align: "right",
             rows: anim.rows,
             minCols: anim.cols,
         });
         const italicRef = layoutFlipDotMatrix({
             text: "frame 2",
             italic: true,
+            align: "right",
             rows: anim.rows,
             minCols: anim.cols,
         });
@@ -195,7 +225,7 @@ describe("frame-by-frame markup ($[key=value, ...])", () => {
         const stills = generateStillFlipDotFrames({
             texts,
             theme: "amber",
-            dotShape: "circle",
+            shape: "circle",
             italic: true,
         });
 
@@ -210,10 +240,11 @@ describe("frame-by-frame markup ($[key=value, ...])", () => {
         expect(stills[1].svg).toContain("<rect ");
         expect(stills[1].overrides.color).toBe("emerald");
         expect(stills[1].overrides.background).toBe("crimson");
-        expect(stills[1].overrides.dotShape).toBe("square");
+        expect(stills[1].overrides.shape).toBe("square");
+        expect(stills[1].overrides.align).toBe("right");
         expect(stills[1].overrides.italic).toBe(false);
 
-        expect(stills[2].text).toBe("frame 3");
+        expect(stills[2].text).toBe("frame 3 with longer background");
         expect(stills[2].svg).toContain(PALETTES.crimson.activeDot);
         expect(stills[2].svg).toContain(PALETTES.cyan.recessBg);
     });

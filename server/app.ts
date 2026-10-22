@@ -5,15 +5,18 @@ import { fileURLToPath } from "node:url";
 import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
+import { loadResourcesAsync } from "../core/resources-node.ts";
 import {
     DEFAULT_ROTATING_TEXTS,
+    type DisplayParams,
     generateFlipDotSvg,
     generateStillFlipDotFrames,
     generateStillFlipDotSvg,
+    parseDisplayParams,
     parseFrameMarkup,
+    resolveDisplayParams,
     splitFrameTexts,
 } from "../core/svg.ts";
-import { loadResourcesAsync } from "../core/resources-node.ts";
 import { generatePlaceholder, OutputCache, rasterize } from "./raster.ts";
 
 const __dirname = resolve(fileURLToPath(import.meta.url), "..");
@@ -26,27 +29,36 @@ interface SvgQuery {
     shape?: string;
     renderTech?: "original" | "compound-path";
     theme?: string;
+    color?: string;
+    background?: string;
     italic?: string;
+    align?: string;
     duration?: string;
     pitch?: string;
     dotSize?: string;
+    dotRadius?: string;
+    letterSpacing?: string;
+    wordSpacing?: string;
+    padX?: string;
+    padY?: string;
+    rows?: string;
+    minCols?: string;
+    flipDuration?: string;
+    sweepMax?: string;
     still?: string;
     frame?: string;
     sync?: string;
 }
 
-interface GenerateBody {
+interface GenerateBody extends DisplayParams {
     text?: string;
     texts?: string[];
-    dotShape?: "square" | "circle";
     renderTech?: "original" | "compound-path";
-    theme?: "amber" | "emerald" | "white" | "cyan" | "crimson";
-    italic?: boolean;
+    // Legacy body field aliases supported via parseDisplayParams
+    dotShape?: "square" | "circle";
     durationPerText?: number;
     cellPitch?: number;
-    dotSize?: number;
-    minCols?: number;
-    rows?: number;
+    textAlign?: "left" | "center" | "right";
 }
 
 export async function createFlipApp(options: {
@@ -101,12 +113,8 @@ export async function createFlipApp(options: {
             return reply.code(400).send({ error: "Text is limited to 500 characters" });
         }
 
-        const dotShape = params.shape === "square" ? "square" : "circle";
-        const theme = (params.theme || "amber") as "amber" | "emerald" | "white" | "cyan" | "crimson";
-        const italic = params.italic !== "false";
-        const durationPerText = Number.parseFloat(params.duration || "3.8") || 3.8;
-        const cellPitch = Number.parseFloat(params.pitch || "14") || 14;
-        const dotSize = Number.parseFloat(params.dotSize || "12") || 12;
+        const displayParams = parseDisplayParams(params as Record<string, unknown>);
+        const resolvedBase = resolveDisplayParams(displayParams);
         const resolvedTexts = texts && texts.length > 0 ? texts : DEFAULT_ROTATING_TEXTS;
 
         const isStill = request.url.startsWith("/api/frame")
@@ -120,14 +128,10 @@ export async function createFlipApp(options: {
         if (isStill) {
             const frameIndex = Number.parseInt(params.frame || "0", 10) || 0;
             const stillResult = generateStillFlipDotSvg({
+                ...displayParams,
                 texts: resolvedTexts,
                 frameIndex,
-                dotShape,
                 renderTech: params.renderTech,
-                theme,
-                italic,
-                cellPitch,
-                dotSize,
             });
             resultSvg = stillResult.svg;
             boardWidth = stillResult.width;
@@ -135,14 +139,9 @@ export async function createFlipApp(options: {
         }
         else {
             const animResult = generateFlipDotSvg({
+                ...displayParams,
                 texts: resolvedTexts,
-                dotShape,
                 renderTech: params.renderTech,
-                theme,
-                italic,
-                durationPerText,
-                cellPitch,
-                dotSize,
             });
             resultSvg = animResult.svg;
             boardWidth = animResult.width;
@@ -209,7 +208,7 @@ export async function createFlipApp(options: {
             const proto = (request.headers["x-forwarded-proto"] as string) || "https";
             const host = (request.headers["x-forwarded-host"] as string) || request.headers.host || "flip.taruna.me";
             const fullUrl = `${proto}://${host}${request.raw.url || request.url}`;
-            const placeholder = await generatePlaceholder(boardWidth, boardHeight, rasterFormat, theme, fullUrl);
+            const placeholder = await generatePlaceholder(boardWidth, boardHeight, rasterFormat, resolvedBase.theme, fullUrl);
             const placeholderEtag = `W/"placeholder-${key.slice(0, 16)}"`;
 
             reply.header("Content-Type", `image/${rasterFormat}`);
@@ -283,17 +282,11 @@ export async function createFlipApp(options: {
                 ? splitFrameTexts(payload.text)
                 : DEFAULT_ROTATING_TEXTS;
 
+        const displayParams = parseDisplayParams(payload as Record<string, unknown>);
         const commonOptions = {
+            ...displayParams,
             texts,
             renderTech: payload.renderTech,
-            dotShape: (payload.dotShape === "square" ? "square" : "circle") as "square" | "circle",
-            theme: (payload.theme || "amber") as "amber" | "emerald" | "white" | "cyan" | "crimson",
-            italic: payload.italic !== false,
-            durationPerText: Number.parseFloat(String(payload.durationPerText || "3.8")) || 3.8,
-            cellPitch: Number.parseFloat(String(payload.cellPitch || "14")) || 14,
-            dotSize: Number.parseFloat(String(payload.dotSize || "12")) || 12,
-            minCols: Number.parseInt(String(payload.minCols || "86"), 10) || 86,
-            rows: Number.parseInt(String(payload.rows || "13"), 10) || 13,
         };
 
         const animResult = generateFlipDotSvg(commonOptions);

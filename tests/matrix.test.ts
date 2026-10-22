@@ -60,4 +60,30 @@ describe("flip-dot matrix layout & italic shear", () => {
         expect(lines[0]).toHaveLength(28);
         expect(ascii).toContain("#");
     });
+
+    it("supports left, center, and right horizontal text alignment on a wider board", () => {
+        const left = layoutFlipDotMatrix({
+            text: "hi",
+            align: "left",
+            minCols: 80,
+            padX: 3,
+        });
+        const center = layoutFlipDotMatrix({
+            text: "hi",
+            align: "center",
+            minCols: 80,
+            padX: 3,
+        });
+        const right = layoutFlipDotMatrix({
+            text: "hi",
+            align: "right",
+            minCols: 80,
+            padX: 3,
+        });
+
+        expect(left.textBounds.startCol).toBe(3);
+        expect(center.textBounds.startCol).toBe(Math.floor((80 - center.textBounds.shearedWidth) / 2));
+        expect(right.textBounds.startCol).toBe(80 - 3 - right.textBounds.shearedWidth);
+        expect(right.textBounds.endCol).toBe(80 - 3 - 1);
+    });
 });

@@ -101,7 +101,7 @@ describe("render tech API", () => {
                 payload: {
                     texts: [
                         "frame 1",
-                        "frame 2 $[theme=emerald, shape=square, italic=false]",
+                        "frame 2 $[theme=emerald, shape=square, italic=false, align=left]",
                     ],
                 },
             });
@@ -111,10 +111,9 @@ describe("render tech API", () => {
             expect(json.frames[1].text).toBe("frame 2");
             expect(json.frames[1].overrides).toEqual({
                 theme: "emerald",
-                color: "emerald",
-                background: "emerald",
-                dotShape: "square",
+                shape: "square",
                 italic: false,
+                align: "left",
             });
         }
         finally {
