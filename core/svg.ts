@@ -218,6 +218,17 @@ function resolveColorPalette(token: string | undefined, defaultTheme: string): {
     };
 }
 
+function contrastDotColor(hex: string, amount: number): string {
+    const raw = hex.slice(1);
+    const expanded = raw.length <= 4 ? [...raw].map(char => char + char).join("") : raw;
+    const channels = [0, 2, 4].map(offset => Number.parseInt(expanded.slice(offset, offset + 2), 16));
+    const brightness = channels.reduce((sum, value) => sum + value, 0) / 3;
+    const direction = brightness < 128 ? 1 : -1;
+    const rgb = channels.map(value => Math.max(0, Math.min(255, value + direction * amount)).toString(16).padStart(2, "0")).join("");
+
+    return `#${rgb}${expanded.slice(6)}`;
+}
+
 function resolveBgPalette(token: string | undefined, defaultTheme: string): {
     key: string;
     palette: PaletteDef;
@@ -238,8 +249,8 @@ function resolveBgPalette(token: string | undefined, defaultTheme: string): {
             palette: {
                 ...base,
                 recessBg: key,
-                zeroDot: key,
-                zeroDotStroke: key,
+                zeroDot: contrastDotColor(key, 14),
+                zeroDotStroke: contrastDotColor(key, 28),
                 casingOuter: key,
             },
         };
@@ -432,6 +443,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const allCircle = frameConfigs.every(fc => fc.shape !== "square");
     const allSquare = frameConfigs.every(fc => fc.shape === "square");
     const hasMixedShapes = !allCircle && !allSquare;
+    const hasVaryingRadius = hasMixedShapes || (allSquare && frameConfigs.some(fc => fc.dotRadius !== frameConfigs[0].dotRadius));
     const isCircle = allCircle;
 
     // Build extra SVG defs for any frame active-dot colors that differ from frame 0's color
@@ -521,7 +533,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     const rxCssForFrame = (idx: number) => {
         const fc = frameConfigs[idx];
 
-        if (!hasMixedShapes || !fc) return "";
+        if (!hasVaryingRadius || !fc) return "";
 
         const rxVal = fc.shape === "square"
             ? Math.min(fc.dotRadius, boardDotSize / 2)
@@ -548,8 +560,8 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
             const t0 = tTrans[i];
             const prev = S[i];
             const next = S[i + 1];
-            const prevIdx = Math.max(0, i - 1);
-            const nextIdx = Math.min(numTexts - 1, i);
+            const prevIdx = i === 0 ? 0 : i - 1;
+            const nextIdx = i === numTexts ? 0 : i;
             const flipDuration = frameConfigs[nextIdx]?.flipDuration ?? config.flipDuration ?? 0.35;
 
             const prevColorPal = frameConfigs[prevIdx]?.colorPalette ?? boardPalette;
@@ -624,7 +636,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                 const p0 = +(t0 / cycleSeconds * 100).toFixed(2);
                 const p2 = +((t0 + flipDuration) / cycleSeconds * 100).toFixed(2);
 
-                if (prevBgPal.zeroDot !== nextBgPal.zeroDot || prevRx !== nextRx) {
+                if (prevBgPal.zeroDot !== nextBgPal.zeroDot || prevBgPal.zeroDotStroke !== nextBgPal.zeroDotStroke || prevRx !== nextRx) {
                     kfSteps.push(
                         `  ${p0}% { fill: ${prevBgPal.zeroDot}; stroke: ${prevBgPal.zeroDotStroke}; transform: scaleY(1) scaleX(1); filter: none;${prevRx} }`,
                     );
@@ -648,30 +660,35 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
     let bgAnimationStyles = "";
     const hasVaryingBg = frameConfigs.some(fc => fc.bgKey !== frameConfigs[0].bgKey);
 
-    if (hasVaryingBg) {
+    const hasVaryingZero = hasVaryingBg || hasVaryingRadius;
+    const canUseCompound = config.renderTech === "compound-path" && !hasVaryingZero;
+
+    if (hasVaryingZero) {
         const recessSteps = [];
         const zeroSteps = [];
 
         recessSteps.push(`  0% { fill: ${frameConfigs[0].bgPalette.recessBg}; }`);
-        zeroSteps.push(`  0% { fill: ${frameConfigs[0].bgPalette.zeroDot}; stroke: ${frameConfigs[0].bgPalette.zeroDotStroke}; }`);
+        zeroSteps.push(`  0% { fill: ${frameConfigs[0].bgPalette.zeroDot}; stroke: ${frameConfigs[0].bgPalette.zeroDotStroke};${rxCssForFrame(0)} }`);
 
         for (let i = 0; i < numTransitions; i += 1) {
             const t0 = tTrans[i];
-            const nextIdx = Math.min(numTexts - 1, i);
+            const prevIdx = i === 0 ? 0 : i - 1;
+            const nextIdx = i === numTexts ? 0 : i;
             const flipDuration = frameConfigs[nextIdx]?.flipDuration ?? config.flipDuration ?? 0.35;
             const p0 = +(t0 / cycleSeconds * 100).toFixed(2);
             const p2 = +((t0 + flipDuration) / cycleSeconds * 100).toFixed(2);
-            const pal = frameConfigs[nextIdx].bgPalette;
+            const prevPal = frameConfigs[prevIdx].bgPalette;
+            const nextPal = frameConfigs[nextIdx].bgPalette;
 
-            recessSteps.push(`  ${p0}% { fill: ${pal.recessBg}; }`);
-            recessSteps.push(`  ${p2}% { fill: ${pal.recessBg}; }`);
+            recessSteps.push(`  ${p0}% { fill: ${prevPal.recessBg}; }`);
+            recessSteps.push(`  ${p2}% { fill: ${nextPal.recessBg}; }`);
 
-            zeroSteps.push(`  ${p0}% { fill: ${pal.zeroDot}; stroke: ${pal.zeroDotStroke}; }`);
-            zeroSteps.push(`  ${p2}% { fill: ${pal.zeroDot}; stroke: ${pal.zeroDotStroke}; }`);
+            zeroSteps.push(`  ${p0}% { fill: ${prevPal.zeroDot}; stroke: ${prevPal.zeroDotStroke};${rxCssForFrame(prevIdx)} }`);
+            zeroSteps.push(`  ${p2}% { fill: ${nextPal.zeroDot}; stroke: ${nextPal.zeroDotStroke};${rxCssForFrame(nextIdx)} }`);
         }
 
         recessSteps.push(`  100% { fill: ${frameConfigs[0].bgPalette.recessBg}; }`);
-        zeroSteps.push(`  100% { fill: ${frameConfigs[0].bgPalette.zeroDot}; stroke: ${frameConfigs[0].bgPalette.zeroDotStroke}; }`);
+        zeroSteps.push(`  100% { fill: ${frameConfigs[0].bgPalette.zeroDot}; stroke: ${frameConfigs[0].bgPalette.zeroDotStroke};${rxCssForFrame(0)} }`);
 
         bgAnimationStyles = `\n    @keyframes k-recess-bg {\n${recessSteps.join("\n")}\n    }\n    .recess-bezel {\n      animation: k-recess-bg ${cycleSeconds}s cubic-bezier(0.22, 1, 0.36, 1) infinite;\n    }\n    @keyframes k-zero-bg {\n${zeroSteps.join("\n")}\n    }\n    .z-bg {\n      animation: k-zero-bg ${cycleSeconds}s cubic-bezier(0.22, 1, 0.36, 1) infinite;\n    }`;
     }
@@ -685,7 +702,7 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
             ? Math.min(frameConfigs[0]?.dotRadius ?? 2, boardDotSize / 2)
             : dotRadius;
 
-    const zeroStaticClass = hasVaryingBg ? "d z z-bg" : "d z";
+    const zeroStaticClass = hasVaryingZero ? "d z z-bg" : "d z";
 
     for (let r = 0; r < totalRows; r += 1) {
         for (let c = 0; c < totalCols; c += 1) {
@@ -699,12 +716,12 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                 const cx = +(gridOriginX + c * boardCellPitch + dotCenterOffset).toFixed(2);
                 const cy = +(gridOriginY + r * boardCellPitch + dotCenterOffset).toFixed(2);
 
-                if (isZeroAll && config.renderTech === "compound-path") {
+                if (isZeroAll && canUseCompound) {
                     compoundDots.push(`M${(cx - dotRadius).toFixed(2)} ${cy}a${dotRadius} ${dotRadius} 0 1 0 ${dotRadius * 2} 0a${dotRadius} ${dotRadius} 0 1 0 ${-dotRadius * 2} 0`);
                 }
                 else {
                     const cls = isZeroAll ? zeroStaticClass : `d z p-${seq}`;
-                    const style = isZeroAll ? "" : ` style="animation-delay:${delay}s"`;
+                    const style = isZeroAll && !hasVaryingZero ? "" : ` style="animation-delay:${delay}s"`;
                     dotElements.push(`    <circle class="${cls}" cx="${cx}" cy="${cy}" r="${dotRadius}"${style}/>`);
                 }
             }
@@ -713,13 +730,13 @@ export function generateFlipDotSvg(options: SvgOptions = {}) {
                 const y = +(gridOriginY + r * boardCellPitch + dotSquareOffset).toFixed(2);
                 const rx = +baseRx.toFixed(2);
 
-                if (isZeroAll && config.renderTech === "compound-path") {
+                if (isZeroAll && canUseCompound) {
                     const radius = Math.min(rx, boardDotSize / 2);
                     compoundDots.push(`M${(x + radius).toFixed(2)} ${y}h${boardDotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${radius}v${boardDotSize - 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${radius}h${-boardDotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${-radius} ${-radius}v${-boardDotSize + 2 * radius}a${radius} ${radius} 0 0 1 ${radius} ${-radius}z`);
                 }
                 else {
                     const cls = isZeroAll ? zeroStaticClass : `d z p-${seq}`;
-                    const style = isZeroAll ? "" : ` style="animation-delay:${delay}s"`;
+                    const style = isZeroAll && !hasVaryingZero ? "" : ` style="animation-delay:${delay}s"`;
                     dotElements.push(`    <rect class="${cls}" x="${x}" y="${y}" width="${boardDotSize}" height="${boardDotSize}" rx="${rx}"${style}/>`);
                 }
             }

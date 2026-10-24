@@ -248,4 +248,59 @@ describe("frame-by-frame markup ($[key=value, ...])", () => {
         expect(stills[2].svg).toContain(PALETTES.crimson.activeDot);
         expect(stills[2].svg).toContain(PALETTES.cyan.recessBg);
     });
+
+    it("correctly holds inactive dots and recess bezel at each frame background during multi-frame animation", () => {
+        const texts = [
+            "hello $[color=amber, background=#10141d, align=left]",
+            "world $[color=cyan, background=emerald, shape=square, italic=false, duration=2.5, pitch=16]",
+            "bye $[theme=crimson, align=right]",
+        ];
+
+        const anim = generateFlipDotSvg({ texts });
+
+        // Ensure keyframe rules for recess and zero background exist
+        expect(anim.svg).toContain("@keyframes k-recess-bg");
+        expect(anim.svg).toContain("@keyframes k-zero-bg");
+
+        // Helper to extract keyframe step lines
+        const getKf = (name: string) => {
+            const m = anim.svg.match(new RegExp(`@keyframes ${name}\\s*\\{([\\s\\S]*?)\\}\\n    \\.`));
+            return m ? m[1].trim() : "";
+        };
+
+        const recessKf = getKf("k-recess-bg");
+        const zeroKf = getKf("k-zero-bg");
+
+        // Frame 0 hold (between 8.16% and 32.62%): must hold at Frame 0's background #10141d
+        expect(recessKf).toContain("8.16% { fill: #10141d; }");
+        expect(recessKf).toContain("32.62% { fill: #10141d; }");
+        expect(zeroKf).toContain("8.16% { fill: #1e222b; stroke: #2c3039; rx: 7px; }");
+        expect(zeroKf).toContain("32.62% { fill: #1e222b; stroke: #2c3039; rx: 7px; }");
+
+        // Frame 1 hold (between 35.11% and 50.35%): must hold at emerald background
+        expect(recessKf).toContain(`35.11% { fill: ${PALETTES.emerald.recessBg}; }`);
+        expect(recessKf).toContain(`50.35% { fill: ${PALETTES.emerald.recessBg}; }`);
+        expect(zeroKf).toContain(`35.11% { fill: ${PALETTES.emerald.zeroDot}; stroke: ${PALETTES.emerald.zeroDotStroke}; rx: 2.2px; }`);
+        expect(zeroKf).toContain(`50.35% { fill: ${PALETTES.emerald.zeroDot}; stroke: ${PALETTES.emerald.zeroDotStroke}; rx: 2.2px; }`);
+
+        // Frame 2 hold (between 52.84% and 77.3%): must hold at crimson background
+        expect(recessKf).toContain(`52.84% { fill: ${PALETTES.crimson.recessBg}; }`);
+        expect(recessKf).toContain(`77.3% { fill: ${PALETTES.crimson.recessBg}; }`);
+        expect(zeroKf).toContain(`52.84% { fill: ${PALETTES.crimson.zeroDot}; stroke: ${PALETTES.crimson.zeroDotStroke}; rx: 7px; }`);
+        expect(zeroKf).toContain(`77.3% { fill: ${PALETTES.crimson.zeroDot}; stroke: ${PALETTES.crimson.zeroDotStroke}; rx: 7px; }`);
+
+        // Final blank hold: returns to Frame 0 background and holds until cycle completion
+        expect(recessKf).toContain("79.79% { fill: #10141d; }");
+        expect(recessKf).toContain("100% { fill: #10141d; }");
+        expect(zeroKf).toContain("79.79% { fill: #1e222b; stroke: #2c3039; rx: 7px; }");
+        expect(zeroKf).toContain("100% { fill: #1e222b; stroke: #2c3039; rx: 7px; }");
+
+        // Inactive dots across transitions (e.g. dots only lit in 'world' [seq 010])
+        // must also match zero background during Frame 0, Frame 2, and blank hold
+        const k010 = getKf("k-010");
+        expect(k010).toContain("32.62% { fill: #1e222b; stroke: #2c3039;");
+        expect(k010).toContain(`52.84% { fill: ${PALETTES.crimson.zeroDot}; stroke: ${PALETTES.crimson.zeroDotStroke};`);
+        expect(k010).toContain(`77.3% { fill: ${PALETTES.crimson.zeroDot}; stroke: ${PALETTES.crimson.zeroDotStroke};`);
+        expect(k010).toContain("79.79% { fill: #1e222b; stroke: #2c3039;");
+    });
 });
