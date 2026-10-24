@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { calculateRasterProgress } from "../../core/progress.ts";
 import {
     appendDisplaySearchParams,
     DEFAULT_ROTATING_TEXTS,
@@ -176,18 +177,12 @@ export function MainPage() {
         }
 
         const startTime = Date.now();
-        const estimatedMs = Math.max(3000, texts.length * 3600);
 
         const interval = setInterval(() => {
             const elapsed = Date.now() - startTime;
             setRasterElapsed(elapsed);
-
-            const ratio = elapsed / estimatedMs;
-            const pct = Math.min(
-                95,
-                Math.round(88 * (1 - Math.exp(-2 * ratio)) + (ratio > 1 ? (1 - Math.exp(-0.4 * (ratio - 1))) * 7 : 0)),
-            );
-            setRasterProgress(pct);
+            const { percent } = calculateRasterProgress(elapsed, texts.length);
+            setRasterProgress(percent);
         }, 100);
 
         return () => clearInterval(interval);

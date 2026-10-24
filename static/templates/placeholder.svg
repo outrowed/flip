@@ -5,6 +5,13 @@
       <stop offset="0%" stop-color="#141923"/>
       <stop offset="100%" stop-color="{{palette.casingOuter}}"/>
     </linearGradient>
+    <linearGradient id="progress-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="{{palette.activeDot}}"/>
+      <stop offset="100%" stop-color="{{palette.activeDotBright}}"/>
+    </linearGradient>
+    <clipPath id="progress-bar-clip">
+      <rect x="{{barX}}" y="{{barY}}" width="{{barWidth}}" height="{{barHeight}}" rx="{{barRadius}}"/>
+    </clipPath>
   </defs>
 
   <!-- Outer casing -->
@@ -22,5 +29,13 @@
   <!-- Notice text -->
   <text x="{{centerX}}" y="{{titleY}}" font-family="system-ui, -apple-system, sans-serif" font-size="{{titleSize}}" font-weight="700" fill="{{palette.activeDotBright}}" letter-spacing="1.2" text-anchor="middle" dominant-baseline="middle">GENERATING FLIP-DOT ANIMATION...</text>
   <text x="{{centerX}}" y="{{subY}}" font-family="system-ui, -apple-system, sans-serif" font-size="{{subSize}}" fill="#94a3b8" letter-spacing="0.4" text-anchor="middle" dominant-baseline="middle">Please wait for a moment • Reload from time to time to view</text>
+
+  <!-- Progress bar -->
+  <rect x="{{barX}}" y="{{barY}}" width="{{barWidth}}" height="{{barHeight}}" rx="{{barRadius}}" fill="#161c26" stroke="#202736" stroke-width="1"/>
+  <rect x="{{barX}}" y="{{barY}}" width="{{progressWidth}}" height="{{barHeight}}" rx="{{barRadius}}" fill="url(#progress-grad)" clip-path="url(#progress-bar-clip)"/>
+
+  <!-- Progress labels -->
+  <text x="{{barX}}" y="{{labelY}}" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="{{labelSize}}" font-weight="600" fill="#94a3b8" text-anchor="start" dominant-baseline="middle">{{progressText}}</text>
+  <text x="{{barRightX}}" y="{{labelY}}" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="{{labelSize}}" font-weight="600" fill="#64748b" text-anchor="end" dominant-baseline="middle">{{elapsedText}}</text>
 {{urlElement}}
 </svg>

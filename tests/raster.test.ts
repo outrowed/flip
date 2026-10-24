@@ -74,11 +74,19 @@ describe("raster output", () => {
 
     it("generates placeholders with exact dimensions and proper format encoding", async () => {
         const testUrl = "https://flip.taruna.me/api/svg?texts=hello+world&format=webp";
-        const pWebp = await generatePlaceholder(640, 180, "webp", "amber", testUrl);
+        const progress = {
+            percent: 45,
+            elapsedMs: 3200,
+        };
+        const pWebp = await generatePlaceholder(640, 180, "webp", "amber", testUrl, progress);
         const pPng = await generatePlaceholder(640, 180, "apng", "emerald");
-        const pSvg = await generatePlaceholder(640, 180, "svg", "amber", testUrl);
+        const pSvg = await generatePlaceholder(640, 180, "svg", "amber", testUrl, progress);
 
-        expect(pSvg.toString("utf8")).toContain("https://flip.taruna.me/api/svg?texts=hello+world&amp;format=webp");
+        const svgContent = pSvg.toString("utf8");
+        expect(svgContent).toContain("https://flip.taruna.me/api/svg?texts=hello+world&amp;format=webp");
+        expect(svgContent).toContain("45%");
+        expect(svgContent).toContain("3.2s");
+        expect(svgContent).toContain("id=\"progress-bar-clip\"");
 
         const metaWebp = await sharp(pWebp).metadata();
         expect(metaWebp.width).toBe(640);

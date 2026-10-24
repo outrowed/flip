@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { chromium, type Browser } from "playwright";
 import sharp from "sharp";
 import UPNG from "upng-js";
+import { calculateRasterProgress, type RasterProgress } from "../core/progress.ts";
 import { PALETTES, type PaletteDef, getLoadedPlaceholderTemplate } from "../core/resources.ts";
 
 export type OutputType = "svg" | "apng" | "webp";
@@ -11,10 +12,16 @@ export interface CacheEntry {
     etag: string;
 }
 
+export interface PendingJob {
+    startedAt: number;
+    textsCount: number;
+    promise: Promise<CacheEntry>;
+}
+
 /** Byte-bounded LRU with single-flight generation and synchronous cache inspection. */
 export class OutputCache {
     private entries = new Map<string, CacheEntry>();
-    private pending = new Map<string, Promise<CacheEntry>>();
+    private pending = new Map<string, PendingJob>();
     private bytes = 0;
 
     private readonly maxBytes: number;
@@ -37,6 +44,15 @@ export class OutputCache {
 
     isPending(key: string): boolean {
         return this.pending.has(key);
+    }
+
+    getProgress(key: string): RasterProgress | undefined {
+        const job = this.pending.get(key);
+
+        if (!job) return undefined;
+
+        const elapsedMs = Math.max(0, Date.now() - job.startedAt);
+        return calculateRasterProgress(elapsedMs, job.textsCount);
     }
 
     set(key: string, data: Buffer): CacheEntry {
@@ -62,29 +78,35 @@ export class OutputCache {
         return entry;
     }
 
-    trigger(key: string, generate: () => Promise<Buffer>): Promise<CacheEntry> {
+    trigger(key: string, generate: () => Promise<Buffer>, textsCount = 1): Promise<CacheEntry> {
         const cached = this.peek(key);
 
         if (cached) return Promise.resolve(cached);
 
         const pending = this.pending.get(key);
 
-        if (pending) return pending;
+        if (pending) return pending.promise;
 
-        const task = generate()
+        const startedAt = Date.now();
+        const promise = generate()
             .then(data => this.set(key, data))
             .finally(() => this.pending.delete(key));
 
-        this.pending.set(key, task);
-        return task;
+        this.pending.set(key, {
+            startedAt,
+            textsCount,
+            promise,
+        });
+
+        return promise;
     }
 
-    async get(key: string, generate: () => Promise<Buffer>): Promise<CacheEntry> {
+    async get(key: string, generate: () => Promise<Buffer>, textsCount = 1): Promise<CacheEntry> {
         const cached = this.peek(key);
 
         if (cached) return cached;
 
-        return this.trigger(key, generate);
+        return this.trigger(key, generate, textsCount);
     }
 }
 
@@ -95,17 +117,41 @@ export async function generatePlaceholder(
     format: "apng" | "webp" | "svg" | "png" = "webp",
     theme = "amber",
     apiUrl?: string,
+    progress?: RasterProgress,
 ): Promise<Buffer> {
     const palette: PaletteDef = PALETTES[theme] || PALETTES.amber;
-    const titleSize = Math.min(18, Math.max(11, Math.floor(Math.min(height / 11, width / 34))));
-    const subSize = Math.min(12, Math.max(9, Math.floor(Math.min(height / 17, width / 52))));
-    const yCenter = height / 2;
+    const titleSize = Math.min(18, Math.max(10, Math.floor(Math.min(height / 11, width / 34))));
+    const subSize = Math.min(12, Math.max(8, Math.floor(Math.min(height / 18, width / 54))));
+    const labelSize = Math.min(11, Math.max(7, Math.floor(subSize * 0.9)));
+    const barHeight = Math.min(8, Math.max(4, Math.floor(height / 28)));
+    const barRadius = +(barHeight / 2).toFixed(1);
 
+    const maxBarW = Math.min(540, width - 48);
+    const barWidth = Math.max(100, Math.min(maxBarW, Math.floor(width * 0.45)));
+    const barX = Math.round((width - barWidth) / 2);
+    const barRightX = barX + barWidth;
+
+    const currentPercent = progress?.percent ?? 0;
+    const currentElapsed = progress?.elapsedMs ?? 0;
+    const clampedProgress = Math.max(0, Math.min(100, Math.round(currentPercent)));
+    const progressWidth = clampedProgress === 0
+        ? 0
+        : Math.max(barHeight, Math.round((barWidth * clampedProgress) / 100));
+
+    const yCenter = height / 2;
     const hasUrl = Boolean(apiUrl && apiUrl.trim().length > 0);
-    const lineGap = Math.min(24, Math.max(16, Math.floor(height * 0.11)));
-    const titleY = hasUrl ? yCenter - lineGap : yCenter - 9;
-    const subY = hasUrl ? yCenter - 2 : yCenter + 14;
-    const urlY = yCenter + lineGap;
+    const gap = hasUrl
+        ? Math.min(22, Math.max(12, Math.floor(height * 0.095)))
+        : Math.min(26, Math.max(15, Math.floor(height * 0.125)));
+
+    const totalBlock = gap + gap * 0.9 + (barHeight + labelSize + 2) + (hasUrl ? gap * 0.9 : 0);
+    const startY = Math.round(yCenter - totalBlock / 2 + titleSize / 2);
+
+    const titleY = startY;
+    const subY = titleY + gap;
+    const barY = subY + Math.round(gap * 0.9);
+    const labelY = barY + barHeight + labelSize + 2;
+    const urlY = hasUrl ? labelY + Math.round(gap * 0.9) : 0;
 
     let urlElement = "";
 
@@ -136,8 +182,19 @@ export async function generatePlaceholder(
         centerX: String(width / 2),
         titleY: String(titleY),
         subY: String(subY),
+        labelY: String(labelY),
         titleSize: String(titleSize),
         subSize: String(subSize),
+        labelSize: String(labelSize),
+        barX: String(barX),
+        barY: String(barY),
+        barWidth: String(barWidth),
+        barHeight: String(barHeight),
+        barRadius: String(barRadius),
+        barRightX: String(barRightX),
+        progressWidth: String(progressWidth),
+        progressText: `${clampedProgress}%`,
+        elapsedText: `${(currentElapsed / 1000).toFixed(1)}s`,
         urlElement,
     };
 

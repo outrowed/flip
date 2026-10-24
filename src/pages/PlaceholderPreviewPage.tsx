@@ -6,11 +6,15 @@ export function PlaceholderPreviewPage() {
     const [height, setHeight] = useState(234);
     const [theme, setTheme] = useState("amber");
     const [format, setFormat] = useState("webp");
+    const [progress, setProgress] = useState(42);
+    const [elapsed, setElapsed] = useState(2.4);
     const params = new URLSearchParams({
         width: String(width),
         height: String(height),
         theme,
         format,
+        progress: String(progress),
+        elapsed: String(elapsed),
     });
     const url = `/api/placeholder?${params}`;
     const fieldClass = "rounded border border-[#202736] bg-[#080a0f] p-2 text-[#f1f5f9]";
@@ -40,6 +44,16 @@ export function PlaceholderPreviewPage() {
                     <select className={fieldClass} value={format} onChange={event => setFormat(event.target.value)}>
                         {["webp", "png", "svg"].map(value => <option key={value}>{value}</option>)}
                     </select>
+                </label>
+                <label className="flex flex-col gap-2 text-sm">
+                    Progress (
+                    {progress}
+                    %)
+                    <input className="w-32 accent-[#fbbf24]" type="range" min="0" max="100" value={progress} onChange={event => setProgress(Number(event.target.value))} />
+                </label>
+                <label className="flex flex-col gap-2 text-sm">
+                    Elapsed (s)
+                    <input className={`${fieldClass} w-24`} type="number" min="0" max="60" step="0.5" value={elapsed} onChange={event => setElapsed(Number(event.target.value))} />
                 </label>
             </div>
             <div className="overflow-auto rounded-xl border border-[#202736] bg-[#0b0d13] p-6">

@@ -200,7 +200,7 @@ export async function createFlipApp(options: {
             }
 
             // Cache miss: trigger background generation if not already pending
-            void cache.trigger(key, () => rasterize(resultSvg, rasterFormat, false)).catch((err) => {
+            void cache.trigger(key, () => rasterize(resultSvg, rasterFormat, false), texts?.length ?? 1).catch((err) => {
                 request.log.error(err, "Background rasterization failed");
             });
 
@@ -208,7 +208,8 @@ export async function createFlipApp(options: {
             const proto = (request.headers["x-forwarded-proto"] as string) || "https";
             const host = (request.headers["x-forwarded-host"] as string) || request.headers.host || "flip.taruna.me";
             const fullUrl = `${proto}://${host}${request.raw.url || request.url}`;
-            const placeholder = await generatePlaceholder(boardWidth, boardHeight, rasterFormat, resolvedBase.theme, fullUrl);
+            const progress = cache.getProgress(key);
+            const placeholder = await generatePlaceholder(boardWidth, boardHeight, rasterFormat, resolvedBase.theme, fullUrl, progress);
             const placeholderEtag = `W/"placeholder-${key.slice(0, 16)}"`;
 
             reply.header("Content-Type", `image/${rasterFormat}`);
@@ -238,6 +239,8 @@ export async function createFlipApp(options: {
             height?: string;
             theme?: string;
             format?: string;
+            progress?: string;
+            elapsed?: string;
         };
     }>("/api/placeholder", async (request, reply) => {
         const query = request.query;
@@ -254,12 +257,20 @@ export async function createFlipApp(options: {
         const host = (request.headers["x-forwarded-host"] as string) || request.headers.host || "flip.taruna.me";
         const fullUrl = `${proto}://${host}${request.raw.url || request.url}`;
 
+        const progressPercent = query.progress !== undefined ? Number.parseFloat(query.progress) : 0;
+        const elapsedMs = query.elapsed !== undefined ? Number.parseFloat(query.elapsed) * 1000 : 0;
+        const progress = {
+            percent: Number.isFinite(progressPercent) ? progressPercent : 0,
+            elapsedMs: Number.isFinite(elapsedMs) ? elapsedMs : 0,
+        };
+
         const placeholder = await generatePlaceholder(
             width,
             height,
             format === "svg" ? "svg" : format === "apng" ? "apng" : format === "png" ? "png" : "webp",
             theme,
             fullUrl,
+            progress,
         );
 
         const contentType = format === "svg"
